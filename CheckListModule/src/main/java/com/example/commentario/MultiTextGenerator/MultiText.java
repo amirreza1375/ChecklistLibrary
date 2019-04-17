@@ -3,6 +3,7 @@ package com.example.commentario.MultiTextGenerator;
 import android.content.Context;
 import android.graphics.Color;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -209,7 +210,9 @@ public class MultiText extends LinearLayout implements TextWatcher {
 
                 TextView maxLengthTxt = comment.findViewById(R.id.max_length);
                 int itemMaxLength = item.has(conf_maxLength) ? item.getInt(conf_maxLength) : 20;
-                edt.setMaxWidth(itemMaxLength);
+                InputFilter[] filterArray = new InputFilter[1];
+                filterArray[0] = new InputFilter.LengthFilter(itemMaxLength);
+                edt.setFilters(filterArray);
                 maxLengthTxt.setText("Max : " + itemMaxLength);
 
                 editTexts.add(edt);

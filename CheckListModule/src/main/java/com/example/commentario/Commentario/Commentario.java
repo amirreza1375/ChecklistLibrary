@@ -137,7 +137,7 @@ public class Commentario extends LinearLayout implements TextWatcher {
                         , dpToPx(42, context));
         comment.setLayoutParams(commentParams);
 
-        comment.setBackground(context.getDrawable(R.drawable.ticket_edt));
+        comment.setBackground(context.getResources().getDrawable(R.drawable.ticket_edt));
 
         comment.setText(pre_content);
 
@@ -189,7 +189,7 @@ public class Commentario extends LinearLayout implements TextWatcher {
     public void setMandatoryError() {
         if (getView() != null)
             if (setMandatories)
-                getView().setBackground(context.getDrawable(R.drawable.is_requiered));
+                getView().setBackground(context.getResources().getDrawable(R.drawable.is_requiered));
     }
 
     public void removeMandatoryError() {

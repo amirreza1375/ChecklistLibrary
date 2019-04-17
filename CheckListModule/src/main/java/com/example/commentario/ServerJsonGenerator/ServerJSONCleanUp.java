@@ -11,6 +11,8 @@ public class ServerJSONCleanUp {
 
     private String json;
 
+    private String MultiTextServerName = "multitext";
+
     public ServerJSONCleanUp(String json){
         this.json = json;
     }
@@ -75,6 +77,10 @@ public class ServerJSONCleanUp {
                     finalJSON.put(cleanUpFile(answer));
                     continue;
                 }
+                if (answer.getString(GlobalFuncs.conf_type)
+                        .equals(GlobalFuncs.conf_multiText)){
+                    finalJSON.put(cleanUpMultiText(answer));
+                }
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -84,6 +90,29 @@ public class ServerJSONCleanUp {
         }
         return finalJSON;
 
+    }
+
+    private JSONObject cleanUpMultiText(JSONObject answer) {
+
+        JSONObject cleanedMultiText = new JSONObject();
+
+        //position
+        //id
+        //type
+        //values array
+
+        try {
+            JSONArray values = answer.getJSONArray(GlobalFuncs.conf_value);
+            cleanedMultiText.put(GlobalFuncs.conf_position,answer.getInt(GlobalFuncs.conf_position));
+            cleanedMultiText.put(GlobalFuncs.conf_type,MultiTextServerName);
+            cleanedMultiText.put(GlobalFuncs.conf_id,answer.getString(GlobalFuncs.conf_id));
+            //add child value array
+            cleanedMultiText.put(GlobalFuncs.conf_value,values);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return cleanedMultiText;
     }
 
     private JSONObject cleanUpFile(JSONObject answer) {
