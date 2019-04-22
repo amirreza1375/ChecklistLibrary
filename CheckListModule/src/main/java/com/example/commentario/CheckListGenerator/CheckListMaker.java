@@ -2,7 +2,6 @@ package com.example.commentario.CheckListGenerator;
 
 import android.content.Context;
 import android.content.Intent;
-import android.media.Image;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,7 +27,7 @@ import com.example.commentario.ImageSliderView.ImageSliderViewer;
 import com.example.commentario.MultiTextGenerator.MultiText;
 import com.example.commentario.PictureElement.PicturePickerItemModel;
 import com.example.commentario.R;
-import com.example.commentario.RadioGroup.RadioGroupGenerator;
+import com.example.commentario.RadioGroupMaker.RadioGroupMaker;
 import com.example.commentario.RatingGenerator.RatingGenerator;
 import com.example.commentario.ResultId;
 import com.example.commentario.SeekBar.Nouislider;
@@ -97,7 +96,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
     //all views
     private SignatureElement signatureElement;
     private Nouislider nouislider;
-    private RadioGroupGenerator radioGroupGenerator;
+    private RadioGroupMaker radioGroupMaker;
     private CheckBoxGroup checkBoxGroup;
     private ImageFileConcept imageFileConcept;
     private Commentario commentario;
@@ -489,7 +488,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
                 array.put(commentValue);
                 continue;
             }
-            if (views.get(i) instanceof RadioGroupGenerator) {
+            if (views.get(i) instanceof RadioGroupMaker) {
                 JSONObject commentValue = getRadioValue(views.get(i));
                 array.put(commentValue);
                 continue;
@@ -627,12 +626,12 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
 
     private JSONObject getRadioValue(View view) {
         JSONObject object = new JSONObject();
-        RadioGroupGenerator radioGroupGenerator = (RadioGroupGenerator) view;
-        JSONObject radioItem = radioGroupGenerator.getValue();
+        RadioGroupMaker radioGroupMaker = (RadioGroupMaker) view;
+        JSONObject radioItem = radioGroupMaker.getValue();
         try {
             object.put(key_POSITION, position);
             object.put(key_TYPE, conf_radioButton);
-            object.put(GlobalFuncs.conf_id, radioGroupGenerator.getElementId());
+            object.put(GlobalFuncs.conf_id, radioGroupMaker.getElementId());
             object.put(key_VALUE, radioItem);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -997,12 +996,12 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
         return answers;
     }
 
-    private RadioGroupGenerator createRadio(JSONObject element, Context context) {
-        radioGroupGenerator = new RadioGroupGenerator(context
+    private RadioGroupMaker createRadio(JSONObject element, Context context) {
+        radioGroupMaker = new RadioGroupMaker(context
                 , element, false, enable, getRadioButtonAnswer(element), position);
-        radioGroupGenerator.setListener(this);
-        views.add(radioGroupGenerator);
-        return radioGroupGenerator;
+        radioGroupMaker.setListener(this);
+        views.add(radioGroupMaker);
+        return radioGroupMaker;
     }
 
     private JSONObject getRadioButtonAnswer(JSONObject element) {

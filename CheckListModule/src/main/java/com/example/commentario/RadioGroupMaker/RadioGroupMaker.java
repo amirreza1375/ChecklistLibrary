@@ -1,4 +1,4 @@
-package com.example.commentario.RadioGroup;
+package com.example.commentario.RadioGroupMaker;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -29,7 +29,7 @@ import static com.example.commentario.GlobalFuncs.conf_title;
 import static com.example.commentario.GlobalFuncs.setOrgProps;
 import static com.example.commentario.PageGenerator.CheckListPager.setMandatories;
 
-public class RadioGroupGenerator extends LinearLayout {
+public class RadioGroupMaker extends LinearLayout {
 
     //region variables
     private Context context;
@@ -50,9 +50,9 @@ public class RadioGroupGenerator extends LinearLayout {
     //endregion
 
 
-    public RadioGroupGenerator(Context context
-            , JSONObject element,boolean isRequired
-    ,boolean enabled,JSONObject answer,int position) {
+    public RadioGroupMaker(Context context
+            , JSONObject element, boolean isRequired
+    , boolean enabled, JSONObject answer, int position) {
         super(context);
         this.context = context;
         this.element = element;
@@ -64,11 +64,11 @@ public class RadioGroupGenerator extends LinearLayout {
         init(context);
     }
 
-    public RadioGroupGenerator(Context context, AttributeSet attrs) {
+    public RadioGroupMaker(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public RadioGroupGenerator(Context context, AttributeSet attrs, int defStyleAttr) {
+    public RadioGroupMaker(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
