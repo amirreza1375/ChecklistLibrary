@@ -23,13 +23,14 @@ public class PicturePickerItemModel {
     private int index;
 //    private long checkListId = -1;
     private int position = -1;
+    private String name;
 
     public PicturePickerItemModel(){
 
     }
 
     public PicturePickerItemModel(String category, String id, int count, boolean hasPic, int cat_id
-            , String path, boolean status, int index,int position) {
+            , String path, boolean status, int index,int position,String name) {
         this.category = category;
         this.id = id;
         this.count = count;
@@ -40,6 +41,7 @@ public class PicturePickerItemModel {
         this.index = index;
 //        this.checkListId = checkListId;
         this.position = position;
+        this.name = name;
     }
 
     public int getIndex() {
@@ -114,5 +116,13 @@ public class PicturePickerItemModel {
 
     public void setPosition(int position) {
         this.position = position;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

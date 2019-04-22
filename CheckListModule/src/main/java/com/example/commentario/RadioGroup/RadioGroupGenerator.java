@@ -72,11 +72,6 @@ public class RadioGroupGenerator extends LinearLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    public RadioGroupGenerator(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
-
     private void init(Context context){
 
         parsJSON(element);
@@ -139,7 +134,8 @@ public class RadioGroupGenerator extends LinearLayout {
             for (int i = 0 ; i < choices.length() ; i++){
                 JSONObject object = choices.getJSONObject(i);
                 RadioButton btn = new RadioButton(context);
-                btn.setText(object.getString(conf_text));
+                String text = object.getString(conf_text);
+                btn.setText(text);
                 btn.setId(i);
                 addAnswer(btn,answer);
                 btn.setEnabled(enabled);

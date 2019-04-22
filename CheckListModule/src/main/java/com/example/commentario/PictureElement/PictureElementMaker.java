@@ -9,6 +9,7 @@ import android.util.TypedValue;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.commentario.Config;
 import com.example.commentario.GlobalFuncs;
 
 import org.json.JSONArray;
@@ -58,9 +59,6 @@ public class PictureElementMaker extends LinearLayout implements PicturesRecycle
         super(context, attrs, defStyleAttr);
     }
 
-    public PictureElementMaker(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
 
     private void init(Context context){
 
@@ -116,6 +114,7 @@ public class PictureElementMaker extends LinearLayout implements PicturesRecycle
 
     private void setupRecyclerData(JSONObject element) {
         try {
+            String name = element.has(Config.name) ? element.getString(Config.name) : "no name";
             String imageTypeNames[] = element.getString(imagetypeName).split(",");
             String imageTypes[] = element.getString(imagetype).split(",");
             int countIndex = 0;
@@ -132,6 +131,8 @@ public class PictureElementMaker extends LinearLayout implements PicturesRecycle
                     model.setStatus(status);
                     model.setId(id);
                     model.setPosition(position);
+                    model.setName(name);
+
 
                     models.add(model);
 
