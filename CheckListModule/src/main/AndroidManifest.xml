@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.commentario">
+    package="com.example.checklist">
 
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-feature android:name="android.hardware.camera.autofocus"/>
@@ -8,30 +8,30 @@
         android:required="true"/>
 
     <application >
-        <activity android:name=".Camera.empty"
+        <activity android:name="com.example.checklist.Camera.empty"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustNothing">
 
         </activity>
-        <activity android:name=".Camera.ActivityCamera"
+        <activity android:name="com.example.checklist.Camera.ActivityCamera"
             android:theme="@style/CAMERA_THEME"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustNothing">
 
         </activity>
-        <activity android:name=".Camera.ActivityEdit"
+        <activity android:name="com.example.checklist.Camera.ActivityEdit"
             android:theme="@style/CAMERA_THEME"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustNothing">
 
         </activity>
-        <activity android:name=".Camera.ActivityPicture"
+        <activity android:name="com.example.checklist.Camera.ActivityPicture"
             android:theme="@style/CAMERA_THEME"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustNothing">
 
         </activity>
-        <activity android:name=".Camera.ActivityCamera2"
+        <activity android:name="com.example.checklist.Camera.ActivityCamera2"
             android:theme="@style/CAMERA_THEME"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustNothing">

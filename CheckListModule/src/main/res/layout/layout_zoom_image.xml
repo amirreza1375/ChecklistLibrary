@@ -43,7 +43,7 @@
 
 
 
-    <com.example.commentario.imageview.GestureImageView
+    <com.example.checklist.imageview.GestureImageView
         android:id="@+id/gesture_image"
         android:layout_below="@+id/title_holder"
         android:paddingStart="1dp"
