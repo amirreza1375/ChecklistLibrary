@@ -12,6 +12,7 @@ public class PicturePickerItemModel {
     public static String conf_category = "category";
     public static String conf_checkListId = "checklistid";
     public static String conf_position = "position";
+    public static String conf_name = "name";
 
     private String category;
     private String id;

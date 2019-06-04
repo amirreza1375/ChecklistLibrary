@@ -23,6 +23,7 @@ import static com.example.checklist.GlobalFuncs.conf_isRequired;
 import static com.example.checklist.GlobalFuncs.conf_name;
 import static com.example.checklist.GlobalFuncs.conf_title;
 import static com.example.checklist.GlobalFuncs.createTitle;
+import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.GlobalFuncs.setOrgProps;
 
 public class DropDown extends LinearLayout {
@@ -120,6 +121,7 @@ public class DropDown extends LinearLayout {
             });
         }catch (Exception e){
             e.printStackTrace();
+            log(e.getMessage());
         }
     }
 
@@ -157,6 +159,8 @@ public class DropDown extends LinearLayout {
             isRequired = element.has(conf_isRequired) && element.getBoolean(conf_isRequired);
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
+
         }
     }
 

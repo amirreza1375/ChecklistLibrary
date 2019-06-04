@@ -20,6 +20,7 @@ android {
 
 }
 
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     //noinspection GradleCompatible
@@ -40,6 +41,7 @@ dependencies {
     implementation 'com.android.support:exifinterface:28.0.0'
     implementation "com.airbnb.android:lottie:2.7.0"
     implementation  'com.simplify:ink:1.0.2'
+    implementation 'com.alexvasilkov:gesture-views:2.5.2'
 
 
 }

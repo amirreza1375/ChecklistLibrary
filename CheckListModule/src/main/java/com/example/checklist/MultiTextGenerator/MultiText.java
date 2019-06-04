@@ -24,12 +24,14 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import static com.example.checklist.GlobalFuncs.dpToPx;
+import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.PageGenerator.CheckListPager.setMandatories;
 
 public class MultiText extends LinearLayout implements TextWatcher {
 
 
     //region json keys
+    private String conf_placeHolder = "placeHolder";
     private String conf_title = "title";
     private String conf_id = "id";
     private String conf_name = "name";
@@ -84,9 +86,7 @@ public class MultiText extends LinearLayout implements TextWatcher {
         super(context, attrs, defStyleAttr);
     }
 
-    public MultiText(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
+
     //endregion
 
     private void init(Context context) {
@@ -135,7 +135,7 @@ public class MultiText extends LinearLayout implements TextWatcher {
 
         //region holder
         LayoutParams holderParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-        holderParams.setMargins(dpToPx(8, context), dpToPx(8, context)
+        holderParams.setMargins(dpToPx(8, context), dpToPx(0, context)
                 , dpToPx(8, context), dpToPx(8, context));
         setOrientation(HORIZONTAL);
         LinearLayout holder = new LinearLayout(context);
@@ -194,10 +194,11 @@ public class MultiText extends LinearLayout implements TextWatcher {
                 }
 
                 TextView title = comment.findViewById(R.id.title);
-                title.setText(item.getString(conf_name));
+                title.setText(item.getString(conf_title));
 
                 EditText edt = comment.findViewById(R.id.comment);
-                edt.setHint("Guardar");
+                String hint = item.has(conf_placeHolder) ? item.getString(conf_placeHolder) : "Guardar";
+                edt.setHint(hint);
                 if (answer != null) {
 
                     edt.setText(answer.getString("value"));
@@ -224,6 +225,7 @@ public class MultiText extends LinearLayout implements TextWatcher {
 
             } catch (JSONException e) {
                 e.printStackTrace();
+                log(e.getMessage());
             }
 
 
@@ -241,6 +243,7 @@ public class MultiText extends LinearLayout implements TextWatcher {
             items = element.has(conf_items) ? element.getJSONArray(conf_items) : new JSONArray();
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
     }
 
@@ -250,6 +253,7 @@ public class MultiText extends LinearLayout implements TextWatcher {
             type = item.getString(conf_inputType);
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
         switch (type) {
             case "number":
@@ -280,6 +284,7 @@ public class MultiText extends LinearLayout implements TextWatcher {
                         array.put(object);
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        log(e.getMessage());
                     }
 
                 }
@@ -290,11 +295,13 @@ public class MultiText extends LinearLayout implements TextWatcher {
     }
 
     private boolean isMandatoryAnswered() {
-        for (int i = 0; i < editTexts.size(); i++) {
-            if (editTexts.get(i).getText().toString().equals("")) {
-                if (listener != null)
-                    listener.onMandatoryStatusError();
-                return false;
+        if (isRequired) {
+            for (int i = 0; i < editTexts.size(); i++) {
+                if (editTexts.get(i).getText().toString().equals("")) {
+                    if (listener != null)
+                        listener.onMandatoryStatusError();
+                    return false;
+                }
             }
         }
         return true;
@@ -306,6 +313,7 @@ public class MultiText extends LinearLayout implements TextWatcher {
             return element.getString(conf_title);
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
             return "no title";
         }
     }

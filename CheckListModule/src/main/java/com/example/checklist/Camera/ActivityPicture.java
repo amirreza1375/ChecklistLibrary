@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.checklist.CheckListGenerator.CheckListMaker;
 import com.example.checklist.Config;
@@ -31,12 +32,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.example.checklist.Camera.ActivityCamera.IMAGE_RESULT;
+import static com.example.checklist.GlobalFuncs.conf_id;
+import static com.example.checklist.GlobalFuncs.convert_ArrayList_to_JSONArray;
+import static com.example.checklist.GlobalFuncs.convert_JSONArray_to_ArrayList;
 import static com.example.checklist.GlobalFuncs.convert_JSONArray_to_PictureModel;
 import static com.example.checklist.GlobalFuncs.convert_PictureModel_to_JSONArrary;
+import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.GlobalFuncs.showToast;
 
-public class ActivityPicture extends AppCompatActivity  implements View.OnClickListener
-,PictureElementMaker.TakePictureItemClickListener {
+public class ActivityPicture extends AppCompatActivity implements View.OnClickListener
+        , PictureElementMaker.TakePictureItemClickListener {
 
     public static String data_str = "";
     private static final String TAG = "ActivityPicture";
@@ -47,6 +52,10 @@ public class ActivityPicture extends AppCompatActivity  implements View.OnClickL
     private int current_index = 0;
     private int position;
     private long checkListId;
+
+    private String elementId;
+
+    private boolean activityClosed;
 
     public static JSONArray answerPictures;
     //
@@ -64,7 +73,6 @@ public class ActivityPicture extends AppCompatActivity  implements View.OnClickL
     private JSONArray pictures;
     private JSONArray pictures_data;
     private boolean status;
-    private String element_id;
     private boolean isRequiredEach = false;
     private boolean isRequired = false;
     private Uri imageUri;
@@ -89,6 +97,37 @@ public class ActivityPicture extends AppCompatActivity  implements View.OnClickL
         if (outState != null) {
             outState.clear();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        activityClosed = true;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (activityClosed) {
+            putDataInSharedPrefrences(getPictures());
+            this.activityClosed = false;
+//            setResult(-1);
+            setResult(0);
+            finish();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        this.activityClosed = false;
+        setResult(-1);
+        super.onBackPressed();
     }
 
     @Override
@@ -120,24 +159,25 @@ public class ActivityPicture extends AppCompatActivity  implements View.OnClickL
 
         String element = "{}";
         Bundle bundlee = getIntent().getExtras();
-        if (bundlee != null){
+        if (bundlee != null) {
             element = bundlee.getString("element");
             position = bundlee.getInt("position");
             String answerPicsStr = bundlee.getString(CheckListMaker.SavedPicturesFlag);
             try {
                 answerPictures = new JSONArray(answerPicsStr);
-                if (answerPictures.length() > 0){
+                if (answerPictures.length() > 0) {
                     hasPic = true;
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+                log(e.getMessage());
                 hasPic = false;
             }
         }
 
         setMandatoryStatus(element);
 
-        if (hasPic){
+        if (hasPic) {
             addPicAnswers(convert_JSONArray_to_PictureModel(answerPictures));
         }
 
@@ -145,20 +185,22 @@ public class ActivityPicture extends AppCompatActivity  implements View.OnClickL
 
             boolean FLAG_ENABLED = false;
 
-            if (CheckListPager.pageStatus != CheckListMaker.pageStatus.PREVIEW){
+            if (CheckListPager.pageStatus != CheckListMaker.pageStatus.PREVIEW) {
                 FLAG_ENABLED = true;
             }
-            if (!FLAG_ENABLED){
+            if (!FLAG_ENABLED) {
                 done.setVisibility(View.GONE);
             }
 
-            elementMaker = new PictureElementMaker(this,new JSONObject(element)
-            ,true,FLAG_ENABLED,getPicAnswers(),position);
+            elementMaker = new PictureElementMaker(this, new JSONObject(element)
+                    , true, FLAG_ENABLED, getPicAnswers(), position, this);
             elementMaker.setMlistener(this);
             parent.addView(elementMaker);
             elementMaker.getModels();
+            this.elementId = elementMaker.getElementId();
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
 
         addPrePictures();
@@ -175,8 +217,8 @@ public class ActivityPicture extends AppCompatActivity  implements View.OnClickL
         try {
             JSONObject element = new JSONObject(elementStr);
 
-            if (element.has("isRequiredEach")){
-                if (element.getBoolean("isRequiredEach")){
+            if (element.has("isRequiredEach")) {
+                if (element.getBoolean("isRequiredEach")) {
                     isRequiredEach = true;
                 }
             }
@@ -184,6 +226,7 @@ public class ActivityPicture extends AppCompatActivity  implements View.OnClickL
 
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
 
     }
@@ -191,33 +234,34 @@ public class ActivityPicture extends AppCompatActivity  implements View.OnClickL
     private void addPicAnswers(ArrayList<PicturePickerItemModel> models) {
 
 
-
     }
 
-    private JSONArray getPicAnswers(){
+    private JSONArray getPicAnswers() {
 
         JSONArray finalJSON = new JSONArray();
 
-        String answersStr = getSharedPreferences(Config.sharedPreferencName,MODE_PRIVATE)
-        .getString(Config.pictures,"");
+        String answersStr = getSharedPreferences(Config.sharedPreferencName, MODE_PRIVATE)
+                .getString(Config.pictures, "");
 
         try {
             JSONArray SPPics = new JSONArray(answersStr);
-            for (int i = 0 ; i < SPPics.length() ; i++){
+            for (int i = 0; i < SPPics.length(); i++) {
                 finalJSON.put(SPPics.getJSONObject(i));
             }
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
 
-        for (int i = 0 ; i < answerPictures.length() ; i++){
+        for (int i = 0; i < answerPictures.length(); i++) {
             try {
                 JSONObject answer = answerPictures.getJSONObject(i);
-                if (isPicExist(answer,finalJSON)){
+                if (isPicExist(answer, finalJSON)) {
                     finalJSON.put(answer);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+                log(e.getMessage());
             }
 
         }
@@ -228,15 +272,17 @@ public class ActivityPicture extends AppCompatActivity  implements View.OnClickL
 
     @Override
     public void onPictureItemClicked(PicturesRecyclerView.ViewHolder holder, PicturePickerItemModel model) {
+        this.activityClosed = false;
         Intent intent = null;
         try {
             this.picturePickerItemModel = model;
             intent = new Intent(ActivityPicture.this
-            ,Class.forName(ActivityCamera.FLAG_CUSTOM_CAMERA));
-            startActivityForResult(intent,101);
+                    , Class.forName(ActivityCamera.FLAG_CUSTOM_CAMERA));
+            startActivityForResult(intent, 101);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
 
     }
@@ -247,12 +293,25 @@ public class ActivityPicture extends AppCompatActivity  implements View.OnClickL
     }
 
     @Override
+    public void onNoImageAppeared(final String msg) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(ActivityPicture.this, msg, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 101){
-            if (resultCode == RESULT_OK){
+        if (requestCode == 101) {
+            if (resultCode == RESULT_OK) {
                 String path = data.getExtras().getString(IMAGE_RESULT);
                 addImagePath(path);
+            } else if (resultCode == 1) {
+                setResult(0);
+                finish();
             }
         }
     }
@@ -260,8 +319,8 @@ public class ActivityPicture extends AppCompatActivity  implements View.OnClickL
     private void addImagePath(String path) {
         boolean FLAG_ADDED = false;
         int index = -1;
-        for (int i = 0 ; i < pictureModels.size() ; i++){
-            if (pictureModels.get(i).getIndex() == picturePickerItemModel.getIndex()){
+        for (int i = 0; i < pictureModels.size(); i++) {
+            if (pictureModels.get(i).getIndex() == picturePickerItemModel.getIndex()) {
                 pictureModels.get(i).setPath(path);
                 pictureModels.get(i).setPosition(position);
                 FLAG_ADDED = true;
@@ -269,7 +328,7 @@ public class ActivityPicture extends AppCompatActivity  implements View.OnClickL
                 break;
             }
         }
-        if (!FLAG_ADDED){
+        if (!FLAG_ADDED) {
             picturePickerItemModel.setPath(path);
             pictureModels.add(picturePickerItemModel);
         }
@@ -282,16 +341,19 @@ public class ActivityPicture extends AppCompatActivity  implements View.OnClickL
 
     @Override
     public void onClick(View v) {
-        if (v == back){
-            setResult(RESULT_CANCELED);
+        if (v == back) {
+            this.activityClosed = false;
+            setResult(-1);
             finish();
         }
-        if (v == done){
+        if (v == done) {
             if (takenPicturesCount() > 0) {
                 putDataInSharedPrefrences(getPictures());
+                this.activityClosed = false;
+                setResult(-1);
                 finish();
-            }else{
-                showToast(ActivityPicture.this,getString(R.string.take_picture));
+            } else {
+                showToast(ActivityPicture.this, getString(R.string.take_picture));
             }
         }
     }
@@ -300,114 +362,134 @@ public class ActivityPicture extends AppCompatActivity  implements View.OnClickL
         JSONArray allPics = new JSONArray();
         //first we should get other pages pictures
 
-        String prePicsStr = getSharedPreferences(Config.sharedPreferencName,MODE_PRIVATE)
-                .getString(Config.pictures,"");
+        String prePicsStr = getSharedPreferences(Config.sharedPreferencName, MODE_PRIVATE)
+                .getString(Config.pictures, "");
 
-        if (prePicsStr.equals("")){
+        if (prePicsStr.equals("")) {
             prePicsStr = "[]";
         }
 
         try {
-            JSONArray prePictures = new JSONArray(prePicsStr);
-            for (int i = 0 ; i < prePictures.length() ; i++){
+
+
+            ArrayList<JSONObject> prePicturesArray = convert_JSONArray_to_ArrayList(new JSONArray(prePicsStr));
+            for (int i = 0; i < prePicturesArray.size(); i++) {
+                try {
+                    if (prePicturesArray.get(i).getString(conf_id)
+                            .equals(elementId)) {
+                        prePicturesArray.remove(i);
+                        i--;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            JSONArray prePictures = convert_ArrayList_to_JSONArray(prePicturesArray);
+
+            for (int i = 0; i < prePictures.length(); i++) {
                 allPics.put(prePictures.getJSONObject(i));
             }
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
 
-
         try {
-            for (int i = 0 ; i < pictures.length() ; i++){
-               JSONObject object = pictures.getJSONObject(i);
-               if(!isPicExist(object,allPics)) {
-                   allPics.put(object);
-               }
+            for (int i = 0; i < pictures.length(); i++) {
+                JSONObject object = pictures.getJSONObject(i);
+                if (!isPicExist(object, allPics)) {
+                    allPics.put(object);
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
 
-        SharedPreferences.Editor editor = getSharedPreferences(Config.sharedPreferencName,MODE_PRIVATE)
+        SharedPreferences.Editor editor = getSharedPreferences(Config.sharedPreferencName, MODE_PRIVATE)
                 .edit();
-        editor.putString(Config.pictures,allPics.toString()).apply();
+        editor.putString(Config.pictures, allPics.toString()).apply();
     }
 
-    public static JSONArray getPicsFromSharedPreferences(Context context){
-        String picsStr = context.getSharedPreferences(Config.sharedPreferencName,MODE_PRIVATE)
-                .getString(Config.pictures,"");
+    public static JSONArray getPicsFromSharedPreferences(Context context) {
+        String picsStr = context.getSharedPreferences(Config.sharedPreferencName, MODE_PRIVATE)
+                .getString(Config.pictures, "");
         try {
             return new JSONArray(picsStr);
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
             return new JSONArray();
         }
     }
 
-    private void addPrePictures(){
+    private void addPrePictures() {
         JSONArray allAnswers = new JSONArray();
-        String picsStr = getSharedPreferences(Config.sharedPreferencName,MODE_PRIVATE)
-                .getString(Config.pictures,"[]");
-        if (picsStr.equals("")){
+        String picsStr = getSharedPreferences(Config.sharedPreferencName, MODE_PRIVATE)
+                .getString(Config.pictures, "[]");
+        if (picsStr.equals("")) {
             picsStr = "[]";
         }
         try {
             JSONArray pics = new JSONArray(picsStr);
-            for (int i = 0 ; i < pics.length() ; i++){
+            for (int i = 0; i < pics.length(); i++) {
                 allAnswers.put(pics.getJSONObject(i));
             }
-            for (int i = 0 ; i < answerPictures.length() ; i++){
+            for (int i = 0; i < answerPictures.length(); i++) {
                 JSONObject pic = answerPictures.getJSONObject(i);
-                if (!isPicExist(pic,allAnswers)){
-                   allAnswers.put(answerPictures.getJSONObject(i));
+                if (!isPicExist(pic, allAnswers)) {
+                    allAnswers.put(answerPictures.getJSONObject(i));
                 }
             }
 
             //now add all pics to models
 
-            for (int i = 0 ; i < allAnswers.length() ; i++) {
+            for (int i = 0; i < allAnswers.length(); i++) {
                 JSONObject pic = allAnswers.getJSONObject(i);
                 for (int j = 0; j < pictureModels.size(); j++) {
 
                     if (pictureModels.get(j).getId()
                             .equals(pic.getString(PicturePickerItemModel.conf_id))
                             && pictureModels.get(j).getIndex()
-                             == (pic.getInt(PicturePickerItemModel.conf_index))
-                            ){
-                        putPicInModel(pictureModels.get(j),pic);
+                            == (pic.getInt(PicturePickerItemModel.conf_index))) {
+                        putPicInModel(pictureModels.get(j), pic);
                     }
 
                 }
             }
 
 
-
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
     }
 
+    //put path and make it has picture
     private void putPicInModel(PicturePickerItemModel picturePickerItemModel, JSONObject pic) {
         try {
             picturePickerItemModel.setPath(pic.getString(PicturePickerItemModel.conf_path));
             picturePickerItemModel.setHasPic(true);
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
     }
 
     private boolean isPicExist(JSONObject pic, JSONArray allAnswers) {
-        for (int i = 0 ; i < allAnswers.length() ; i++){
+        for (int i = 0; i < allAnswers.length(); i++) {
             try {
                 JSONObject object = allAnswers.getJSONObject(i);
                 if (pic.getString(PicturePickerItemModel.conf_id)
                         .equals(object.getString(PicturePickerItemModel.conf_id))
                         && pic.getInt(PicturePickerItemModel.conf_index)
-                         == (object.getInt(PicturePickerItemModel.conf_index))){
+                        == (object.getInt(PicturePickerItemModel.conf_index))) {
                     return true;
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+                log(e.getMessage());
             }
 
         }
@@ -415,24 +497,51 @@ public class ActivityPicture extends AppCompatActivity  implements View.OnClickL
 
     }
 
-    private int takenPicturesCount(){
+    private int takenPicturesCount() {
+
         if (isRequiredEach) {
-            ArrayList<PicturePickerItemModel> tempModels = pictureModels;
-            for (int i = 0; i < tempModels.size(); i++) {
-                if (tempModels.get(i).getPath().equals("")) {
-                    tempModels.remove(i);
-                    i--;
+            int countImages = 0;
+            for (int i = 0; i < pictureModels.size(); i++) {
+                if (!pictureModels.get(i).getPath().equals("")) {
+                    countImages++;
                 }
             }
-            return tempModels.size();
+
+            if (countImages == pictureModels.size()) {
+                return 1;
+            }
+
+        } else {
+            int countImages = 0;
+            for (int i = 0; i < pictureModels.size(); i++) {
+                if (!pictureModels.get(i).getPath().equals("")) {
+                    countImages++;
+                }
+            }
+            if (countImages > 0) {
+                return 1;
+            }
         }
-        return 1;
+
+
+//        if (isRequiredEach) {
+//            ArrayList<PicturePickerItemModel> tempModels = pictureModels;
+//            for (int i = 0; i < tempModels.size(); i++) {
+//                if (tempModels.get(i).getPath().equals("")) {
+//                    tempModels.remove(i);
+//                    i--;
+//                }
+//            }
+//            return tempModels.size();
+//        }
+//        return 1;
+        return 0;
     }
 
     private JSONArray getPictures() {
         ArrayList<PicturePickerItemModel> tempModels = pictureModels;
-        for (int i = 0 ; i < tempModels.size() ; i++){
-            if (tempModels.get(i).getPath().equals("")){
+        for (int i = 0; i < tempModels.size(); i++) {
+            if (tempModels.get(i).getPath().equals("")) {
                 tempModels.remove(i);
                 i--;
             }

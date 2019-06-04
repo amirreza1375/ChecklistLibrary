@@ -1,7 +1,9 @@
 package com.example.checklist.CheckListGenerator;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.text.Layout;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,8 +26,14 @@ import com.example.checklist.HtmlViewer.WebViewer;
 import com.example.checklist.ImageFile.ImageFileConcept;
 import com.example.checklist.ImageSliderModel;
 import com.example.checklist.ImageSliderView.ImageSliderViewer;
+import com.example.checklist.LayoutMaker.LayoutAdapter;
+import com.example.checklist.LayoutMaker.LayoutMaker;
+import com.example.checklist.LayoutMaker.LayoutModel;
 import com.example.checklist.MultiTextGenerator.MultiText;
 import com.example.checklist.PictureElement.PicturePickerItemModel;
+import com.example.checklist.ProductCounter.ProductCounter;
+import com.example.checklist.ProductCounter.ProductCounterMaker;
+import com.example.checklist.ProductCounter.ProductModel;
 import com.example.checklist.R;
 import com.example.checklist.RadioGroupMaker.RadioGroupMaker;
 import com.example.checklist.RatingGenerator.RatingGenerator;
@@ -39,6 +47,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.checklist.GlobalFuncs.conf_DataBase;
 import static com.example.checklist.GlobalFuncs.conf_Elemento;
@@ -51,23 +60,31 @@ import static com.example.checklist.GlobalFuncs.conf_file;
 import static com.example.checklist.GlobalFuncs.conf_html;
 import static com.example.checklist.GlobalFuncs.conf_id;
 import static com.example.checklist.GlobalFuncs.conf_imagePicker;
+import static com.example.checklist.GlobalFuncs.conf_isAnswered;
 import static com.example.checklist.GlobalFuncs.conf_multiText;
+import static com.example.checklist.GlobalFuncs.conf_name;
 import static com.example.checklist.GlobalFuncs.conf_optico;
 import static com.example.checklist.GlobalFuncs.conf_position;
+import static com.example.checklist.GlobalFuncs.conf_productCount;
 import static com.example.checklist.GlobalFuncs.conf_radioButton;
 import static com.example.checklist.GlobalFuncs.conf_rating;
 import static com.example.checklist.GlobalFuncs.conf_seekBar;
 import static com.example.checklist.GlobalFuncs.conf_signature;
+import static com.example.checklist.GlobalFuncs.conf_tipo;
 import static com.example.checklist.GlobalFuncs.conf_type;
 import static com.example.checklist.GlobalFuncs.convert_JSONArray_to_PictureModel;
 import static com.example.checklist.GlobalFuncs.convert_PictureModel_to_JSONArrary;
 import static com.example.checklist.GlobalFuncs.dpToPx;
 import static com.example.checklist.GlobalFuncs.getTitleFromElement;
+import static com.example.checklist.GlobalFuncs.hideKeyboard;
+import static com.example.checklist.GlobalFuncs.log;
 
 public class CheckListMaker extends ScrollView implements View.OnClickListener
         , MultiText.MandatoryListener, ImageFileConcept.ButtonPressedCallBack {
 
     public boolean isFirstTime = true;
+
+    private boolean isNextEnabled = false;
 
     private static final String TAG = "CheckListMaker";
 
@@ -92,6 +109,8 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
     private Context context;
     private CheckListDataListener.CheckListConditionListener conditionListener;
     private CheckListDataListener listener;
+    private ArrayList<LayoutModel> layoutModels;
+    private ArrayList<ProductModel> productModels;
 
     //all views
     private SignatureElement signatureElement;
@@ -128,7 +147,8 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
     public CheckListMaker(Context context, JSONObject page, pageStatus pageStatus
             , int position, ArrayList<ImageSliderModel> imageSliderModels, int shopId
             , JSONArray picAnswers, JSONArray pageAnswers, String signatureFolderPath
-            , CheckListDataListener listener) {
+            , CheckListDataListener listener, ArrayList<LayoutModel> layoutModels
+            , ArrayList<ProductModel> productModels) {
         super(context);
         this.context = context;
         this.page = page;
@@ -140,6 +160,8 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
         this.pageAnswers = pageAnswers;
         this.signatureFolderPath = signatureFolderPath;
         this.listener = listener;
+        this.layoutModels = layoutModels;
+        this.productModels = productModels;
         views = new ArrayList<>();
         conditions = new JSONArray();
         setPageStatus(pageStatus);
@@ -171,15 +193,9 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
         super(context, attrs, defStyleAttr);
     }
 
-    public CheckListMaker(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     //endregion
 
     private void init(Context context) {
-
-//        btnNext.setEnabled(false);
 
         //region inner
         LinearLayout innerLayout = new LinearLayout(context);
@@ -188,27 +204,6 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
         innerParams.setMargins(dpToPx(8, context), dpToPx(8, context), dpToPx(8, context), dpToPx(8, context));
 
         //endregion
-
-        //region title
-//        LinearLayout titleHolder = new LinearLayout(context);
-//        LinearLayout.LayoutParams holderParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
-//        holderParams.setMargins(dpToPx(8,context),dpToPx(8,context),dpToPx(8,context),dpToPx(8,context));
-//        titleHolder.setLayoutParams(holderParams);
-//        titleHolder.setGravity(Gravity.CENTER);
-//        CardView cardView = new CardView(context);
-//        LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
-//        cardView.setCardElevation(4);
-//        cardView.setRadius(4);
-//        cardView.setPadding(dpToPx(8,context),dpToPx(8,context),dpToPx(8,context),dpToPx(8,context));
-//        TextView titleTxt = createTitle(context,false,page);
-//
-//        LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
-//        titleParams.setMargins(dpToPx(8,context),dpToPx(8,context),dpToPx(8,context),dpToPx(8,context));
-//        titleTxt.setLayoutParams(titleParams);
-//
-//        cardView.addView(titleTxt);
-//        titleHolder.addView(cardView);
-//        innerLayout.addView(titleHolder);
 
         View titleHolder = LayoutInflater.from(context).inflate(R.layout.layout_page_title_library, this, false);
         TextView titleTxt = titleHolder.findViewById(R.id.titleTxt);
@@ -222,7 +217,8 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
             checkList = createComponnents(page.getJSONArray(conf_elements), innerLayout, context);
         } catch (JSONException e) {
             e.printStackTrace();
-            listener.onCheckListError(e.getMessage());
+            log(e.getMessage());
+//            listener.onCheckListError(e.getMessage());
         }
         //endregion
 
@@ -232,7 +228,8 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
             addView(innerLayout);
         } catch (Exception e) {
             e.printStackTrace();
-            listener.onCheckListError(e.getMessage());
+            log(e.getMessage());
+//            listener.onCheckListError(e.getMessage());
         }
 
     }
@@ -293,12 +290,32 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
                 //comment
                 if (element.getString(conf_type)
                         .equals(conf_comment)) {
-                    linearLayout.addView(createComment(element, context));
+                    if (element.has(conf_tipo)) {
+                        if (element.getString(conf_tipo)
+                                .equals(conf_productCount)) {
+                            linearLayout.addView(createProductCounter(element, context));
+                        } else {
+
+                            if (isComment(element)) {
+                                linearLayout.addView(createComment(element, context));
+                            } else {
+                                linearLayout.addView(createLayout(element, context));
+                            }
+                        }
+
+                    } else {
+                        if (isComment(element)) {
+                            linearLayout.addView(createComment(element, context));
+                        } else {
+                            linearLayout.addView(createLayout(element, context));
+                        }
+                    }
+
                 }
                 //Html
                 if (element.getString(conf_type)
-                        .equals(conf_html)){
-                    linearLayout.addView(createHtml(element,context));
+                        .equals(conf_html)) {
+                    linearLayout.addView(createHtml(element, context));
                 }
                 //dataBase
                 if (element.getString(conf_type)
@@ -310,17 +327,87 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+                log(e.getMessage());
             }
 
         }
         return linearLayout;
     }
 
+    private View createProductCounter(JSONObject element, Context context) {
+        ProductCounterMaker productCounter = new ProductCounterMaker(context, element, getProductCounterAnswer(element)
+                , enable, productModels, this,shopId+"",position);
+        views.add(productCounter);
+        return productCounter;
+    }
+
+    private JSONObject getProductCounterAnswer(JSONObject element) {
+        JSONObject answer = new JSONObject();
+        for (int i = 0; i < pageAnswers.length(); i++) {
+            try {
+                if (pageAnswers.getJSONObject(i).getString(conf_type)
+                        .equals(conf_productCount)) {
+                    if (element.getString("id")
+                            .equals(pageAnswers.getJSONObject(i).getString("id"))) {
+                        answer = pageAnswers.getJSONObject(i);
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                log(e.getMessage());
+            }
+        }
+        return answer;
+    }
+
+    private View createLayout(JSONObject element, Context context) {
+        LayoutMaker layoutMaker = new LayoutMaker(context, layoutModels, element, shopId + "");
+        return layoutMaker;
+    }
+
+
+    private void add_layout(LayoutModel layoutModel, LinearLayout parent) {
+        //add
+
+        LayoutAdapter adapter = new LayoutAdapter(context
+                , layoutModel.getOrder_name()
+                , "id"
+                , layoutModel.getShop()
+                , layoutModel.getImage_path()
+                , parent
+                , layoutModel.getPositions()
+                , layoutModel.getReplacements());
+        parent.addView(adapter.get_view());
+
+    }
+
+
     private View createHtml(JSONObject element, Context context) {
-        WebViewer webViewer = new WebViewer(context,element);
+        WebViewer webViewer = new WebViewer(context, element);
         return webViewer;
     }
 
+
+    private boolean isComment(JSONObject element) {
+        boolean FLAG_IS_COMMENT = true;
+
+        if (element.has("Layout")) {
+            try {
+                if (element.getString("Layout").equals("")
+                        || element.getString("Layout").equals("0")) {
+                    FLAG_IS_COMMENT = true;
+                } else {
+                    FLAG_IS_COMMENT = false;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else {
+            FLAG_IS_COMMENT = true;
+        }
+
+        return FLAG_IS_COMMENT;
+    }
 
     private View createOptico(JSONObject element, Context context) {
         try {
@@ -381,6 +468,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
 
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        log(e.getMessage());
                         listener.onCheckListError(e.getMessage());
                     }
                 }//end of result for
@@ -399,7 +487,8 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
 
         } catch (Exception e) {
             e.printStackTrace();
-            listener.onCheckListError(e.getMessage());
+            log(e.getMessage());
+//            listener.onCheckListError(e.getMessage());
             return new ImageSliderViewer(context, element
                     , new ArrayList<File>(), new ArrayList<String>(), new ArrayList<String>());
         }
@@ -412,6 +501,8 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
         this.btnPre = btnPre;
         this.btnNext = btnNext;
 
+        setButtonDisableBack(btnNext);
+
         btnPre.setOnClickListener(this);
         btnNext.setOnClickListener(this);
 
@@ -419,9 +510,21 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
 
     }
 
+    private void setButtonDisableBack(View view) {
+        this.isNextEnabled = false;
+        view.setBackground(context.getResources().getDrawable(R.drawable.next_btn_disable));
+    }
+
+    private void setButtonEnableBack(View view) {
+        this.isNextEnabled = true;
+        view.setBackground(context.getResources().getDrawable(R.drawable.next_btn));
+    }
+
 
     @Override
     public void onClick(View v) {
+
+        hideKeyboard((Activity) context);
 
         if (v == btnPre) {
             if (conditionListener != null) {
@@ -435,23 +538,27 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
 
         }
         if (v == btnNext) {
-            checkMandatoriesAndChangeButtonStatus();
-            IsMandatoryAnswered = true;
-            conditions = new JSONArray(new ArrayList<String>());
-            JSONArray datas = getData();
-            if (conditionListener != null) {
-                conditionListener.onConditionRecieved(conditions, position);
-            }
-            if (listener != null) {
-                if (isMandatoryPicturesTaken()) {
-                    if (IsMandatoryAnswered) {
-                        listener.onNextClicked(position, datas);
-                    } else {
-                        Toast.makeText(context, "answer questions", Toast.LENGTH_SHORT).show();
+            if (isNextEnabled) {
+                checkMandatoriesAndChangeButtonStatus(true);
+                IsMandatoryAnswered = true;
+                conditions = new JSONArray(new ArrayList<String>());
+                JSONArray datas = getData(true);
+                if (conditionListener != null) {
+                    conditionListener.onConditionRecieved(conditions, position);
+                }
+                if (listener != null) {
+                    if (isMandatoryPicturesTaken()) {
+                        if (IsMandatoryAnswered) {
+                            listener.onNextClicked(position, datas);
+                        } else {
+                            Toast.makeText(context, context.getString(R.string.mandatory_message), Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
-            }
 
+            } else {
+                checkMandatoriesAndChangeButtonStatus(true);
+            }
         }
     }
 
@@ -465,7 +572,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
 
                 if (!temp.isMandatoryPictureTaken()) {
                     FLAG_ALL_TAKEN = false;
-                    temp.setMandatoryError();
+//                    temp.setMandatoryError();
                 }
 
             }
@@ -476,7 +583,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
 
     }
 
-    public JSONArray getData() {
+    public JSONArray getData(boolean isNextClicked) {
         JSONArray array = new JSONArray();
         //int this func we should get values from different views and combine them
         //1.get values
@@ -484,18 +591,18 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
         //3.parse views arrary to get instances type and get data
         for (int i = 0; i < views.size(); i++) {//commentario
             if (views.get(i) instanceof Commentario) {
-                JSONObject commentValue = getCommentarioValue(views.get(i));
+                JSONObject commentValue = getCommentarioValue(isNextClicked, views.get(i));
                 array.put(commentValue);
                 continue;
             }
             if (views.get(i) instanceof RadioGroupMaker) {
-                JSONObject commentValue = getRadioValue(views.get(i));
+                JSONObject commentValue = getRadioValue(isNextClicked, views.get(i));
                 array.put(commentValue);
                 continue;
             }
             if (views.get(i) instanceof CheckBoxGroup) {
 
-                JSONObject commentValue = getCheckBoxValue(views.get(i));
+                JSONObject commentValue = getCheckBoxValue(isNextClicked, views.get(i));
                 array.put(commentValue);
                 continue;
             }
@@ -522,6 +629,10 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
                 JSONObject signatureValue = getSignatureValue(views.get(i));
                 array.put(signatureValue);
             }
+            if (views.get(i) instanceof ProductCounterMaker) {
+                JSONObject productCounter = getProductCounterValue(views.get(i), isNextClicked);
+                array.put(productCounter);
+            }
 
         }
 
@@ -529,6 +640,19 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
     }
 
     //region data getters
+
+    private JSONObject getProductCounterValue(View view, boolean isNextClicked) {
+        JSONObject object = new JSONObject();
+        ProductCounterMaker productCounter = (ProductCounterMaker) view;
+//        try {
+//            object.put(key_POSITION, position);
+//            object.put(key_TYPE, conf_productCount);
+//            object.put(key_VALUE, productCounter.getValue(isNextClicked));
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+        return productCounter.getValue(isNextClicked);
+    }
 
     private JSONObject getSignatureValue(View view) {
         JSONObject object = new JSONObject();
@@ -541,7 +665,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
             object.put(key_VALUE, path);
         } catch (JSONException e) {
             e.printStackTrace();
-
+            log(e.getMessage());
         }
         return object;
     }
@@ -557,6 +681,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
             object.put(key_VALUE, item);
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
         return object;
     }
@@ -572,6 +697,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
             object.put(key_VALUE, rate);
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
         return object;
     }
@@ -586,6 +712,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
             object.put(GlobalFuncs.conf_id, multiText.getElementId());
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
         return object;
     }
@@ -602,15 +729,16 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
             object.put(key_VALUE, value);
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
 
         return object;
     }
 
-    private JSONObject getCheckBoxValue(View view) {
+    private JSONObject getCheckBoxValue(boolean isNextClicked, View view) {
         JSONObject object = new JSONObject();
         CheckBoxGroup checkBoxGroup = (CheckBoxGroup) view;
-        JSONArray items = checkBoxGroup.getValues();
+        JSONArray items = checkBoxGroup.getValues(isNextClicked);
         try {
             object.put(key_POSITION, position);
             object.put(key_TYPE, conf_checkBox);
@@ -618,16 +746,17 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
             object.put(key_VALUE, items);
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
         addCheckBoxConditions(items);
         return object;
     }
 
 
-    private JSONObject getRadioValue(View view) {
+    private JSONObject getRadioValue(boolean isNextClicked, View view) {
         JSONObject object = new JSONObject();
         RadioGroupMaker radioGroupMaker = (RadioGroupMaker) view;
-        JSONObject radioItem = radioGroupMaker.getValue();
+        JSONObject radioItem = radioGroupMaker.getValue(isNextClicked);
         try {
             object.put(key_POSITION, position);
             object.put(key_TYPE, conf_radioButton);
@@ -635,15 +764,16 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
             object.put(key_VALUE, radioItem);
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
         addRadioCondition(radioItem);
         return object;
     }
 
 
-    private JSONObject getCommentarioValue(View view) {
+    private JSONObject getCommentarioValue(boolean isNextClicked, View view) {
         Commentario commentario = (Commentario) view;
-        String comment = commentario.getCommentValue();
+        String comment = commentario.getCommentValue(isNextClicked);
         JSONObject object = new JSONObject();
         try {
             object.put(GlobalFuncs.conf_name, commentario.getName());
@@ -655,6 +785,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
 
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
         return object;
     }
@@ -667,38 +798,39 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
             try {
                 JSONObject item = items.getJSONObject(i);
                 item.put(conf_type, conf_checkBox);
-                item.put(conf_position,position);
+                item.put(conf_position, position);
+                item.put(conf_id, item.getString(conf_id));
                 conditions.put(item);
             } catch (JSONException e) {
                 e.printStackTrace();
+                log(e.getMessage());
             }
 
         }
     }
 
-    public void checkMandatoriesAndChangeButtonStatus() {
+    public void checkMandatoriesAndChangeButtonStatus(boolean isNextClicked) {
 
-        Log.i(TAG, "checkMandatoriesAndChangeButtonStatus: "+position);
+        Log.i(TAG, "checkMandatoriesAndChangeButtonStatus: " + position);
 
         isAllAnswered = true;
 
-        getData();//trigger not answered element event
+        getData(isNextClicked);//trigger not answered element event
 
         if (!isMandatoryPicturesTaken()) {
             isAllAnswered = false;
-
         }
 
         Log.i(TAG, "checkMandatoriesAndChangeButtonStatus: is all answered" + isAllAnswered);
 
         if (isAllAnswered) {
             if (btnNext != null) {
-                btnNext.setEnabled(true);
+                setButtonEnableBack(btnNext);
                 Log.i(TAG, "checkMandatoriesAndChangeButtonStatus: true");
             }
         } else {
             if (btnNext != null) {
-                btnNext.setEnabled(false);
+                setButtonDisableBack(btnNext);
                 Log.i(TAG, "checkMandatoriesAndChangeButtonStatus: false");
             }
         }
@@ -710,10 +842,11 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
     private void addRadioCondition(JSONObject radioItem) {
         try {
             radioItem.put(conf_type, conf_radioButton);
-            radioItem.put(conf_position,position);
+            radioItem.put(conf_position, position);
             conditions.put(radioItem);
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
 
     }
@@ -734,7 +867,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
 
     @Override
     public void onElementStatusChanged() {
-        checkMandatoriesAndChangeButtonStatus();
+        checkMandatoriesAndChangeButtonStatus(false);
     }
 
     public CheckListDataListener.CheckListConditionListener getConditionListener() {
@@ -758,11 +891,13 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
             intent.putExtra("position", position);
             intent.putExtra("element", element.toString());
 
-            context.startActivity(intent);
+            Activity activity = (Activity) context;
+            activity.startActivityForResult(intent, 111);
 
 
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+            log(e.getMessage());
             listener.onCheckListError(e.getMessage());
         }
 
@@ -809,7 +944,8 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            listener.onCheckListError(e.getMessage());
+            log(e.getMessage());
+//            listener.onCheckListError(e.getMessage());
         }
         return false;
     }
@@ -836,18 +972,19 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                listener.onCheckListError(e.getMessage());
+                log(e.getMessage());
+//                listener.onCheckListError(e.getMessage());
             }
         }
         return answer;
     }
 
-    public ArrayList<PicturePickerItemModel> getSignatures(){
+    public ArrayList<PicturePickerItemModel> getSignatures() {
         ArrayList<PicturePickerItemModel> pickerItemModels = new ArrayList<>();
 
-        for (int i = 0 ; i < views.size() ; i++){
+        for (int i = 0; i < views.size(); i++) {
 
-            if (views.get(i) instanceof SignatureElement){
+            if (views.get(i) instanceof SignatureElement) {
 
                 SignatureElement signatureElement = (SignatureElement) views.get(i);
 
@@ -872,7 +1009,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
     private LinearLayout createSignature(JSONObject element) {
 
         signatureElement = new SignatureElement(context, element, false
-                , signatureFolderPath,getSignatureAnswer(element),enable);
+                , signatureFolderPath, getSignatureAnswer(element), enable);
         views.add(signatureElement);
 
         return signatureElement;
@@ -889,6 +1026,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+                log(e.getMessage());
             }
         }
         return answer;
@@ -908,7 +1046,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
 
     private MultiText createMultiText(JSONObject element, Context context) {
         multiText = new MultiText(context, element, enable
-                , getMultiTextAnswer(element), position,this);
+                , getMultiTextAnswer(element), position, this);
 
         views.add(multiText);
         return multiText;
@@ -924,6 +1062,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+                log(e.getMessage());
             }
         }
         return answer;
@@ -946,6 +1085,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+                log(e.getMessage());
             }
         }
         return answer;
@@ -970,8 +1110,8 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
 
     private CheckBoxGroup createCheckBox(JSONObject element, Context context) {
         checkBoxGroup = new CheckBoxGroup(context, element
-                , enable, getCheckBoxAnswer(element), position);
-        checkBoxGroup.setListener(this);
+                , enable, getCheckBoxAnswer(element), position, this);
+//        checkBoxGroup.setListener(this);
         views.add(checkBoxGroup);
         return checkBoxGroup;
     }
@@ -991,6 +1131,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+                log(e.getMessage());
             }
         }
         return answers;
@@ -1016,6 +1157,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+                log(e.getMessage());
 
             }
         }
@@ -1037,6 +1179,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+                log(e.getMessage());
             }
         }
         return FLAG_HAS_PIC;

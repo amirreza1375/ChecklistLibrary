@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.checklist.Config;
 import com.example.checklist.GlobalFuncs;
@@ -19,19 +20,20 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import static com.example.checklist.GlobalFuncs.conf_id;
+import static com.example.checklist.GlobalFuncs.log;
 
 public class PictureElementMaker extends LinearLayout implements PicturesRecyclerView.ItemClickCallBack {
 
     //region element keys
     private String imagetypeName = "imagetypeName";
-    private String imageTypeCount = "count";
+    private String imageTypeCount = "Cuantos";
     private String imagetype = "imagetype";
     //endregion
 
     private boolean FLAG_ENABLE = true;
     private JSONArray answers;
     private int position;
-    ArrayList<PicturePickerItemModel> models ;
+    ArrayList<PicturePickerItemModel> models;
     private RecyclerView recyclerView;
     private JSONObject element;
     private boolean status;
@@ -39,27 +41,28 @@ public class PictureElementMaker extends LinearLayout implements PicturesRecycle
     private TakePictureItemClickListener mlistener;
 
     public PictureElementMaker(Context context, JSONObject element, boolean status
-    , boolean FLAG_ENABLE, JSONArray answers,int position) {
+            , boolean FLAG_ENABLE, JSONArray answers, int position, TakePictureItemClickListener mlistener) {
         super(context);
         this.element = element;
         this.status = status;
         this.FLAG_ENABLE = FLAG_ENABLE;
         this.answers = answers;
         this.position = position;
+        this.mlistener = mlistener;
         models = new ArrayList<>();
         init(context);
     }
 
-    public PictureElementMaker(Context context,  AttributeSet attrs) {
+    public PictureElementMaker(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public PictureElementMaker(Context context,  AttributeSet attrs, int defStyleAttr) {
+    public PictureElementMaker(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
 
-    private void init(Context context){
+    private void init(Context context) {
 
         getVariablesFromElement(element);
 
@@ -70,8 +73,8 @@ public class PictureElementMaker extends LinearLayout implements PicturesRecycle
 
         //region recycler props
         recyclerView = new RecyclerView(context);
-        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
-        params.setMargins(dpToPx(8,context),dpToPx(8,context),dpToPx(8,context),dpToPx(8,context));
+        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        params.setMargins(dpToPx(8, context), dpToPx(8, context), dpToPx(8, context), dpToPx(8, context));
         recyclerView.setLayoutParams(params);
         //endregion
         addView(recyclerView);
@@ -79,14 +82,14 @@ public class PictureElementMaker extends LinearLayout implements PicturesRecycle
 
         setupRecyclerData(element);
         setAnswerImages(answers);
-        initRecycler(context,this);
-//        updateRecycler();
+        initRecycler(context, this);
+        updateRecycler();
 
     }
 
     private void setAnswerImages(JSONArray answers) {
         ArrayList<PicturePickerItemModel> answerModels = GlobalFuncs.convert_JSONArray_to_PictureModel(answers);
-        for (int i = 0 ; i < answerModels.size() ; i++){
+        for (int i = 0; i < answerModels.size(); i++) {
             PicturePickerItemModel answerModel = answerModels.get(i);
             //we should check id first
             if (id.equals(answerModel.getId())) {//then check index
@@ -107,6 +110,7 @@ public class PictureElementMaker extends LinearLayout implements PicturesRecycle
             return element.getString(conf_title);
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
             return "";
         }
     }
@@ -117,12 +121,15 @@ public class PictureElementMaker extends LinearLayout implements PicturesRecycle
             String imageTypeNames[] = element.getString(imagetypeName).split(",");
             String imageTypes[] = element.getString(imagetype).split(",");
             int countIndex = 0;
-            for (int i = 0 ; i < imageTypeNames.length ; i++){//names
+
+            showError(imageTypeNames, element);
+
+            for (int i = 0; i < imageTypeNames.length; i++) {//names
                 //get count of that type
-                String nameCountStr = element.has(imageTypeCount+"-"+imageTypeNames[i]) ? element.getString(imageTypeCount+"-"+imageTypeNames[i]) : "1";
+                String nameCountStr = element.has(imageTypeCount + "-" + imageTypeNames[i]) ? element.getString(imageTypeCount + "-" + imageTypeNames[i]) : "1";
                 int nameCount = Integer.parseInt(nameCountStr);
                 int countLastIndex = 0;
-                for (int j = 0 ; j < nameCount ; j++){//count of type
+                for (int j = 0; j < nameCount; j++) {//count of type
                     PicturePickerItemModel model = new PicturePickerItemModel();
                     model.setIndex(countIndex + j);
                     model.setCategory(imageTypeNames[i]);
@@ -145,45 +152,73 @@ public class PictureElementMaker extends LinearLayout implements PicturesRecycle
 
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
     }
 
-    public void getModels(){
+    private void showError(String[] imageTypeNames, JSONObject element) {
+        if (imageTypeNames.length == 0) {
+            if (mlistener != null)
+                mlistener.onNoImageAppeared("No hay imagen asignada");
+        } else {
+            try {
+                String nameCountStr = element.has(imageTypeCount + "-" + imageTypeNames[0]) ? element.getString(imageTypeCount + "-" + imageTypeNames[0]) : "1";
+                if (nameCountStr.equals("0")) {
+                    if (mlistener != null)
+                        mlistener.onNoImageAppeared("No hay imagen asignada a esto -> " + imageTypeNames[0] + " tipo de imagen");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                if (mlistener != null)
+                    mlistener.onNoImageAppeared(e.getMessage());
+            }
+
+        }
+    }
+
+    public void getModels() {
         mlistener.onModelsAdded(models);
     }
 
-    private void initRecycler(Context context , LinearLayout parent) {
+    private void initRecycler(Context context, LinearLayout parent) {
         PicturesRecyclerView recyclerViewAdapter = new PicturesRecyclerView(context
-                ,parent,models);
-        recyclerView.setLayoutManager(new GridLayoutManager(context,2));
+                , parent, models);
+        recyclerView.setLayoutManager(new GridLayoutManager(context, 2));
         recyclerView.setAdapter(recyclerViewAdapter);
         recyclerViewAdapter.setCallBack(this);
         recyclerViewAdapter.setFLAG_ENABLED(FLAG_ENABLE);
     }
-    public void updateRecycler(){
+
+    public void updateRecycler() {
         if (recyclerView.getAdapter() != null)
             recyclerView.getAdapter().notifyDataSetChanged();
     }
+
     public static int dpToPx(float dp, Context context) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
     }
 
-    private void getVariablesFromElement(JSONObject element){
+    private void getVariablesFromElement(JSONObject element) {
         try {
             id = element.getString(conf_id);
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
     }
 
     @Override
-    public void onPictureItemClicked(PicturesRecyclerView.ViewHolder holder,PicturePickerItemModel model) {
-        mlistener.onPictureItemClicked(holder,model);
+    public void onPictureItemClicked(PicturesRecyclerView.ViewHolder holder, PicturePickerItemModel model) {
+        mlistener.onPictureItemClicked(holder, model);
 
     }
 
     public TakePictureItemClickListener getMlistener() {
         return mlistener;
+    }
+
+    public String getElementId(){
+        return this.id;
     }
 
     public void setMlistener(TakePictureItemClickListener mlistener) {
@@ -198,9 +233,12 @@ public class PictureElementMaker extends LinearLayout implements PicturesRecycle
         this.FLAG_ENABLE = FLAG_ENABLE;
     }
 
-    public interface TakePictureItemClickListener{
+    public interface TakePictureItemClickListener {
         void onPictureItemClicked(PicturesRecyclerView.ViewHolder holder, PicturePickerItemModel model);
+
         void onModelsAdded(ArrayList<PicturePickerItemModel> models);
+
+        void onNoImageAppeared(String msg);
     }
 
 }

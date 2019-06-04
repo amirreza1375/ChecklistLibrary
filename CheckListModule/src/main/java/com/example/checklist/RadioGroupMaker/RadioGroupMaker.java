@@ -26,6 +26,7 @@ import static com.example.checklist.GlobalFuncs.conf_isRequired;
 import static com.example.checklist.GlobalFuncs.conf_name;
 import static com.example.checklist.GlobalFuncs.conf_text;
 import static com.example.checklist.GlobalFuncs.conf_title;
+import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.GlobalFuncs.setOrgProps;
 import static com.example.checklist.PageGenerator.CheckListPager.setMandatories;
 
@@ -34,7 +35,7 @@ public class RadioGroupMaker extends LinearLayout {
     //region variables
     private Context context;
     private JSONObject element;
-    private boolean isRequired = false ;
+    private boolean isRequired = false;
     private boolean enabled;
     private JSONObject answer;
     private int position;
@@ -52,7 +53,7 @@ public class RadioGroupMaker extends LinearLayout {
 
     public RadioGroupMaker(Context context
             , JSONObject element, boolean isRequired
-    , boolean enabled, JSONObject answer, int position) {
+            , boolean enabled, JSONObject answer, int position) {
         super(context);
         this.context = context;
         this.element = element;
@@ -72,19 +73,19 @@ public class RadioGroupMaker extends LinearLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    private void init(Context context){
+    private void init(Context context) {
 
         parsJSON(element);
 
         //region set commentario props
-        setOrgProps(context,this);
+        setOrgProps(context, this);
         //endregion
 
         //region title
         TextView titleTxt = new TextView(context);
 
         if (isRequired)
-            titleTxt.setText(getTitleFromElement(element)+"*");
+            titleTxt.setText(getTitleFromElement(element) + "*");
         else
             titleTxt.setText(getTitleFromElement(element));
 
@@ -102,7 +103,7 @@ public class RadioGroupMaker extends LinearLayout {
         //region add view
         addView(titleTxt);
         addView(guidTxt);
-        addRadioButtons(element,context);
+        addRadioButtons(element, context);
         //endregion
 
     }
@@ -115,32 +116,32 @@ public class RadioGroupMaker extends LinearLayout {
             isRequired = element.has(conf_isRequired) && element.getBoolean(conf_isRequired);
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
     }
 
-    public JSONObject getValue(){
-        if (choosenIndex == -1){
-            isMandatoryAnswered();
+    public JSONObject getValue(boolean isNextClicked) {
+        if (choosenIndex == -1) {
+            isMandatoryAnswered(isNextClicked);
             return new JSONObject();
-        }
-        else
+        } else
             return values.get(choosenIndex);
     }
 
-    private void addRadioButtons(JSONObject element,Context context) {
+    private void addRadioButtons(JSONObject element, Context context) {
         try {
             JSONArray choices = element.getJSONArray(conf_choices);
             RadioGroup radioGroup = new RadioGroup(context);
-            for (int i = 0 ; i < choices.length() ; i++){
+            for (int i = 0; i < choices.length(); i++) {
                 JSONObject object = choices.getJSONObject(i);
                 RadioButton btn = new RadioButton(context);
                 String text = object.getString(conf_text);
                 btn.setText(text);
                 btn.setId(i);
-                addAnswer(btn,answer);
+                addAnswer(btn, answer);
                 btn.setEnabled(enabled);
                 radioGroup.addView(btn);
-                addToValue(object,i);
+                addToValue(object, i);
 
             }
 
@@ -156,55 +157,61 @@ public class RadioGroupMaker extends LinearLayout {
             addView(radioGroup);
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
     }
 
     private void addAnswer(RadioButton btn
             , JSONObject answer) {
-            try {
-                if (answer.getInt("index")
-                        ==
-                        btn.getId()){
-                    choosenIndex = btn.getId();
-                    btn.setChecked(true);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
+        try {
+            if (answer.getInt("index")
+                    ==
+                    btn.getId()) {
+                choosenIndex = btn.getId();
+                btn.setChecked(true);
             }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            log(e.getMessage());
+        }
 
     }
 
-    private void addToValue(JSONObject object,int item) {
+    private void addToValue(JSONObject object, int item) {
         JSONObject value = new JSONObject();
         try {
-            value.put("name",name);
-            value.put("id",id);
-            value.put("status",true);
-            value.put("index",item);
-            value.put("value",object.getInt("value"));
+            value.put("name", name);
+            value.put("id", id);
+            value.put("status", true);
+            value.put("index", item);
+            value.put("value", object.getInt("value"));
 
             values.add(value);
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
     }
 
-    private void isMandatoryAnswered() {
-        if (choosenIndex == -1){
-            setMandatoryError();
-            if (listener != null) {
-                listener.onMandatoryStatusError();
+    private void isMandatoryAnswered(boolean isNextClicked) {
+        if (isRequired) {
+            if (choosenIndex == -1) {
+                if (isNextClicked)
+                    setMandatoryError();
+                if (listener != null) {
+                    listener.onMandatoryStatusError();
+                }
             }
         }
     }
 
     public void setMandatoryError() {
         if (setMandatories)
-             this.setBackground(context.getResources()
-                .getDrawable(R.drawable.is_requiered));
+            this.setBackground(context.getResources()
+                    .getDrawable(R.drawable.is_requiered));
     }
 
-    public void removeMandatoryError(){
+    public void removeMandatoryError() {
         this.setBackground(null);
     }
 
@@ -217,6 +224,7 @@ public class RadioGroupMaker extends LinearLayout {
             isRequired = element.has(conf_isRequired) ? element.getBoolean(conf_isRequired) : false;
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
     }
 
@@ -225,9 +233,11 @@ public class RadioGroupMaker extends LinearLayout {
             return element.getString(conf_title);
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
             return "";
         }
     }
+
     public static int dpToPx(float dp, Context context) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
     }
@@ -240,7 +250,7 @@ public class RadioGroupMaker extends LinearLayout {
         this.listener = listener;
     }
 
-    public String getElementId(){
+    public String getElementId() {
         return id;
     }
 }

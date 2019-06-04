@@ -9,6 +9,8 @@ import android.widget.LinearLayout;
 
 import com.example.checklist.R;
 
+import static com.example.checklist.GlobalFuncs.log;
+
 public class CheckListFinishPage extends LinearLayout implements View.OnClickListener {
 
     Button finishBtn;
@@ -50,6 +52,7 @@ public class CheckListFinishPage extends LinearLayout implements View.OnClickLis
 
         }catch (Exception e){
             e.printStackTrace();
+            log(e.getMessage());
         }
 
     }

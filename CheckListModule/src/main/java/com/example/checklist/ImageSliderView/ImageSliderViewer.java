@@ -32,6 +32,7 @@ import java.util.ArrayList;
 
 import static com.example.checklist.GlobalFuncs.createTitle;
 import static com.example.checklist.GlobalFuncs.dpToPx;
+import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.GlobalFuncs.setOrgProps;
 
 public class ImageSliderViewer extends LinearLayout {
@@ -163,6 +164,7 @@ public class ImageSliderViewer extends LinearLayout {
             return element.getString(conf_title);
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
             return "no title";
         }
     }

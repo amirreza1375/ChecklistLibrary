@@ -26,6 +26,7 @@ import static com.example.checklist.GlobalFuncs.conf_id;
 import static com.example.checklist.GlobalFuncs.conf_value;
 import static com.example.checklist.GlobalFuncs.createTitle;
 import static com.example.checklist.GlobalFuncs.dpToPx;
+import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.GlobalFuncs.setOrgProps;
 import static com.example.checklist.GlobalFuncs.showToast;
 
@@ -189,6 +190,7 @@ public class SignatureElement extends LinearLayout implements View.OnClickListen
             } catch (Exception e) {
                 Log.i(TAG, "saveImage: "+e);
                 e.printStackTrace();
+                log(e.getMessage());
                 return "image save error";
             }
         }
@@ -224,6 +226,7 @@ public class SignatureElement extends LinearLayout implements View.OnClickListen
 //            isRequired = element.has(conf_isRequired) ? element.getBoolean(conf_isRequired) : false;
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
     }
 

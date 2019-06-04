@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import static com.example.checklist.GlobalFuncs.conf_id;
 import static com.example.checklist.GlobalFuncs.createTitle;
 import static com.example.checklist.GlobalFuncs.dpToPx;
+import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.PageGenerator.CheckListPager.setMandatories;
 
 public class ImageFileConcept extends LinearLayout  {
@@ -32,6 +33,7 @@ public class ImageFileConcept extends LinearLayout  {
     private Button button;
     private ButtonPressedCallBack callBack;
     private boolean isRequired;
+    private boolean isRequiredEach;
     //endregion
 
     //region variables
@@ -65,9 +67,6 @@ public class ImageFileConcept extends LinearLayout  {
         super(context, attrs, defStyleAttr);
     }
 
-    public ImageFileConcept(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
     //endregion
 
     private void init(Context context){
@@ -110,10 +109,10 @@ public class ImageFileConcept extends LinearLayout  {
         button.setLayoutParams(btnParams);
 
         if (!hasPic) {
-            button.setBackground(context.getDrawable(R.drawable.picture_btn_back));
+            button.setBackground(context.getResources().getDrawable(R.drawable.picture_btn_back));
             makeMeBlink(button);
         } else {
-            button.setBackground(context.getDrawable(R.drawable.picture_btn_has_pic));
+            button.setBackground(context.getResources().getDrawable(R.drawable.picture_btn_has_pic));
             button.clearAnimation();
         }
 
@@ -190,6 +189,7 @@ public class ImageFileConcept extends LinearLayout  {
 
             } catch (JSONException e) {
                 e.printStackTrace();
+                log(e.getMessage());
                 return false;
             }
 
@@ -201,10 +201,16 @@ public class ImageFileConcept extends LinearLayout  {
 
     private void getVariablesFromElement(JSONObject element) {
         try {
-            isRequired = element.has("isRequiredEach") && element.getBoolean("isRequiredEach");
+            boolean isRE,isR;
+            isRE = element.has("isRequiredEach") ? element.getBoolean("isRequiredEach") : false;
+            isR = element.has("isRequired") ? element.getBoolean("isRequired") : false;
+
+            isRequired = isR || isRE;
+
             elementId = element.has(PicturePickerItemModel.conf_id) ? element.getString(conf_id) : "";
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
     }
 

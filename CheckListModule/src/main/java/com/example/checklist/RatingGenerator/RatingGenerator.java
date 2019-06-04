@@ -17,6 +17,7 @@ import static com.example.checklist.GlobalFuncs.conf_name;
 import static com.example.checklist.GlobalFuncs.conf_title;
 import static com.example.checklist.GlobalFuncs.createTitle;
 import static com.example.checklist.GlobalFuncs.dpToPx;
+import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.GlobalFuncs.setOrgProps;
 
 public class RatingGenerator extends LinearLayout implements RatingBar.OnRatingBarChangeListener {
@@ -105,6 +106,7 @@ public class RatingGenerator extends LinearLayout implements RatingBar.OnRatingB
             isRequired = element.has(conf_isRequired) && element.getBoolean(conf_isRequired);
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
     }
 

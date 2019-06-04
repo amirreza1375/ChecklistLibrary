@@ -6,8 +6,11 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.util.TypedValue;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +26,8 @@ import java.util.ArrayList;
 public class GlobalFuncs {
 
     //region json keys
+
+    public static String LOG = "checklistlib";
 
     public static String conf_index = "index";
     public static String conf_value = "value";
@@ -62,6 +67,13 @@ public class GlobalFuncs {
     public static String conf_signature = "signaturepad";
     public static String conf_html = "html";
     public static String conf_htmlValue = "html";
+    public static String conf_productId = "product_id";
+    public static String conf_stock = "stock";
+    public static String conf_tipo = "Tipo";
+    public static String conf_shopId = "shop_id";
+    public static String conf_productName = "product_name";
+    public static String conf_productCount = "productCount";
+    public static String conf_isAnswered = "isAnswered";
     //endregion
 
     public static int dpToPx(float dp, Context context) {
@@ -71,9 +83,14 @@ public class GlobalFuncs {
     public static String  getTitleFromElement(JSONObject element) {
 
         try {
-            return element.getString(conf_title);
+            String title = element.has(conf_title) ? element.getString(conf_title) : "";
+            if (title.equals("")){
+                title = element.getString(conf_name);
+            }
+            return title;
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
             return "no title";
         }
     }
@@ -85,6 +102,7 @@ public class GlobalFuncs {
                 objects.add(array.getJSONObject(i));
             } catch (JSONException e) {
                 e.printStackTrace();
+                log(e.getMessage());
             }
         }
         return objects;
@@ -142,10 +160,12 @@ public class GlobalFuncs {
                     object.put(PicturePickerItemModel.conf_status,models.get(i).isStatus());
                     object.put(PicturePickerItemModel.conf_index,models.get(i).getIndex());
                     object.put(PicturePickerItemModel.conf_position,models.get(i).getPosition());
+                    object.put(PicturePickerItemModel.conf_name,models.get(i).getName());
 
                     array.put(object);
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    log(e.getMessage());
                 }
             }
         }
@@ -171,11 +191,13 @@ public class GlobalFuncs {
                 model.setHasPic(object.getBoolean(PicturePickerItemModel.conf_hasPic));
                 model.setId(object.getString(PicturePickerItemModel.conf_id));
                 model.setPosition(object.getInt(PicturePickerItemModel.conf_position));
+                model.setName(object.getString(PicturePickerItemModel.conf_name));
 
                 models.add(model);
 
             } catch (JSONException e) {
                 e.printStackTrace();
+                log(e.getMessage());
             }
 
         }
@@ -207,6 +229,7 @@ public class GlobalFuncs {
             return shops;
         }catch (Exception e){
             e.printStackTrace();
+            log(e.getMessage());
             return new ArrayList<Integer>();
         }
     }
@@ -217,5 +240,21 @@ public class GlobalFuncs {
                 == PackageManager.PERMISSION_GRANTED;
     }
 
+
+
+    public static void log(String msg){
+        Log.i(LOG, "log -> "+msg);
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
 
 }

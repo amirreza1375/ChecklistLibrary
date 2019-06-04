@@ -118,5 +118,8 @@
         <string name="delete">Eliminar</string>
         <string name="no">No</string>
         <string name="remove_row_msg">¿Está seguro de que desea eliminar los datos de esta lista de verificación?</string>
+    <string name="emptyPageCheckList">No se ha encontrado ninguna página, por favor verifique los datos de su lista de verificación</string>
+    <string name="notSaveInPreview">La lista de verificación está en modo de vista previa</string>
+    <string name="noDataAssigned">No hay datos asignados</string>
 
 </resources>

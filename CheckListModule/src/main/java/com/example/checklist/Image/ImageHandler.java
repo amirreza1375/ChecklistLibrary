@@ -8,6 +8,8 @@ import android.util.Log;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 
+import static com.example.checklist.GlobalFuncs.log;
+
 public class ImageHandler {
 
     private Context context;
@@ -62,6 +64,7 @@ public class ImageHandler {
             bmpFile.flush();
             bmpFile.close();
         } catch (Exception e) {
+            log(e.getMessage());
             Log.e("compressBitmap", "Error on saving file");
         }
         //return the path of resized and compressed file

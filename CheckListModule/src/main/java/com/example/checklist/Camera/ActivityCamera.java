@@ -58,6 +58,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static com.example.checklist.GlobalFuncs.log;
+
 /**
  * First of all sub folder should named in pictures element acrtivity
  * to put image that related to that activity in one folder
@@ -79,6 +81,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
     public static String sub_folder_path = "";
 
     private int zoom = 0;
+    private boolean isAppClosed ;
 
     private int minWidthRange = 600;
     private int maxWidthRange = 800;
@@ -86,6 +89,8 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
     private float last_number_of_x = 0;
     private float last_number_of_y = 0;
     private float last_number_of_z = 0;
+
+    private boolean editModeEnable = false;
 
     /************************    camera api  ************************/
     private Camera mCamera;
@@ -124,7 +129,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
     private String path;
     private ImageView flash;
     private ImageView camera_rotate;
-    private TextView edit;
+//    private TextView edit;
     private int max_zoom = 0;
     private String mCurrentPhotoPath;
     private LinearLayout options;
@@ -242,8 +247,11 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+
+
     @Override
     public void onBackPressed() {
+        this.isAppClosed = false;
         if (mCamera != null) {
             mCamera.stopPreview();
         }
@@ -268,7 +276,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
         camera_rotate = findViewById(R.id.camera_rotate);
         focus = findViewById(R.id.focus);
         options = findViewById(R.id.options);
-        edit = findViewById(R.id.edit);
+//        edit = findViewById(R.id.edit);
         root = findViewById(R.id.root);
         zoom_option = findViewById(R.id.zoom_options);
         zoom_in = findViewById(R.id.zoom_in);
@@ -280,7 +288,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
         cancel.setOnClickListener(this);
         flash.setOnClickListener(this);
         options.setOnClickListener(this);
-        edit.setOnClickListener(this);
+//        edit.setOnClickListener(this);
         camera_rotate.setOnClickListener(this);
         zoom_in.setOnClickListener(this);
         zoom_out.setOnClickListener(this);
@@ -290,6 +298,10 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
         sm = (SensorManager) getSystemService(SENSOR_SERVICE);
         lastUpdate = System.currentTimeMillis();
 
+
+//        if (!editModeEnable){
+//            edit.setVisibility(View.GONE);
+//        }
 
         // Create an instance of Camera
         if (!isFromEdit) {
@@ -315,6 +327,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
                             mCamera.takePicture(null, null, mPicture);
                         } catch (Exception e) {
                             e.printStackTrace();
+                            log(e.getMessage());
                         }
                     }
                 }
@@ -356,6 +369,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
 
         } catch (IOException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
         return isP;
     }
@@ -415,8 +429,8 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
                     editor.apply();
 
                     preview.bringToFront();
-                    edit.setVisibility(View.VISIBLE);
-                    edit.bringToFront();
+//                    edit.setVisibility(View.VISIBLE);
+//                    edit.bringToFront();
 
                     if (mCamera != null) {
                         mCamera.stopPreview();
@@ -453,6 +467,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
             try {
                 mCamera.setParameters(params);
             } catch (Exception e) {
+                log(e.getMessage());
                 e.printStackTrace();
                 isParamsSet = false;
                 Log.i(TAG, "create_camera: " + e);
@@ -466,6 +481,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
             }
         } catch (Exception e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
     }
 
@@ -532,6 +548,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
             Toast.makeText(this, "parameters got error", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
     }
 
@@ -616,6 +633,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
             out.close();
         } catch (Exception e) {
             e.printStackTrace();
+            log(e.getMessage());
             Log.i(TAG, "createImageFile: " + e);
         }
         remove_image_from_pictures(fname);
@@ -673,6 +691,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
             c = Camera.open(camera_id); // attempt to get a Camera instance
         } catch (Exception e) {
             e.printStackTrace();
+            log(e.getMessage());
             // Camera is not available (in use or does not exist)
         }
         return c; // returns null if camera is unavailable
@@ -687,6 +706,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
 
     @Override
     protected void onResume() {
+        this.isAppClosed = true;
         sm.registerListener(this,
                 sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                 SensorManager.SENSOR_DELAY_NORMAL);
@@ -705,7 +725,14 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
 //                mCamera.release();
             }
         }
+        if (isAppClosed){
+            this.isAppClosed = false;
+            setResult(1);
+            finish();
+        }
     }
+
+
 
     @Override
     public void onClick(View v) {
@@ -721,6 +748,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
             perfotm_cancel_pic();
         }
         if (v == tick) {
+            this.isAppClosed = false;
             Intent data = new Intent();
             data.putExtra(IMAGE_RESULT, path);
             setResult(RESULT_OK, data);
@@ -732,17 +760,19 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
         if (camera_rotate == v) {
             rotate_camera();
         }
-        if (v == edit) {
-            Intent i = null;
-            try {
-                i = new Intent(ActivityCamera.this
-                        , Class.forName("com.example.checklist.Camera.ActivityEdit"));
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-            i.putExtra("path", path);
-            startActivityForResult(i, 102);
-        }
+//        if (v == edit) {
+//            isAppClosed = false;
+//            Intent i = null;
+//            try {
+//                i = new Intent(ActivityCamera.this
+//                        , Class.forName("com.example.checklist.Camera.ActivityEdit"));
+//            } catch (ClassNotFoundException e) {
+//                e.printStackTrace();
+//                log(e.getMessage());
+//            }
+//            i.putExtra("path", path);
+//            startActivityForResult(i, 102);
+//        }
     }
 
     /**
@@ -792,6 +822,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
         try {
             mCamera.setParameters(params);
         } catch (Exception e) {
+            log(e.getMessage());
             handle_catch_camera_params(has_FLASH);
             e.printStackTrace();
             isParamsSet = false;
@@ -860,6 +891,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
         try {
             mCamera.setParameters(params);
         } catch (Exception e) {
+            log(e.getMessage());
             handle_catch_camera_params(has_FLASH);
             isParamsSet = false;
             e.printStackTrace();
@@ -908,7 +940,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
         flash.setVisibility(View.VISIBLE);
         zoom_option.setVisibility(View.VISIBLE);
         camera_rotate.bringToFront();
-        edit.setVisibility(View.INVISIBLE);
+//        edit.setVisibility(View.INVISIBLE);
 
     }
 
@@ -959,6 +991,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
+                                log(e.getMessage());
                             }
 
                         }
@@ -971,6 +1004,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
 
         } catch (Exception e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
         return true;
     }
@@ -1118,6 +1152,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
 
                     // mCamera.setParameters(parameters);//commented
                 } catch (IOException e) {
+                    log(e.getMessage());
                     Log.d(TAG, "Error setting camera preview: " + e.getMessage());
                 }
             }
@@ -1140,6 +1175,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
             try {
                 mCamera.stopPreview();
             } catch (Exception e) {
+                log(e.getMessage());
                 // ignore: tried to stop a non-existent preview
             }
 
@@ -1152,6 +1188,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
                 mCamera.startPreview();
 
             } catch (Exception e) {
+                log(e.getMessage());
                 Log.d(TAG, "Error starting camera preview: " + e.getMessage());
             }
         }

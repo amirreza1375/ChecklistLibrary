@@ -15,11 +15,13 @@ import com.example.checklist.R;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.example.checklist.GlobalFuncs.createTitle;
 import static com.example.checklist.GlobalFuncs.dpToPx;
+import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.GlobalFuncs.setOrgProps;
 import static com.example.checklist.PageGenerator.CheckListPager.setMandatories;
 
@@ -39,7 +41,6 @@ public class CheckBoxGroup extends LinearLayout {
     //endregion
 
 
-
     //region variables
     private JSONObject element;
     private boolean enabled;
@@ -48,49 +49,49 @@ public class CheckBoxGroup extends LinearLayout {
     //region used variables
     private Context context;
     private MultiText.MandatoryListener listener;
-    private boolean isMaxMinExist = false ;
-    private boolean isRequired = false ;
+    private boolean isMaxMinExist = false;
+    private boolean isRequired = false;
     private int choosenCount = 0;
     private int min;
     private int max;
     private int disableOthers = -1;
-    private String name ;
+    private String name;
     private String title;
     private String id;
     private ArrayList<String> answers;
     private int position;
-    private JSONArray choices ;
+    private JSONArray choices;
     private ArrayList<CheckBox> checkBoxes;
-    private HashMap<Integer , Boolean> checkBoxStatuses;
+    private HashMap<Integer, Boolean> checkBoxStatuses;
     private int maxId = -1;
     private int minId = -1;
     //endregion
 
     //region constructor
     public CheckBoxGroup(Context context, JSONObject element
-            , boolean enabled,ArrayList<String> answers,int position) {
+            , boolean enabled, ArrayList<String> answers, int position
+            , MultiText.MandatoryListener listener) {
         super(context);
         this.context = context;
         this.element = element;
         this.enabled = enabled;
         this.answers = answers;
         this.position = position;
+        this.listener = listener;
         checkBoxes = new ArrayList<>();
         checkBoxStatuses = new HashMap<>();
         init(context);
     }
 
-    public CheckBoxGroup(Context context,  AttributeSet attrs) {
+    public CheckBoxGroup(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public CheckBoxGroup(Context context,  AttributeSet attrs, int defStyleAttr) {
+    public CheckBoxGroup(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public CheckBoxGroup(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
+
     //endregion
 
     private void init(Context context) {
@@ -99,7 +100,7 @@ public class CheckBoxGroup extends LinearLayout {
         getSeekBarPropsFromElement(element);
 
         //region org props
-        setOrgProps(context,this);
+        setOrgProps(context, this);
         //endregion
 
         //region guide text
@@ -111,7 +112,7 @@ public class CheckBoxGroup extends LinearLayout {
 
         //region title props
 
-        TextView titleTxt = createTitle(context,isRequired,element);
+        TextView titleTxt = createTitle(context, isRequired, element);
         //endregion
 
         //region footer props
@@ -134,7 +135,7 @@ public class CheckBoxGroup extends LinearLayout {
         maxTxt.setTextAlignment(TextView.TEXT_ALIGNMENT_TEXT_END);
         maxTxt.setTextColor(Color.BLACK);
         maxTxt.setLayoutParams(maxParams);
-        maxTxt.setText("max : "+max);
+        maxTxt.setText("max : " + max);
         //endregion
 
         //region footer min text
@@ -148,7 +149,7 @@ public class CheckBoxGroup extends LinearLayout {
         minTxt.setTextSize(16);
         minTxt.setTextColor(Color.BLACK);
         minTxt.setLayoutParams(minParams);
-        minTxt.setText("min : "+min);
+        minTxt.setText("min : " + min);
         //endregion
 
         //endregion
@@ -160,7 +161,7 @@ public class CheckBoxGroup extends LinearLayout {
                 , dpToPx(8, context), dpToPx(8, context));
         checkHolder.setOrientation(VERTICAL);
         checkHolder.setLayoutParams(hodlerParams);
-        generateCheckBoxes(checkHolder,context);
+        generateCheckBoxes(checkHolder, context);
         //endregion
 
         //region add views
@@ -176,51 +177,54 @@ public class CheckBoxGroup extends LinearLayout {
 
     }
 
-    private void generateCheckBoxes(LinearLayout checkHolder,Context context) {
+    private void generateCheckBoxes(LinearLayout checkHolder, Context context) {
 
-         for(int i = 0 ; i < choices.length() ; i ++){
+        for (int i = 0; i < choices.length(); i++) {
 
-             try {
+            try {
 
-                 JSONObject checkBoxObj = choices.getJSONObject(i);
+                JSONObject checkBoxObj = choices.getJSONObject(i);
 
-                 final CheckBox checkBox = new CheckBox(context);
-                 checkBox.setEnabled(enabled);
-                 checkBox.setText(checkBoxObj.getString(conf_text));
-                 checkBox.setId(checkBoxObj.getInt(conf_value));
-                 checkBoxStatuses.put(checkBox.getId(),false);
-                 setAnswer(answers,checkBox, String.valueOf(checkBoxObj.getInt(conf_value)));
-                 checkBoxes.add(checkBox);
-                 setMinMaxId(checkBox.getId());
-                 checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                     @Override
-                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                         listener.onElementStatusChanged();
-                         checkBoxStatuses.put(checkBox.getId(),isChecked);
-                        if (checkBox.getId() == disableOthers){
-                            disableOthersById(checkBox.getId(),isChecked);
+                final CheckBox checkBox = new CheckBox(context);
+                checkBox.setEnabled(enabled);
+                checkBox.setText(checkBoxObj.getString(conf_text));
+                checkBox.setId(checkBoxObj.getInt(conf_value));
+                checkBoxStatuses.put(checkBox.getId(), false);
+                setAnswer(answers, checkBox, String.valueOf(checkBoxObj.getInt(conf_value)));
+                checkBoxes.add(checkBox);
+                setMinMaxId(checkBox.getId());
+
+                checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        listener.onElementStatusChanged();
+                        checkBoxStatuses.put(checkBox.getId(), isChecked);
+                        if (checkBox.getId() == disableOthers) {
+                            disableOthersById(checkBox.getId(), isChecked);
                         }
                         removeMandatoryError();
-                     }
-                 });
+                    }
+                });
 
-                 checkHolder.addView(checkBox);
+                checkHolder.addView(checkBox);
 
-             } catch (JSONException e) {
-                 e.printStackTrace();
-             }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                log(e.getMessage());
+            }
 
-         }
+        }
 
     }
 
     private void setAnswer(ArrayList<String> answers, CheckBox checkBox, String value) {
 
-
-        for(int i = 0 ; i < answers.size() ; i++){
-            if (value.equals(answers.get(i))){
+        for (int i = 0; i < answers.size(); i++) {
+            if (value.equals(answers.get(i))) {
                 checkBox.setChecked(true);
-                checkBoxStatuses.put(checkBox.getId(),true);
+                checkBoxStatuses.put(checkBox.getId(), true);
+                if (disableOthers != -1)
+                    disableOthersById(checkBox.getId(), true);
                 break;
             }
         }
@@ -228,86 +232,89 @@ public class CheckBoxGroup extends LinearLayout {
 
     private void setMinMaxId(int id) {
         //first check if assigned before
-        if (minId == -1){//not assigned
+        if (minId == -1) {//not assigned
             minId = id;
         }
-        if (maxId == -1){//not assigned
+        if (maxId == -1) {//not assigned
             maxId = id;
         }
         //if assigned and lower that min assign to min
-        if (minId > id){
+        if (minId > id) {
             minId = id;
         }
         //if assigned and higher than max assign to max
-        if (maxId < id){
+        if (maxId < id) {
             maxId = id;
         }
     }
 
-    private void disableOthersById(int id,boolean isChecked) {
-        for (int i = 0 ; i < checkBoxes.size() ; i++){
+    private void disableOthersById(int id, boolean isChecked) {
+        for (int i = 0; i < checkBoxes.size(); i++) {
 
             if (checkBoxes.get(i).getId() != id) {
                 checkBoxes.get(i).setEnabled(!isChecked);
                 checkBoxes.get(i).setChecked(false);
-                checkBoxStatuses.put(checkBoxes.get(i).getId(),false);
+                checkBoxStatuses.put(checkBoxes.get(i).getId(), false);
             }
         }
     }
 
-    private boolean isMaxMinExist(JSONObject element){
+    private boolean isMaxMinExist(JSONObject element) {
         return element.has(conf_rangeMin);
     }
 
-    public JSONArray getValues(){
-        isMandatoriesAnswered();
+    public JSONArray getValues(boolean isNextClicked) {
+        isMandatoriesAnswered(isNextClicked);
         return convert_HashMap_to_JSONArray(checkBoxStatuses);
     }
 
-    private boolean isMandatoriesAnswered() {
-        if (isRequired){
+    private boolean isMandatoriesAnswered(boolean isNextClicked) {
+        if (isRequired) {
             boolean FLAG = false;
-            for (int i = 0 ; i < checkBoxes.size() ; i++){
-                if (checkBoxes.get(i).isChecked()){
+            for (int i = 0; i < checkBoxes.size(); i++) {
+                if (checkBoxes.get(i).isChecked()) {
                     FLAG = true;
                 }
             }
 
-            if (!FLAG){
-                setMandatoryError();
+            if (!FLAG) {
+                if (isNextClicked)
+                    setMandatoryError();
                 if (listener != null)
-                listener.onMandatoryStatusError();
+                    listener.onMandatoryStatusError();
             }
 
         }
         return true;
     }
 
-    public void setMandatoryError(){
+    public void setMandatoryError() {
         if (setMandatories)
             this.setBackground(context.getResources().getDrawable(R.drawable.is_requiered));
     }
-    public void removeMandatoryError(){
+
+    public void removeMandatoryError() {
         this.setBackground(null);
     }
 
-    private JSONArray convert_HashMap_to_JSONArray(HashMap<Integer,Boolean> hashMap){
+    private JSONArray convert_HashMap_to_JSONArray(HashMap<Integer, Boolean> hashMap) {
         JSONArray array = new JSONArray();
-        for (int i = minId ; i <= maxId ; i++){
+        for (int i = minId; i <= maxId; i++) {
 
             if (hashMap.get(i) != null) {
                 JSONObject object = new JSONObject();
                 try {
-                    object.put("name",name);
-                    object.put("id",id);
-                    object.put("name",name);
-                    object.put("value", i+"");
-                    object.put("index",i);
-                    object.put("status",hashMap.get(i));
+                    object.put("name", name);
+                    object.put("id", id);
+                    object.put("name", name);
+                    object.put("value", i + "");
+                    object.put("index", i);
+                    object.put("status", hashMap.get(i));
 
                     array.put(object);
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    log(e.getMessage());
                 }
 
             }
@@ -327,6 +334,7 @@ public class CheckBoxGroup extends LinearLayout {
             isRequired = element.has(conf_required) ? element.getBoolean(conf_required) : false;
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
     }
 
@@ -338,7 +346,7 @@ public class CheckBoxGroup extends LinearLayout {
         this.listener = listener;
     }
 
-    public String getElementId(){
+    public String getElementId() {
         return id;
     }
 }

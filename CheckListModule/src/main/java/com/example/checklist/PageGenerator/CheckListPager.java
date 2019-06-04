@@ -15,7 +15,9 @@ import com.example.checklist.CheckListGenerator.CheckListMaker;
 import com.example.checklist.Config;
 import com.example.checklist.FinishCheckList.CheckListFinishPage;
 import com.example.checklist.ImageSliderModel;
+import com.example.checklist.LayoutMaker.LayoutModel;
 import com.example.checklist.PictureElement.PicturePickerItemModel;
+import com.example.checklist.ProductCounter.ProductModel;
 import com.example.checklist.R;
 
 import org.json.JSONArray;
@@ -28,13 +30,16 @@ import java.util.HashMap;
 import static com.example.checklist.Camera.ActivityPicture.getPicsFromSharedPreferences;
 import static com.example.checklist.GlobalFuncs.conf_checkBox;
 import static com.example.checklist.GlobalFuncs.conf_pages;
+import static com.example.checklist.GlobalFuncs.conf_position;
 import static com.example.checklist.GlobalFuncs.conf_radioButton;
 import static com.example.checklist.GlobalFuncs.conf_type;
+import static com.example.checklist.GlobalFuncs.conf_value;
 import static com.example.checklist.GlobalFuncs.convert_ArrayList_to_JSONArray;
 import static com.example.checklist.GlobalFuncs.convert_JSONArray_to_ArrayList;
 import static com.example.checklist.GlobalFuncs.convert_JSONArray_to_PictureModel;
 import static com.example.checklist.GlobalFuncs.convert_PictureModel_to_JSONArrary;
 import static com.example.checklist.GlobalFuncs.showToast;
+import static com.example.checklist.PictureElement.PicturePickerItemModel.conf_status;
 
 public class CheckListPager extends LinearLayout implements CheckListDataListener
         , CheckListDataListener.CheckListConditionListener, CheckListFinishPage.FinishedPageActionListener {
@@ -58,6 +63,10 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
     private AlertDialog saveAsDraftDialog;
     private AlertDialog lastPageDialog;
 
+    private int maxPostion = 0;
+
+    private int userPagePosition = -1;
+
     private int prePosition;
 
     private JSONObject object;
@@ -79,8 +88,12 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
     private CheckListFinishPage finishPage;
     private CheckListListener listListener;
     private int shopId;
+    private ArrayList<LayoutModel> layoutModels;
 
-    public static boolean setMandatories = false;
+    private int cachedPage;
+    private ArrayList<ProductModel> productModels;
+
+    public static boolean setMandatories = true;
 
     //region cosntructors
 
@@ -88,7 +101,7 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
             , ArrayList<PicturePickerItemModel> picAnswers, CheckListMaker.pageStatus pageStatus
             , JSONArray checkListAnswer, ArrayList<ImageSliderModel> imageSliderModels
             , String signatureFolderPath, CheckListListener listListener
-            , int shopId) {
+            , int shopId, ArrayList<LayoutModel> layoutModels, int cachedPage, ArrayList<ProductModel> productModels) {
         super(context);
         this.context = context;
         this.object = Object;
@@ -101,6 +114,9 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
         this.signatureFolderPath = signatureFolderPath;
         this.listListener = listListener;
         this.shopId = shopId;
+        this.layoutModels = layoutModels;
+        this.cachedPage = cachedPage;
+        this.productModels = productModels;
         pages = new ArrayList<>();
         pagesByPosition = new HashMap<>();
         conditions = new ArrayList<>();
@@ -108,6 +124,8 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
 //        pageKeyValue = new HashMap<>();
         getPagesArray(Object);
         init(context);
+
+        createAllPages();
     }
 
 
@@ -119,9 +137,6 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
         super(context, attrs, defStyleAttr);
     }
 
-    public CheckListPager(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
 
     //endregion
 
@@ -135,7 +150,12 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
         //endregion
 
         addPostionToQueue(0);
-        addPageByPosition(createPage(object, context, 0));
+        CheckListMaker firtPage = createPage(object, context, 0);
+        if (firtPage != null) {
+            addPageByPosition(firtPage);
+        } else {
+            listListener.CheckListHasError(context.getString(R.string.emptyPageCheckList));
+        }
 
 
     }
@@ -145,9 +165,19 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
             checkListMaker.updateViewsStatus();
     }
 
+    private void setMaxPostion(int position) {
+        if (position > maxPostion) {
+            this.maxPostion = position;
+        }
+    }
+
+    private void setUserPagePosition(CheckListMaker checkListMaker){
+        this.userPagePosition = checkListMaker.getPosition();
+    }
+
     private CheckListMaker createPage(JSONObject response, Context context, int position) {
 
-        log("creating page -> "+position);
+        log("creating page -> " + position);
         try {
             checkListMaker = new CheckListMaker(context
                     , response.getJSONArray("pages")
@@ -156,20 +186,27 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
                     , imageSliderModels, shopId, getPagePicAnswers(position, picAnswers)
                     , getPageAnswersByPosition(position)
                     , signatureFolderPath
-                    , this);
+                    , this
+                    , layoutModels
+                    ,productModels);
             checkListMaker.setConditionListener(this);
             checkListMaker.setButtons(pre, next, this);
 
-            checkListMaker.checkMandatoriesAndChangeButtonStatus();
+            checkListMaker.checkMandatoriesAndChangeButtonStatus(false);
 //            checkListMaker.setConditionListener(this);
 
             addView(checkListMaker);
+
+            setMaxPostion(currentPagePosition);
+
+            setUserPagePosition(checkListMaker);
 
             return checkListMaker;
 
         } catch (JSONException e) {
             e.printStackTrace();
-            listListener.CheckListHasError(e.getMessage());
+            log(e.getMessage());
+//            listListener.CheckListHasError(e.getMessage());
         }
         return null;
     }
@@ -186,12 +223,99 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                listListener.CheckListHasError(e.getMessage());
+                log(e.getMessage());
+//                listListener.CheckListHasError(e.getMessage());
             }
         }
 
         return pageAnswers;
 
+    }
+
+    private void createAllPages(){
+        if (pageStatus == CheckListMaker.pageStatus.DRAFT){
+            if (cachedPage > 0) {
+                addAnswerConditions(checkListAnswer);
+                createPages();
+                showCachedPage(getCachedPage());
+            }
+
+        }
+    }
+
+    private void showCachedPage(int cachedPagePosition) {
+        CheckListMaker cachedPage = pagesByPosition.get(cachedPagePosition);
+        if (cachedPage != null){
+            showPage(cachedPage);
+        }
+    }
+
+    private int getCachedPage() {
+        return userPagePosition;
+    }
+
+
+    private void createPages() {
+        for (int i = currentPagePosition + 1 ; i <= cachedPage ; i++){
+            try {
+                if (checkVisibleByOrder(pagesArray.getJSONObject(i))){
+                    setCurrentPagePosition(i);
+                    addPostionToQueue(i);
+                    pagesByPosition.put(i,createPage(object,context,i));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void addAnswerConditions(JSONArray answers) {
+
+        for (int i = 0 ; i < answers.length() ; i++){
+
+            try {
+                JSONObject answer = answers.getJSONObject(i);
+
+                if (answer.getString(conf_type)
+                        .equals(conf_checkBox)){
+                    setCheckboxCondition(answer);
+                }
+
+                if (answer.getString(conf_type)
+                        .equals(conf_radioButton)){
+                    setRadioButtonCondition(answer);
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+    }
+
+    private void setRadioButtonCondition(JSONObject answer) {
+        try {
+            JSONObject value = answer.getJSONObject(conf_value);
+            conditions.add(value);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setCheckboxCondition(JSONObject answer) {
+        try {
+            JSONArray values = answer.getJSONArray(conf_value);
+            for (int i = 0 ; i < values.length() ; i++){
+                JSONObject value = values.getJSONObject(i);
+                if (value.getBoolean(conf_status)){
+                    conditions.add(value);
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private JSONArray getPagePicAnswers(int position, ArrayList<PicturePickerItemModel> pictures) {
@@ -215,24 +339,17 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
      * @return
      */
     private CheckListMaker nextPage() {
-
         for (int i = currentPagePosition + 1; i < pagesArray.length(); i++) {
             try {
-
                 if (checkVisibleByOrder(pagesArray.getJSONObject(i))) {
-                    Log.i(TAG, "nextPage: current position = " + currentPagePosition);
-                    Log.i(TAG, "nextPage: i  = " + i);
-                    //hide all
-                    //show page
-                    //add to queue
                     hideAllPages();
                     setCurrentPagePosition(i);
                     return createPage(object, context, i);
-
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                listListener.CheckListHasError(e.getMessage());
+                log(e.getMessage());
+//                listListener.CheckListHasError(e.getMessage());
             }
         }
         showLastPage();
@@ -265,13 +382,14 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                listListener.CheckListHasError(e.getMessage());
+                log(e.getMessage());
+//                listListener.CheckListHasError(e.getMessage());
             }
         }
     }
 
     //when user press next add page to <int,CheckListMaker>
-    private void addPageByPosition( CheckListMaker checkListMaker) {// -2-
+    private void addPageByPosition(CheckListMaker checkListMaker) {// -2-
         this.pagesByPosition.put(checkListMaker.getPosition(), checkListMaker);
     }
 
@@ -284,7 +402,7 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
             }
         }
         if (!FLAG_EXIST) {
-            log("position added -> " +position);
+            log("position added -> " + position);
             this.pagePositionQueue.add(position);
         }
     }
@@ -293,8 +411,9 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
     private int getCurrentPagePostion() {// -4-
         return this.currentPagePosition;
     }
+
     //set current page
-    private void setCurrentPagePosition(int position){
+    private void setCurrentPagePosition(int position) {
         this.currentPagePosition = position;
     }
 
@@ -312,7 +431,8 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                listListener.CheckListHasError(e.getMessage());
+                log(e.getMessage());
+//                listListener.CheckListHasError(e.getMessage());
             }
         }
         if (!FLAG_EXIST) {
@@ -333,7 +453,8 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                listListener.CheckListHasError(e.getMessage());
+                log(e.getMessage());
+//                listListener.CheckListHasError(e.getMessage());
             }
 
         }
@@ -350,7 +471,7 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                listListener.CheckListHasError(e.getMessage());
+                log(e.getMessage());
             }
         }
         conditions.add(condition);
@@ -376,7 +497,8 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                listListener.CheckListHasError(e.getMessage());
+                log(e.getMessage());
+//                listListener.CheckListHasError(e.getMessage());
             }
         }
     }
@@ -384,10 +506,10 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
     //get previous page posiotn
     private int getPreviousPagePosition() {
         if (pagePositionQueue.size() > 1) {
-            log("previous page is -> "+pagePositionQueue.get(pagePositionQueue.size() - 1));
+            log("previous page is -> " + pagePositionQueue.get(pagePositionQueue.size() - 1));
             return pagePositionQueue.get(pagePositionQueue.size() - 1);
         }
-        if (pagePositionQueue.size() > 0){
+        if (pagePositionQueue.size() > 0) {
             return pagePositionQueue.get(pagePositionQueue.size() - 1);
         }
         log("page queue size is < 1 - previous page is 0");
@@ -396,7 +518,7 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
 
     //remove pageQueue last index when user press back
     private void removeFromPageQueue() {
-        log("page queue size ->"+pagePositionQueue.size());
+        log("page queue size ->" + pagePositionQueue.size());
         if (pagePositionQueue.size() > 1) {
             log("remove index -> " + (pagePositionQueue.size() - 1));
             log("remove value -> " + pagePositionQueue.get(pagePositionQueue.size() - 1));
@@ -421,12 +543,14 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
      */
 
     private void showPage(CheckListMaker checkListMaker) {
-        log("showing page -> "+checkListMaker.getPosition());
+        setUserPagePosition(checkListMaker);
+        log("showing page -> " + checkListMaker.getPosition());
+        setCurrentPagePosition(checkListMaker.getPosition());
         hideAllPages();
         checkListMaker.setButtons(pre, next, this);
         addView(checkListMaker);
         setCurrentPagePosition(checkListMaker.getPosition());
-        updatePages();
+        updatePages(false);
     }
 
     private int getNextPagePosition() {
@@ -434,11 +558,12 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
         for (int i = getCurrentPagePostion() + 1; i < pagesArray.length(); i++) {
             try {
                 if (checkVisibleByOrder(pagesArray.getJSONObject(i))) {
-                    log("next page is -> "+i);
+                    log("next page is -> " + i);
                     return i;
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+                log(e.getMessage());
             }
         }
         log("no next page -> (-1)");
@@ -521,6 +646,7 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+                log(e.getMessage());
                 listListener.CheckListHasError(e.getMessage());
             }
         } else {
@@ -538,6 +664,7 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
             currentPageValue = visiblePages[1];
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
             listListener.CheckListHasError(e.getMessage());
         }
         for (int i = 0; i < conditions.size(); i++) {
@@ -555,7 +682,8 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                listListener.CheckListHasError(e.getMessage());
+                log(e.getMessage());
+//                listListener.CheckListHasError(e.getMessage());
             }
         }
 //        Log.i(TAG, "checkVisibleByOrder: no statment called , condition size = " + conditions.size());
@@ -567,17 +695,21 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
             pagesArray = object.getJSONArray(conf_pages);
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
             listListener.CheckListHasError(e.getMessage());
         }
     }
 
-    private void updatePages() {  // Importatnt func
+    private void updatePages(boolean isNextClicked) {  // Importatnt func
         log("pages updated");
-        for (int i = 0; i < pagePositionQueue.size(); i++) {
-            CheckListMaker temp = pagesByPosition.get(pagePositionQueue.get(i));
+        for (int i = 0; i < maxPostion; i++) {
+            CheckListMaker temp = pagesByPosition.get(i);
 
             if (temp != null)
-                temp.checkMandatoriesAndChangeButtonStatus();
+                temp.checkMandatoriesAndChangeButtonStatus(isNextClicked);
+        }
+        if (pagesByPosition.get(currentPagePosition) != null) {
+            pagesByPosition.get(currentPagePosition).checkMandatoriesAndChangeButtonStatus(isNextClicked);
         }
     }
 
@@ -615,8 +747,10 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
             public void onClick(DialogInterface dialog, int which) {
                 //close dialog
                 saveAsDraftDialog.dismiss();
-
-                listListener.SaveAsDraft(getAllData(), convert_JSONArray_to_PictureModel(getPicsFromSharedPreferences(context)), false,getSignatures());
+                if (pageStatus != CheckListMaker.pageStatus.PREVIEW)
+                    listListener.SaveAsDraft(getAllData(), convert_JSONArray_to_PictureModel(getPicsFromSharedPreferences(context)), false, getSignatures());
+                else
+                    listListener.CheckListMessage(context.getString(R.string.notSaveInPreview));
 
             }
         });
@@ -637,7 +771,7 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
 
 
     public void updateMandatory() {
-        checkListMaker.checkMandatoriesAndChangeButtonStatus();
+        updatePages(false);
     }
 
     public boolean isSetMandatories() {
@@ -653,7 +787,10 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
     }
 
     public void instantSaveCheckList(boolean isAppClosed) {
-        listListener.SaveAsDraft(getAllData(), convert_JSONArray_to_PictureModel(getPicsFromSharedPreferences(context)), isAppClosed,getSignatures());
+        if (pageStatus != CheckListMaker.pageStatus.PREVIEW)
+            listListener.instantSaveCall(getAllData(), convert_JSONArray_to_PictureModel(getPicsFromSharedPreferences(context)), isAppClosed, getSignatures(),userPagePosition);
+//        else
+//            listListener.CheckListMessage(context.getString(R.string.notSaveInPreview));
     }
 
 
@@ -681,6 +818,7 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
             editor.putString(Config.pictures, String.valueOf(convert_ArrayList_to_JSONArray(picsArray))).apply();
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
     }
 
@@ -704,27 +842,56 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
 //        return array;
 //    }
 
+    //here we are getting all data of checklist - what ever user chose
     private JSONArray getAllData() {
-        JSONArray allData = new JSONArray();
+//        JSONArray allData = new JSONArray();
+        pagePositionQueue.add(userPagePosition);
         for (int i = 0; i < pagePositionQueue.size(); i++) {
-            CheckListMaker page = pagesByPosition.get(pagePositionQueue.get(i));
+            int position = pagePositionQueue.get(i);
+            removeDataWithPostion(position);
+
+            CheckListMaker page = pagesByPosition.get(position);
             if (page != null) {
-                JSONArray temp = page.getData();
+                JSONArray temp = page.getData(true);
 
                 for (int j = 0; j < temp.length(); j++) {
 
                     try {
-                        allData.put(temp.getJSONObject(j));
+                        checkListAnswer.put(temp.getJSONObject(j));
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        listListener.CheckListHasError(e.getMessage());
+                        log(e.getMessage());
                     }
 
                 }
             }
 
         }
-        return allData;
+        return checkListAnswer;
+    }
+
+    private void removeDataWithPostion(int position) {
+
+        ArrayList<JSONObject> datas = convert_JSONArray_to_ArrayList(checkListAnswer);
+
+        for (int i = 0; i < datas.size(); i++) {
+
+            JSONObject data = datas.get(i);
+
+            try {
+                if (data.getInt(conf_position)
+                        == position) {
+                    datas.remove(i);
+                    i--;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        checkListAnswer = convert_ArrayList_to_JSONArray(datas);
+
     }
 
     private void log(String message) {
@@ -746,17 +913,21 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
             log("found cache page");
             showNextPage(nextPage);
             setCurrentPagePosition(nextPagePosition);
+            addPostionToQueue(position);
         } else {
             log("not cache page");//if not do the rest
             CheckListMaker checkListMaker = nextPage();//find next page
 //            log("Created page -> "+checkListMaker.getPosition());
             if (checkListMaker != null) {//if page exist
-                log(" - "+checkListMaker.getPosition() + " created page");
-                addPageByPosition( checkListMaker);//add to key,value
+                log(" - " + checkListMaker.getPosition() + " created page");
+                addPageByPosition(checkListMaker);//add to key,value
                 setCurrentPagePosition(checkListMaker.getPosition());
             }
             addPostionToQueue(position);//add position of page to queue to know use passed this page
         }
+//        addPostionToQueue(nextPagePosition);
+//        log(nextPagePosition+"");
+
     }
 
 
@@ -770,7 +941,8 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
 
     @Override
     public void onCheckListError(String error) {
-
+//        listListener.CheckListHasError(error);
+        listListener.ChecklistErrorMessage(error);
     }
 
     @Override
@@ -793,7 +965,10 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
     @Override
     public void onFinishClicked() {
         //get all data and clear sharedpreferences pictures
-        listListener.SaveAsFinished(getAllData(), convert_JSONArray_to_PictureModel(getPicsFromSharedPreferences(context)),getSignatures());
+        if (pageStatus != CheckListMaker.pageStatus.PREVIEW)
+            listListener.SaveAsFinished(getAllData(), convert_JSONArray_to_PictureModel(getPicsFromSharedPreferences(context)), getSignatures());
+        else
+            listListener.CheckListMessage(context.getString(R.string.notSaveInPreview));
     }
 
     @Override
@@ -810,26 +985,29 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
     @Override
     public void onSaveAsDraftClicked() {
         //get all data and clear sharedpreferences picture
-        listListener.SaveAsDraft(getAllData(), convert_JSONArray_to_PictureModel(getPicsFromSharedPreferences(context)), false,getSignatures());
+        if (pageStatus != CheckListMaker.pageStatus.PREVIEW)
+            listListener.SaveAsDraft(getAllData(), convert_JSONArray_to_PictureModel(getPicsFromSharedPreferences(context)), false, getSignatures());
+        else
+            listListener.CheckListMessage(context.getString(R.string.notSaveInPreview));
     }
 
-    private ArrayList<PicturePickerItemModel> getSignatures(){
+    private ArrayList<PicturePickerItemModel> getSignatures() {
 
         ArrayList<PicturePickerItemModel> models = new ArrayList<>();
 
-        for (int i = 0 ; i < pagePositionQueue.size() ; i++){
+        for (int i = 0; i < pagePositionQueue.size(); i++) {
 
             int position = pagePositionQueue.get(i);
 
             CheckListMaker page = pagesByPosition.get(position);
 
-            if (page != null){
+            if (page != null) {
 
                 ArrayList<PicturePickerItemModel> temp = page.getSignatures();
 
-                for (int j = 0 ; j < temp.size() ; j++){
-
-                    models.add(temp.get(i));
+                for (int j = 0; j < temp.size(); j++) {
+                    if (temp.get(i).getPath() != null && temp.get(i).getName() != null)
+                        models.add(temp.get(i));
 
                 }
 
@@ -850,9 +1028,9 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
 
 
     public interface CheckListListener {
-        void SaveAsDraft(JSONArray array, ArrayList<PicturePickerItemModel> pics, boolean isAppClosed,ArrayList<PicturePickerItemModel> signatures);
+        void SaveAsDraft(JSONArray array, ArrayList<PicturePickerItemModel> pics, boolean isAppClosed, ArrayList<PicturePickerItemModel> signatures);
 
-        void SaveAsFinished(JSONArray array, ArrayList<PicturePickerItemModel> pics,ArrayList<PicturePickerItemModel> signatures);
+        void SaveAsFinished(JSONArray array, ArrayList<PicturePickerItemModel> pics, ArrayList<PicturePickerItemModel> signatures);
 
         void Finished();
 
@@ -864,6 +1042,11 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
 
         void StopFromSaving();
 
+        void ChecklistErrorMessage(String msg);
+
+        void instantSaveCall(JSONArray array, ArrayList<PicturePickerItemModel> pics, boolean isAppClosed, ArrayList<PicturePickerItemModel> signatures,int userPagePosition);
+
+        void CheckListMessage(String msg);
 
     }
 

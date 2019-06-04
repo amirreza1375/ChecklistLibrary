@@ -21,6 +21,7 @@ import static com.example.checklist.GlobalFuncs.conf_id;
 import static com.example.checklist.GlobalFuncs.conf_isRequired;
 import static com.example.checklist.GlobalFuncs.conf_name;
 import static com.example.checklist.GlobalFuncs.createTitle;
+import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.PageGenerator.CheckListPager.setMandatories;
 
 
@@ -168,19 +169,23 @@ public class Commentario extends LinearLayout implements TextWatcher {
             isRequired = element.has(conf_isRequired) ? element.getBoolean(conf_isRequired) : false;
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
     }
 
-    public String getCommentValue() {
-        isMandatoryAnswered();
+    public String getCommentValue(boolean isNextClicked) {
+        isMandatoryAnswered(isNextClicked);
         return comment.getText().toString();
     }
 
-    private void isMandatoryAnswered() {
-        if (comment.getText().toString().equals("")) {
-            setMandatoryError();
-            if (listener != null)
-                listener.onMandatoryStatusError();
+    private void isMandatoryAnswered(boolean isNextClicked) {
+        if (isRequired) {
+            if (comment.getText().toString().equals("")) {
+                if (isNextClicked)
+                    setMandatoryError();
+                if (listener != null)
+                    listener.onMandatoryStatusError();
+            }
         }
     }
 

@@ -37,9 +37,7 @@ public class SignatureGenerator extends LinearLayout implements View.OnClickList
         super(context, attrs, defStyleAttr);
     }
 
-    public SignatureGenerator(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
+
 
 
     private void init(Context context){

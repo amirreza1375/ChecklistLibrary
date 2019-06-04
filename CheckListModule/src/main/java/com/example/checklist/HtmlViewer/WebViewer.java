@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import static com.example.checklist.GlobalFuncs.conf_htmlValue;
+import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.GlobalFuncs.setOrgProps;
 
 public class WebViewer extends LinearLayout {
@@ -36,9 +37,6 @@ public class WebViewer extends LinearLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    public WebViewer(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
 
     private void init(Context context){
 
@@ -69,6 +67,7 @@ public class WebViewer extends LinearLayout {
             return htmlStr;
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
             return "";
         }
 

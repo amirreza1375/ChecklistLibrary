@@ -6,6 +6,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.example.checklist.GlobalFuncs.conf_productCount;
+import static com.example.checklist.GlobalFuncs.conf_type;
+import static com.example.checklist.GlobalFuncs.conf_value;
+import static com.example.checklist.GlobalFuncs.log;
+
 public class ServerJSONCleanUp {
 
     private String json;
@@ -23,6 +28,7 @@ public class ServerJSONCleanUp {
             return new JSONArray(str);
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
         return new JSONArray();
     }
@@ -80,15 +86,32 @@ public class ServerJSONCleanUp {
                         .equals(GlobalFuncs.conf_multiText)){
                     finalJSON.put(cleanUpMultiText(answer));
                 }
+                if (answer.getString(conf_type)
+                        .equals(conf_productCount)){
+                    JSONArray productAnswers = cleanUpProductCounter(answer);
+                    for (int j = 0 ; j < productAnswers.length() ; j++){
+                        finalJSON.put(productAnswers.getJSONObject(j));
+                    }
+                }
 
             } catch (JSONException e) {
                 e.printStackTrace();
+                log(e.getMessage());
             }
 
 
         }
         return finalJSON;
 
+    }
+
+    private JSONArray cleanUpProductCounter(JSONObject answer) {
+        try {
+            return answer.getJSONArray(conf_value);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return new JSONArray();
     }
 
     private JSONObject cleanUpMultiText(JSONObject answer) {
@@ -109,6 +132,7 @@ public class ServerJSONCleanUp {
             cleanedMultiText.put(GlobalFuncs.conf_value,values);
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
 
         return cleanedMultiText;
@@ -138,6 +162,7 @@ public class ServerJSONCleanUp {
 
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
 
         return finalCommentJSON;
@@ -163,6 +188,7 @@ public class ServerJSONCleanUp {
 
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
 
         return finalCommentJSON;
@@ -191,6 +217,7 @@ public class ServerJSONCleanUp {
 
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
 
         return finalRadioJSON;
@@ -229,6 +256,7 @@ public class ServerJSONCleanUp {
             }
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
 
 

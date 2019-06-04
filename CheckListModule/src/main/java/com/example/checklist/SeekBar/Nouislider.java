@@ -16,6 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import static com.example.checklist.GlobalFuncs.dpToPx;
+import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.PageGenerator.CheckListPager.setMandatories;
 
 public class Nouislider extends LinearLayout {
@@ -192,6 +193,7 @@ public class Nouislider extends LinearLayout {
 
         }catch (Exception e){
             e.printStackTrace();
+            log(e.getMessage());
         }
     }
 
@@ -247,6 +249,7 @@ public class Nouislider extends LinearLayout {
             isRequired = element.has(conf_required) ? element.getBoolean(conf_required) : false;
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
         }
     }
 
@@ -256,6 +259,7 @@ public class Nouislider extends LinearLayout {
             return element.getString(conf_title);
         } catch (JSONException e) {
             e.printStackTrace();
+            log(e.getMessage());
             return "";
         }
     }
