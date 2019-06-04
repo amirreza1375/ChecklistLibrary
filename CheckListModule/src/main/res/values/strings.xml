@@ -121,5 +121,7 @@
     <string name="emptyPageCheckList">No se ha encontrado ninguna página, por favor verifique los datos de su lista de verificación</string>
     <string name="notSaveInPreview">La lista de verificación está en modo de vista previa</string>
     <string name="noDataAssigned">No hay datos asignados</string>
+    <string name="ImageNoExist">La imagen no existe, por favor intente actualizar</string>
+    <string name="ImageHasProblem">La imagen no se ha descargado bien. Por favor, intente actualizar.</string>
 
 </resources>

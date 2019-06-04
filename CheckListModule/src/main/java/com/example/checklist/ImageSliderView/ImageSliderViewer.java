@@ -38,13 +38,19 @@ import static com.example.checklist.GlobalFuncs.setOrgProps;
 public class ImageSliderViewer extends LinearLayout {
 
 
+    public enum ImageStatus {
+        IMAGE_NOT_EXIST, IMAGE_HAS_PROBLEM
+    }
+
     //region used variables
     private ArrayList<File> imageFiles;
     private ArrayList<String> names;
     private ArrayList<String> priorities;
+    private ImageSliderListener listener;
     //endregion
 
     //region variables
+    private boolean isErrorSent = false;
     private Context context;
     private JSONObject element;
     private boolean isRequired;
@@ -56,14 +62,15 @@ public class ImageSliderViewer extends LinearLayout {
 
 
     public ImageSliderViewer(Context context, JSONObject element
-    , ArrayList<File> imageFiles,ArrayList<String> priorities
-    ,ArrayList<String> names) {
+            , ArrayList<File> imageFiles, ArrayList<String> priorities
+            , ArrayList<String> names, ImageSliderListener listener) {
         super(context);
         this.context = context;
         this.element = element;
         this.imageFiles = imageFiles;
         this.names = names;
         this.priorities = priorities;
+        this.listener = listener;
         init(context);
 
 
@@ -154,6 +161,20 @@ public class ImageSliderViewer extends LinearLayout {
 
         SliderLayout sliderLayout = new SliderLayout(context);
         for (int i = 0 ; i < imageFiles.size() ; i++){
+            File imageFile = imageFiles.get(i);
+            if (!imageFile.exists()) {
+                if (!isErrorSent) {
+                    isErrorSent = true;
+                    listener.onError(context.getString(R.string.ImageNoExist), ImageStatus.IMAGE_NOT_EXIST);
+                }
+            }
+
+            if (imageFile.length() == 0) {
+                if (!isErrorSent) {
+                    isErrorSent = true;
+                    listener.onError(context.getString(R.string.ImageHasProblem), ImageStatus.IMAGE_HAS_PROBLEM);
+                }
+            }
 
             TextSliderView textSliderView = new TextSliderView(context);
             textSliderView.image(imageFiles.get(i)).bundle(new Bundle())
@@ -222,9 +243,10 @@ public class ImageSliderViewer extends LinearLayout {
             }
         });
 
+    }
 
-
-
+    public interface ImageSliderListener {
+        void onError(String err, ImageStatus errCode);
     }
 
 }
