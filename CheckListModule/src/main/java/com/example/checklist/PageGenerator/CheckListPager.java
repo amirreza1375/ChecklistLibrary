@@ -15,6 +15,7 @@ import com.example.checklist.CheckListGenerator.CheckListMaker;
 import com.example.checklist.Config;
 import com.example.checklist.FinishCheckList.CheckListFinishPage;
 import com.example.checklist.ImageSliderModel;
+import com.example.checklist.ImageSliderView.ImageSliderViewer;
 import com.example.checklist.LayoutMaker.LayoutModel;
 import com.example.checklist.PictureElement.PicturePickerItemModel;
 import com.example.checklist.ProductCounter.ProductModel;
@@ -946,6 +947,12 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
     }
 
     @Override
+    public void onImageSliderError(String err, ImageSliderViewer.ImageStatus errCode) {
+        listListener.ImageSliderError(err,errCode);
+
+    }
+
+    @Override
     public void onCameraLoad() {
         listListener.StopFromSaving();
     }
@@ -1047,6 +1054,9 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
         void instantSaveCall(JSONArray array, ArrayList<PicturePickerItemModel> pics, boolean isAppClosed, ArrayList<PicturePickerItemModel> signatures,int userPagePosition);
 
         void CheckListMessage(String msg);
+
+        void ImageSliderError(String err, ImageSliderViewer.ImageStatus errCode);
+
 
     }
 

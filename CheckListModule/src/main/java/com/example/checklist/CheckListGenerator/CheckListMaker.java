@@ -80,7 +80,7 @@ import static com.example.checklist.GlobalFuncs.hideKeyboard;
 import static com.example.checklist.GlobalFuncs.log;
 
 public class CheckListMaker extends ScrollView implements View.OnClickListener
-        , MultiText.MandatoryListener, ImageFileConcept.ButtonPressedCallBack {
+        , MultiText.MandatoryListener, ImageFileConcept.ButtonPressedCallBack ,ImageSliderViewer.ImageSliderListener {
 
     public boolean isFirstTime = true;
 
@@ -102,6 +102,11 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
 
     public static enum pageStatus {
         CHECKLIST, DRAFT, PREVIEW
+    }
+
+    @Override
+    public void onError(String err,ImageSliderViewer.ImageStatus errCode) {
+        listener.onImageSliderError(err,errCode);
     }
 
     private boolean enable;
@@ -482,7 +487,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
             }//end of org for
 
             ImageSliderViewer imageSliderViewer = new ImageSliderViewer(context, element
-                    , imageFiles, priorities, names);
+                    , imageFiles, priorities, names,this);
             return imageSliderViewer;
 
         } catch (Exception e) {
@@ -490,7 +495,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
             log(e.getMessage());
 //            listener.onCheckListError(e.getMessage());
             return new ImageSliderViewer(context, element
-                    , new ArrayList<File>(), new ArrayList<String>(), new ArrayList<String>());
+                    , new ArrayList<File>(), new ArrayList<String>(), new ArrayList<String>(),this);
         }
 
     }
