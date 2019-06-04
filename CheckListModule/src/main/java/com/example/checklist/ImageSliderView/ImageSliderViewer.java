@@ -77,9 +77,6 @@ public class ImageSliderViewer extends LinearLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    public ImageSliderViewer(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
 
     private void init(Context context){
 
@@ -97,23 +94,50 @@ public class ImageSliderViewer extends LinearLayout {
 
         LayoutParams sliderParams = new LayoutParams(LayoutParams.MATCH_PARENT
         ,dpToPx(200,context));
-        SliderLayout sliderLayout = setupSlider(element,context);
-        sliderLayout.setLayoutParams(sliderParams);
-        //region add view
-        addView(titleTxt);
-        if (checkStoragePermission()){
-            addView(sliderLayout);
-        }else {
-            TextView err = new TextView(context);
-            err.setText("Storage Permision needed");
-            err.setTextColor(Color.RED);
-            addView(err);
-            err.setTextSize(18);
-        }
+
+
+            //region add view
+            addView(titleTxt);
+            if (checkStoragePermission()) {//so we have read,write permission
+                if (imageFiles.size() > 1) {//image are a lot
+                    SliderLayout sliderLayout = setupSlider(element, context);
+                    sliderLayout.setLayoutParams(sliderParams);
+                    addView(sliderLayout);
+                }else{//one image or no image
+                    createOneImageView();
+                }
+            } else {
+                setStorageError();
+            }
+
 
         setOrientation(VERTICAL);
         //endregion
 
+    }
+
+    private void createOneImageView() {
+        if (imageFiles.size() != 0){
+            ImageView imageView = new ImageView(context);
+            Bitmap bitmap = BitmapFactory.decodeFile(imageFiles.get(0).getAbsolutePath());
+            imageView.setImageBitmap(bitmap);
+            imageView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    show_image(imageFiles.get(0).getAbsolutePath()
+                    ,names.size() != 0 ? names.get(0) : ""
+                    ,priorities.size() != 0 ? priorities.get(0) : "0");
+                }
+            });
+        }
+    }
+
+    private void setStorageError(){
+        TextView err = new TextView(context);
+        err.setText("Storage Permision needed");
+        err.setTextColor(Color.RED);
+        addView(err);
+        err.setTextSize(18);
     }
 
     public void removeView(){
