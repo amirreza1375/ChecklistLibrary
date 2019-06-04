@@ -74,6 +74,9 @@ public class GlobalFuncs {
     public static String conf_productName = "product_name";
     public static String conf_productCount = "productCount";
     public static String conf_isAnswered = "isAnswered";
+    public static String conf_val = "val";
+    public static String conf_class = "class";
+    public static String conf_valType = "valType";
     //endregion
 
     public static int dpToPx(float dp, Context context) {
