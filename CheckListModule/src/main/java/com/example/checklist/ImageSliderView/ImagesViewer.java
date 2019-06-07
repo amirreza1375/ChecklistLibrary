@@ -35,7 +35,7 @@ import static com.example.checklist.GlobalFuncs.dpToPx;
 import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.GlobalFuncs.setOrgProps;
 
-public class ImageSliderViewer extends LinearLayout {
+public class ImagesViewer extends LinearLayout {
 
 
     public enum ImageStatus {
@@ -61,7 +61,7 @@ public class ImageSliderViewer extends LinearLayout {
     //endregion
 
 
-    public ImageSliderViewer(Context context, JSONObject element
+    public ImagesViewer(Context context, JSONObject element
             , ArrayList<File> imageFiles, ArrayList<String> priorities
             , ArrayList<String> names, ImageSliderListener listener) {
         super(context);
@@ -76,11 +76,11 @@ public class ImageSliderViewer extends LinearLayout {
 
     }
 
-    public ImageSliderViewer(Context context,  AttributeSet attrs) {
+    public ImagesViewer(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public ImageSliderViewer(Context context,  AttributeSet attrs, int defStyleAttr) {
+    public ImagesViewer(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 

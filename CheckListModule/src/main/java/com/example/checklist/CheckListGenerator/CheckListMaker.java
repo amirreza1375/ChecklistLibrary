@@ -3,7 +3,6 @@ package com.example.checklist.CheckListGenerator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.text.Layout;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,13 +24,12 @@ import com.example.checklist.GlobalFuncs;
 import com.example.checklist.HtmlViewer.WebViewer;
 import com.example.checklist.ImageFile.ImageFileConcept;
 import com.example.checklist.ImageSliderModel;
-import com.example.checklist.ImageSliderView.ImageSliderViewer;
+import com.example.checklist.ImageSliderView.ImagesViewer;
 import com.example.checklist.LayoutMaker.LayoutAdapter;
 import com.example.checklist.LayoutMaker.LayoutMaker;
 import com.example.checklist.LayoutMaker.LayoutModel;
 import com.example.checklist.MultiTextGenerator.MultiText;
 import com.example.checklist.PictureElement.PicturePickerItemModel;
-import com.example.checklist.ProductCounter.ProductCounter;
 import com.example.checklist.ProductCounter.ProductCounterMaker;
 import com.example.checklist.ProductCounter.ProductModel;
 import com.example.checklist.R;
@@ -47,7 +45,6 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 import static com.example.checklist.GlobalFuncs.conf_DataBase;
 import static com.example.checklist.GlobalFuncs.conf_Elemento;
@@ -60,9 +57,7 @@ import static com.example.checklist.GlobalFuncs.conf_file;
 import static com.example.checklist.GlobalFuncs.conf_html;
 import static com.example.checklist.GlobalFuncs.conf_id;
 import static com.example.checklist.GlobalFuncs.conf_imagePicker;
-import static com.example.checklist.GlobalFuncs.conf_isAnswered;
 import static com.example.checklist.GlobalFuncs.conf_multiText;
-import static com.example.checklist.GlobalFuncs.conf_name;
 import static com.example.checklist.GlobalFuncs.conf_optico;
 import static com.example.checklist.GlobalFuncs.conf_position;
 import static com.example.checklist.GlobalFuncs.conf_productCount;
@@ -80,7 +75,7 @@ import static com.example.checklist.GlobalFuncs.hideKeyboard;
 import static com.example.checklist.GlobalFuncs.log;
 
 public class CheckListMaker extends ScrollView implements View.OnClickListener
-        , MultiText.MandatoryListener, ImageFileConcept.ButtonPressedCallBack ,ImageSliderViewer.ImageSliderListener {
+        , MultiText.MandatoryListener, ImageFileConcept.ButtonPressedCallBack , ImagesViewer.ImageSliderListener {
 
     public boolean isFirstTime = true;
 
@@ -105,7 +100,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
     }
 
     @Override
-    public void onError(String err,ImageSliderViewer.ImageStatus errCode) {
+    public void onError(String err, ImagesViewer.ImageStatus errCode) {
         listener.onImageSliderError(err,errCode);
     }
 
@@ -125,7 +120,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
     private ImageFileConcept imageFileConcept;
     private Commentario commentario;
     private DropDown dropDown;
-    private ImageSliderViewer imageSliderViewer;
+    private ImagesViewer imagesViewer;
     private MultiText multiText;
     private RatingGenerator ratingGenerator;
     private ArrayList<View> views;
@@ -486,15 +481,15 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
 
             }//end of org for
 
-            ImageSliderViewer imageSliderViewer = new ImageSliderViewer(context, element
+            ImagesViewer imagesViewer = new ImagesViewer(context, element
                     , imageFiles, priorities, names,this);
-            return imageSliderViewer;
+            return imagesViewer;
 
         } catch (Exception e) {
             e.printStackTrace();
             log(e.getMessage());
 //            listener.onCheckListError(e.getMessage());
-            return new ImageSliderViewer(context, element
+            return new ImagesViewer(context, element
                     , new ArrayList<File>(), new ArrayList<String>(), new ArrayList<String>(),this);
         }
 
