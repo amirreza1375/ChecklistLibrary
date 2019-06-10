@@ -248,9 +248,8 @@ public class ActivityPicture extends AppCompatActivity implements View.OnClickLi
             JSONArray SPPics = new JSONArray(answersStr);
             for (int i = 0; i < SPPics.length(); i++) {
                 if (isPictureForThisPage(position, SPPics.getJSONObject(i))) {
-
+                    finalJSON.put(SPPics.getJSONObject(i));
                 }
-                finalJSON.put(SPPics.getJSONObject(i));
             }
         } catch (JSONException e) {
             e.printStackTrace();
