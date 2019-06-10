@@ -33,6 +33,7 @@ import java.util.HashMap;
 
 import static com.example.checklist.Camera.ActivityCamera.IMAGE_RESULT;
 import static com.example.checklist.GlobalFuncs.conf_id;
+import static com.example.checklist.GlobalFuncs.conf_position;
 import static com.example.checklist.GlobalFuncs.convert_ArrayList_to_JSONArray;
 import static com.example.checklist.GlobalFuncs.convert_JSONArray_to_ArrayList;
 import static com.example.checklist.GlobalFuncs.convert_JSONArray_to_PictureModel;
@@ -246,6 +247,9 @@ public class ActivityPicture extends AppCompatActivity implements View.OnClickLi
         try {
             JSONArray SPPics = new JSONArray(answersStr);
             for (int i = 0; i < SPPics.length(); i++) {
+                if (isPictureForThisPage(position, SPPics.getJSONObject(i))) {
+
+                }
                 finalJSON.put(SPPics.getJSONObject(i));
             }
         } catch (JSONException e) {
@@ -268,6 +272,17 @@ public class ActivityPicture extends AppCompatActivity implements View.OnClickLi
 
         return finalJSON;
 
+    }
+
+    private boolean isPictureForThisPage(int position, JSONObject jsonObject) {
+        try {
+            int imagePosition = jsonObject.getInt(conf_position);
+            if (imagePosition == position)
+                return true;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     @Override
