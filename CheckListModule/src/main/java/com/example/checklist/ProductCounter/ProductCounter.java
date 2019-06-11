@@ -59,7 +59,7 @@ public class ProductCounter extends LinearLayout implements TextWatcher {
 
     public ProductCounter(Context context, String name, String title, String negativeBtnTxt, String positiveBtnTxt
             , int stockCount, long productId, MultiText.MandatoryListener listener
-            , JSONObject answe,String blankHint, boolean enabled) {
+            , JSONObject answer,String blankHint, boolean enabled) {
         super(context);
         this.name = name;
         this.title = title;
