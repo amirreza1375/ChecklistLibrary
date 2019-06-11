@@ -111,7 +111,7 @@ public class ImagesViewer extends LinearLayout {
                     sliderLayout.setLayoutParams(sliderParams);
                     addView(sliderLayout);
                 }else{//one image or no image
-                    createOneImageView();
+                    addView(createOneImageView());
                 }
             } else {
                 setStorageError();
@@ -123,7 +123,7 @@ public class ImagesViewer extends LinearLayout {
 
     }
 
-    private void createOneImageView() {
+    private View createOneImageView() {
         if (imageFiles.size() != 0){
             ImageView imageView = new ImageView(context);
             Bitmap bitmap = BitmapFactory.decodeFile(imageFiles.get(0).getAbsolutePath());
@@ -136,7 +136,12 @@ public class ImagesViewer extends LinearLayout {
                     ,priorities.size() != 0 ? priorities.get(0) : "0");
                 }
             });
+            return imageView;
         }
+
+        TextView textView = new TextView(context);
+        textView.setText("no image");
+        return textView;
     }
 
     private void setStorageError(){
