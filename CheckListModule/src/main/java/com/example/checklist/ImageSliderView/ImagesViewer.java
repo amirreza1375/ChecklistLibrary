@@ -7,12 +7,14 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -125,7 +127,8 @@ public class ImagesViewer extends LinearLayout {
 
     private View createOneImageView() {
         if (imageFiles.size() != 0){
-            ImageView imageView = new ImageView(context);
+            View view = LayoutInflater.from(context).inflate(R.layout.layout_image_item,this,false);
+            ImageView imageView = view.findViewById(R.id.imageView);
             Bitmap bitmap = BitmapFactory.decodeFile(imageFiles.get(0).getAbsolutePath());
             imageView.setImageBitmap(bitmap);
             imageView.setOnClickListener(new OnClickListener() {
@@ -140,7 +143,9 @@ public class ImagesViewer extends LinearLayout {
         }
 
         TextView textView = new TextView(context);
-        textView.setText("no image");
+        textView.setTextColor(Color.RED);
+        textView.setTextAlignment(TEXT_ALIGNMENT_CENTER);
+        textView.setText("Sin imágen");
         return textView;
     }
 
