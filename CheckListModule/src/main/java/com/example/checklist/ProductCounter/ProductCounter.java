@@ -129,16 +129,18 @@ public class ProductCounter extends LinearLayout implements TextWatcher {
     private void setAnswer(JSONObject answer, RadioButton isOk, RadioButton notOk) {
         try {
             if (answer != null) {
-                if (answer.getBoolean(conf_isAnswered)) {
-                    isAnswered = true;
-                    int value = answer.getInt(conf_value);
-                    if (value > 0) {
-                        isOk.setChecked(true);
-                        hiddenCounter();
-                    } else {
-                        notOk.setChecked(true);
-                        showCounter();
-                        counterEdt.setText((value * -1) + "");
+                if (answer.has(conf_isAnswered)) {
+                    if (answer.getBoolean(conf_isAnswered)) {
+                        isAnswered = true;
+                        int value = answer.getInt(conf_value);
+                        if (value > 0) {
+                            isOk.setChecked(true);
+                            hiddenCounter();
+                        } else {
+                            notOk.setChecked(true);
+                            showCounter();
+                            counterEdt.setText((value * -1) + "");
+                        }
                     }
                 }
             }
