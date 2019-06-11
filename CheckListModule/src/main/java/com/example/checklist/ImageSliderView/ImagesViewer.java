@@ -139,7 +139,7 @@ public class ImagesViewer extends LinearLayout {
                     ,priorities.size() != 0 ? priorities.get(0) : "0");
                 }
             });
-            return imageView;
+            return view;
         }
 
         TextView textView = new TextView(context);
