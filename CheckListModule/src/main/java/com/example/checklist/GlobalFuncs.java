@@ -260,4 +260,46 @@ public class GlobalFuncs {
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
+    private ArrayList<Character> convertArrayToArrayList(char[] chars){
+        ArrayList<Character> characters = new ArrayList<>();
+        for(char c : chars){
+            characters.add(c);
+        }
+        return characters;
+    }
+
+    private String convertCharArrayToString(ArrayList<Character> characters){
+        String str = "";
+        for (char c : characters){
+            str = str + c;
+        }
+        return str;
+    }
+
+    private String removeNumbersFromAdress(String adress){
+
+        char charArray[] = adress.toCharArray();
+
+        ArrayList<Character> characters = convertArrayToArrayList(charArray);
+
+        for(int i = characters.size() - 1 ; i >= 0 ; i --){
+
+            char c = characters.get(i);
+
+            try{
+                if(Character.isDigit(c)){
+                    characters.remove(i);
+                    i++;
+                }
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }
+
+        return convertCharArrayToString(characters);
+
+    }
+
 }
