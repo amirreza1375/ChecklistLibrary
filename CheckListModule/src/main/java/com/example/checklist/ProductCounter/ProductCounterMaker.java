@@ -139,7 +139,7 @@ public class ProductCounterMaker extends LinearLayout {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return "countados";
+        return "Agregar cantidad";
     }
 
     private JSONObject getAnswer(ProductModel model) {
