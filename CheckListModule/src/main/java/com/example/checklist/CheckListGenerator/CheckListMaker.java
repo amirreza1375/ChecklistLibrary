@@ -149,7 +149,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
             , int position, ArrayList<ImageSliderModel> imageSliderModels, int shopId
             , JSONArray picAnswers, JSONArray pageAnswers, String signatureFolderPath
             , CheckListDataListener listener, ArrayList<LayoutModel> layoutModels
-            , ArrayList<ProductModel> productModels,String checklistServerId) {
+            , ArrayList<ProductModel> productModels, String checklistServerId) {
         super(context);
         this.context = context;
         this.page = page;
@@ -468,10 +468,15 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
         return isAnyResultOk;
     }
 
-    private boolean isSurveyOk(ImageSliderModel model,JSONObject element) {
+    private boolean isSurveyOk(ImageSliderModel model) {
+        if (model.getSurveyIdes() == null)
+            return true;
+        if (model.getSurveyIdes().equals(""))
+            return true;
+
         String surveys[] = model.getSurveyIdes().split(",");
-        for (String survey : surveys){
-            if (survey.equals(checklistServerId)){
+        for (String survey : surveys) {
+            if (survey.equals(checklistServerId)) {
                 return true;
             }
         }
@@ -488,22 +493,8 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
 
                 ImageSliderModel model = imageSliderModels.get(i);
 
-                if (model.getSurveyIdes() != null) {//has survey
-                    if (model.getSurveyIdes().equals("")){//empty survey
-                        if (isConditionsAreOk(model, element)) {
-                            names.add(model.getName());
-                            priorities.add(model.getPrioritie());
-                            imageFiles.add(model.getImageFile());
-                        }
-                    }else{//has surveys
-                        if (isSurveyOk(model, element)) {
-                            names.add(model.getName());
-                            priorities.add(model.getPrioritie());
-                            imageFiles.add(model.getImageFile());
-                        }
-                    }
-                } else {//no survey
-                    if (isConditionsAreOk(model, element)) {
+                if (isConditionsAreOk(model, element)) {
+                    if (isSurveyOk(model)) {
                         names.add(model.getName());
                         priorities.add(model.getPrioritie());
                         imageFiles.add(model.getImageFile());
