@@ -9,6 +9,7 @@ public class ImageSliderModel {
     private String prioritie;
     private ArrayList<Integer> shops;
     private ArrayList<ResultId> resultIDS;
+    private String surveyIdes;
 
     public File getImageFile() {
         return imageFile;
@@ -52,4 +53,11 @@ public class ImageSliderModel {
     }
 
 
+    public String getSurveyIdes() {
+        return surveyIdes;
+    }
+
+    public void setSurveyIdes(String surveyIdes) {
+        this.surveyIdes = surveyIdes;
+    }
 }

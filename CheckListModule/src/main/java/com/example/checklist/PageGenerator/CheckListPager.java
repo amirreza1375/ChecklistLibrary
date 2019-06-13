@@ -93,6 +93,7 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
 
     private int cachedPage;
     private ArrayList<ProductModel> productModels;
+    private String checklistSurverId;
 
     public static boolean setMandatories = true;
 
@@ -102,7 +103,8 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
             , ArrayList<PicturePickerItemModel> picAnswers, CheckListMaker.pageStatus pageStatus
             , JSONArray checkListAnswer, ArrayList<ImageSliderModel> imageSliderModels
             , String signatureFolderPath, CheckListListener listListener
-            , int shopId, ArrayList<LayoutModel> layoutModels, int cachedPage, ArrayList<ProductModel> productModels) {
+            , int shopId, ArrayList<LayoutModel> layoutModels, int cachedPage, ArrayList<ProductModel> productModels
+            ,String checklistSurverId) {
         super(context);
         this.context = context;
         this.object = Object;
@@ -118,6 +120,7 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
         this.layoutModels = layoutModels;
         this.cachedPage = cachedPage;
         this.productModels = productModels;
+        this.checklistSurverId = checklistSurverId;
         pages = new ArrayList<>();
         pagesByPosition = new HashMap<>();
         conditions = new ArrayList<>();
@@ -189,7 +192,8 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
                     , signatureFolderPath
                     , this
                     , layoutModels
-                    ,productModels);
+                    ,productModels
+                    ,checklistSurverId);
             checkListMaker.setConditionListener(this);
             checkListMaker.setButtons(pre, next, this);
 

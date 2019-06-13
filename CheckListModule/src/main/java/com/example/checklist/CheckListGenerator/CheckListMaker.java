@@ -75,7 +75,7 @@ import static com.example.checklist.GlobalFuncs.hideKeyboard;
 import static com.example.checklist.GlobalFuncs.log;
 
 public class CheckListMaker extends ScrollView implements View.OnClickListener
-        , MultiText.MandatoryListener, ImageFileConcept.ButtonPressedCallBack , ImagesViewer.ImageSliderListener {
+        , MultiText.MandatoryListener, ImageFileConcept.ButtonPressedCallBack, ImagesViewer.ImageSliderListener {
 
     public boolean isFirstTime = true;
 
@@ -101,7 +101,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
 
     @Override
     public void onError(String err, ImagesViewer.ImageStatus errCode) {
-        listener.onImageSliderError(err,errCode);
+        listener.onImageSliderError(err, errCode);
     }
 
     private boolean enable;
@@ -111,6 +111,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
     private CheckListDataListener listener;
     private ArrayList<LayoutModel> layoutModels;
     private ArrayList<ProductModel> productModels;
+    private String checklistServerId;
 
     //all views
     private SignatureElement signatureElement;
@@ -148,7 +149,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
             , int position, ArrayList<ImageSliderModel> imageSliderModels, int shopId
             , JSONArray picAnswers, JSONArray pageAnswers, String signatureFolderPath
             , CheckListDataListener listener, ArrayList<LayoutModel> layoutModels
-            , ArrayList<ProductModel> productModels) {
+            , ArrayList<ProductModel> productModels,String checklistServerId) {
         super(context);
         this.context = context;
         this.page = page;
@@ -162,6 +163,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
         this.listener = listener;
         this.layoutModels = layoutModels;
         this.productModels = productModels;
+        this.checklistServerId = checklistServerId;
         views = new ArrayList<>();
         conditions = new JSONArray();
         setPageStatus(pageStatus);
@@ -336,7 +338,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
 
     private View createProductCounter(JSONObject element, Context context) {
         ProductCounterMaker productCounter = new ProductCounterMaker(context, element, getProductCounterAnswer(element)
-                , enable, productModels, this,shopId+"",position);
+                , enable, productModels, this, shopId + "", position);
         views.add(productCounter);
         return productCounter;
     }
@@ -409,6 +411,73 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
         return FLAG_IS_COMMENT;
     }
 
+    private boolean isConditionsAreOk(ImageSliderModel model, JSONObject element) {
+        ArrayList<ResultId> resultIds = model.getResultIDS();
+
+        boolean isOk = true;
+        boolean isAnyResultOk = false;
+
+        for (int j = 0; j < resultIds.size(); j++) {
+
+            ResultId resultId = resultIds.get(j);
+
+            try {
+                int Posicion = element.has(conf_Posicion) ? element.getInt(conf_Posicion) : -1;
+                int Elemento = element.has(conf_Elemento) ? element.getInt(conf_Elemento) : -1;
+                int subCanal = element.has("Subcanal") ? element.getInt("Subcanal") : -1;
+
+                if (Posicion > -1) {
+                    if (Posicion != resultId.getPosicion()) {
+                        isOk = false;
+                        continue;
+                    }
+                }
+                if (Elemento > -1) {
+                    if (Elemento != resultId.getElemento()) {
+                        isOk = false;
+                        continue;
+                    }
+                }
+                if (subCanal > -1) {
+                    if (subCanal != resultId.getSubCanal()) {
+                        isOk = false;
+                        continue;
+                    }
+                }
+                boolean FLAG_EXIST = false;
+                //check shops
+                for (int k = 0; k < model.getShops().size(); k++) {
+
+                    if (model.getShops().get(k) == shopId) {
+                        FLAG_EXIST = true;
+                        break;
+                    }
+
+                }
+                if (FLAG_EXIST) {
+                    isAnyResultOk = true;
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+                log(e.getMessage());
+                listener.onCheckListError(e.getMessage());
+            }
+        }//end of result for
+
+        return isAnyResultOk;
+    }
+
+    private boolean isSurveyOk(ImageSliderModel model,JSONObject element) {
+        String surveys[] = model.getSurveyIdes().split(",");
+        for (String survey : surveys){
+            if (survey.equals(checklistServerId)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     private View createOptico(JSONObject element, Context context) {
         try {
             ArrayList<File> imageFiles = new ArrayList<>();
@@ -417,72 +486,34 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
 
             for (int i = 0; i < imageSliderModels.size(); i++) {
 
-                boolean isOk = true;
-
                 ImageSliderModel model = imageSliderModels.get(i);
 
-                ArrayList<ResultId> resultIds = model.getResultIDS();
-
-                boolean isAnyResultOk = false;
-
-                for (int j = 0; j < resultIds.size(); j++) {
-
-                    ResultId resultId = resultIds.get(j);
-
-                    try {
-                        int Posicion = element.has(conf_Posicion) ? element.getInt(conf_Posicion) : -1;
-                        int Elemento = element.has(conf_Elemento) ? element.getInt(conf_Elemento) : -1;
-                        int subCanal = element.has("Subcanal") ? element.getInt("Subcanal") : -1;
-
-                        if (Posicion > -1) {
-                            if (Posicion != resultId.getPosicion()) {
-                                isOk = false;
-                                continue;
-                            }
+                if (model.getSurveyIdes() != null) {//has survey
+                    if (model.getSurveyIdes().equals("")){//empty survey
+                        if (isConditionsAreOk(model, element)) {
+                            names.add(model.getName());
+                            priorities.add(model.getPrioritie());
+                            imageFiles.add(model.getImageFile());
                         }
-                        if (Elemento > -1) {
-                            if (Elemento != resultId.getElemento()) {
-                                isOk = false;
-                                continue;
-                            }
+                    }else{//has surveys
+                        if (isSurveyOk(model, element)) {
+                            names.add(model.getName());
+                            priorities.add(model.getPrioritie());
+                            imageFiles.add(model.getImageFile());
                         }
-                        if (subCanal > -1) {
-                            if (subCanal != resultId.getSubCanal()) {
-                                isOk = false;
-                                continue;
-                            }
-                        }
-                        boolean FLAG_EXIST = false;
-                        //check shops
-                        for (int k = 0; k < model.getShops().size(); k++) {
-
-                            if (model.getShops().get(k) == shopId) {
-                                FLAG_EXIST = true;
-                                break;
-                            }
-
-                        }
-                        if (FLAG_EXIST) {
-                            isAnyResultOk = true;
-                        }
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        log(e.getMessage());
-                        listener.onCheckListError(e.getMessage());
                     }
-                }//end of result for
-
-                if (isAnyResultOk) {
-                    names.add(model.getName());
-                    priorities.add(model.getPrioritie());
-                    imageFiles.add(model.getImageFile());
+                } else {//no survey
+                    if (isConditionsAreOk(model, element)) {
+                        names.add(model.getName());
+                        priorities.add(model.getPrioritie());
+                        imageFiles.add(model.getImageFile());
+                    }
                 }
 
             }//end of org for
 
             ImagesViewer imagesViewer = new ImagesViewer(context, element
-                    , imageFiles, priorities, names,this);
+                    , imageFiles, priorities, names, this);
             return imagesViewer;
 
         } catch (Exception e) {
@@ -490,7 +521,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
             log(e.getMessage());
 //            listener.onCheckListError(e.getMessage());
             return new ImagesViewer(context, element
-                    , new ArrayList<File>(), new ArrayList<String>(), new ArrayList<String>(),this);
+                    , new ArrayList<File>(), new ArrayList<String>(), new ArrayList<String>(), this);
         }
 
     }
