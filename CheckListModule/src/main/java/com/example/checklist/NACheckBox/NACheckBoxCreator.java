@@ -49,6 +49,7 @@ public class NACheckBoxCreator extends LinearLayout{
     //endregion
 
     //region used variables
+    private EditText editText;
     private Context context;
     private MultiText.MandatoryListener listener;
     private boolean isMaxMinExist = false;
@@ -56,7 +57,7 @@ public class NACheckBoxCreator extends LinearLayout{
     private int choosenCount = 0;
     private int min;
     private int max;
-    private int disableOthers = 0;
+    private int disableOthers = 1;
     private String name;
     private String title;
     private String id;
@@ -167,7 +168,8 @@ public class NACheckBoxCreator extends LinearLayout{
         //endregion
 
         //region commentario
-        EditText editText = new EditText(context);
+        editText = new EditText(context);
+        editText.setVisibility(INVISIBLE);
         editText.setBackground(context.getResources().getDrawable(R.drawable.ticket_edt));
         LayoutParams commentParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
         commentParams.setMargins(dpToPx(0,context),dpToPx(8,context),dpToPx(0,context),dpToPx(0,context));
@@ -209,7 +211,8 @@ public class NACheckBoxCreator extends LinearLayout{
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                         listener.onElementStatusChanged();
                         checkBoxStatuses.put(checkBox.getId(), isChecked);
-                        if (checkBox.getId() == disableOthers) {
+                        int id = checkBox.getId();
+                        if (id == disableOthers) {
                             disableOthersById(checkBox.getId(), isChecked);
                         }
                         removeMandatoryError();
@@ -271,7 +274,7 @@ public class NACheckBoxCreator extends LinearLayout{
     }
 
     private void showCommentario() {
-
+        editText.setVisibility(VISIBLE);
     }
 
     private boolean isMaxMinExist(JSONObject element) {
