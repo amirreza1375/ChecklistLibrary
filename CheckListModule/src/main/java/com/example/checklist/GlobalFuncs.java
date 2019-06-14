@@ -77,6 +77,7 @@ public class GlobalFuncs {
     public static String conf_val = "val";
     public static String conf_class = "class";
     public static String conf_valType = "valType";
+    public static String conf_tipoNA = "Tipo NA";
     //endregion
 
     public static int dpToPx(float dp, Context context) {

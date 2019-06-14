@@ -56,7 +56,7 @@ public class NACheckBoxCreator extends LinearLayout{
     private int choosenCount = 0;
     private int min;
     private int max;
-    private int disableOthers = -1;
+    private int disableOthers = 0;
     private String name;
     private String title;
     private String id;

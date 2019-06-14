@@ -29,6 +29,7 @@ import com.example.checklist.LayoutMaker.LayoutAdapter;
 import com.example.checklist.LayoutMaker.LayoutMaker;
 import com.example.checklist.LayoutMaker.LayoutModel;
 import com.example.checklist.MultiTextGenerator.MultiText;
+import com.example.checklist.NACheckBox.NACheckBoxCreator;
 import com.example.checklist.PictureElement.PicturePickerItemModel;
 import com.example.checklist.ProductCounter.ProductCounterMaker;
 import com.example.checklist.ProductCounter.ProductModel;
@@ -66,6 +67,7 @@ import static com.example.checklist.GlobalFuncs.conf_rating;
 import static com.example.checklist.GlobalFuncs.conf_seekBar;
 import static com.example.checklist.GlobalFuncs.conf_signature;
 import static com.example.checklist.GlobalFuncs.conf_tipo;
+import static com.example.checklist.GlobalFuncs.conf_tipoNA;
 import static com.example.checklist.GlobalFuncs.conf_type;
 import static com.example.checklist.GlobalFuncs.convert_JSONArray_to_PictureModel;
 import static com.example.checklist.GlobalFuncs.convert_PictureModel_to_JSONArrary;
@@ -244,7 +246,15 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
                 //signature
                 if (element.getString(conf_type)
                         .equals(conf_signature)) {
-                    linearLayout.addView(createSignature(element));
+                    if (element.has(conf_tipoNA)){
+                        if (element.getBoolean(conf_tipoNA)){
+                            linearLayout.addView(createNACheckBox(element));
+                        }else {
+                            linearLayout.addView(createSignature(element));
+                        }
+                    }else {
+                        linearLayout.addView(createSignature(element));
+                    }
                     continue;
                 }
 
@@ -335,6 +345,13 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
         }
         return linearLayout;
     }
+
+    private View createNACheckBox(JSONObject element) {
+        NACheckBoxCreator naCheckBoxCreator = new NACheckBoxCreator(context,element,enable,new ArrayList<String>(),position,this);
+        return naCheckBoxCreator;
+    }
+
+
 
     private View createProductCounter(JSONObject element, Context context) {
         ProductCounterMaker productCounter = new ProductCounterMaker(context, element, getProductCounterAnswer(element)
