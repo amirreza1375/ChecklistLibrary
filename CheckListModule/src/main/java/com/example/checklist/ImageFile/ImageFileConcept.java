@@ -1,5 +1,6 @@
 package com.example.checklist.ImageFile;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.CardView;
@@ -27,7 +28,7 @@ import static com.example.checklist.GlobalFuncs.dpToPx;
 import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.PageGenerator.CheckListPager.setMandatories;
 
-public class ImageFileConcept extends LinearLayout  {
+public class ImageFileConcept extends LinearLayout {
 
     //region used variables
     private Button button;
@@ -49,7 +50,7 @@ public class ImageFileConcept extends LinearLayout  {
 
     //region constructors
     public ImageFileConcept(Context context
-            , JSONObject element, String btnText,boolean enable,boolean hasPic) {
+            , JSONObject element, String btnText, boolean enable, boolean hasPic) {
         super(context);
         this.context = context;
         this.element = element;
@@ -69,21 +70,21 @@ public class ImageFileConcept extends LinearLayout  {
 
     //endregion
 
-    private void init(Context context){
+    private void init(Context context) {
 
         getVariablesFromElement(element);
 
         //region parent props
-        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(dpToPx(8,context),dpToPx(8,context),dpToPx(8,context),dpToPx(8,context));
+        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins(dpToPx(8, context), dpToPx(8, context), dpToPx(8, context), dpToPx(8, context));
         setLayoutParams(layoutParams);
         //endregion
 
 
         CardView cardView = new CardView(context);
         //region cardView props
-        LayoutParams cardParams = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
-        cardParams.setMargins(dpToPx(8,context),dpToPx(8,context),dpToPx(8,context),dpToPx(8,context));
+        LayoutParams cardParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        cardParams.setMargins(dpToPx(8, context), dpToPx(8, context), dpToPx(8, context), dpToPx(8, context));
         cardView.setLayoutParams(cardParams);
         cardView.setCardElevation(4.0f);
         cardView.setRadius(16.0f);
@@ -91,21 +92,21 @@ public class ImageFileConcept extends LinearLayout  {
 
         LinearLayout cardInside = new LinearLayout(context);
         //region inner layout props
-        LayoutParams innerLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
+        LayoutParams innerLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         cardInside.setLayoutParams(innerLayoutParams);
         cardInside.setOrientation(LinearLayout.VERTICAL);
         //endregion
 
-        TextView txt ;//= new TextView(context);
+        TextView txt;//= new TextView(context);
         //region txt props
-        txt = createTitle(context,isRequired,element);
+        txt = createTitle(context, isRequired, element);
 
         //endregion
 
         button = new Button(context);
         //region button props
-        LayoutParams btnParams = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
-        btnParams.setMargins(dpToPx(32,context),dpToPx(8,context),dpToPx(32,context),dpToPx(8,context));
+        LayoutParams btnParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        btnParams.setMargins(dpToPx(32, context), dpToPx(8, context), dpToPx(32, context), dpToPx(8, context));
         button.setLayoutParams(btnParams);
 
         if (!hasPic) {
@@ -123,7 +124,7 @@ public class ImageFileConcept extends LinearLayout  {
             public void onClick(View v) {
                 removeMandatoryError();
                 if (callBack != null)
-                callBack.onButtonClicked(element);
+                    callBack.onButtonClicked(element);
             }
         });
         //endregion
@@ -136,8 +137,8 @@ public class ImageFileConcept extends LinearLayout  {
             cardInside.addView(button);
             addView(cardView);
 
-        }else {
-            if (hasPic){//preview mode with picture must show
+        } else {
+            if (hasPic) {//preview mode with picture must show
                 cardView.addView(cardInside);
                 cardInside.addView(txt);
                 cardInside.addView(button);
@@ -159,29 +160,30 @@ public class ImageFileConcept extends LinearLayout  {
         anim.start();
     }
 
-    public void setMandatoryError(){
+    public void setMandatoryError() {
         if (setMandatories)
             this.setBackground(context.getResources().getDrawable(R.drawable.is_requiered));
     }
-    public void removeMandatoryError(){
+
+    public void removeMandatoryError() {
         this.setBackground(null);
     }
 
 
     public boolean isMandatoryPictureTaken() {
-        if (isRequired){
+        if (isRequired) {
 
-            String picsStr = context.getSharedPreferences(Config.sharedPreferencName,Context.MODE_PRIVATE)
-                    .getString(Config.pictures,"");
+            String picsStr = context.getSharedPreferences(Config.sharedPreferencName, Context.MODE_PRIVATE)
+                    .getString(Config.pictures, "");
             try {
                 JSONArray pics = new JSONArray(picsStr);
 
-                for (int i = 0  ; i < pics.length() ; i++){
+                for (int i = 0; i < pics.length(); i++) {
 
                     JSONObject pic = pics.getJSONObject(i);
 
                     if (pic.getString(conf_id)
-                            .equals(elementId)){
+                            .equals(elementId)) {
                         return true;
                     }
 
@@ -193,7 +195,7 @@ public class ImageFileConcept extends LinearLayout  {
                 return false;
             }
 
-        }else {
+        } else {
             return true;
         }
         return false;
@@ -201,7 +203,7 @@ public class ImageFileConcept extends LinearLayout  {
 
     private void getVariablesFromElement(JSONObject element) {
         try {
-            boolean isRE,isR;
+            boolean isRE, isR;
             isRE = element.has("isRequiredEach") ? element.getBoolean("isRequiredEach") : false;
             isR = element.has("isRequired") ? element.getBoolean("isRequired") : false;
 
@@ -215,13 +217,19 @@ public class ImageFileConcept extends LinearLayout  {
     }
 
 
-    public static int spTopx(float sp , Context context){
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,sp,context.getResources().getDisplayMetrics());
+    public static int spTopx(float sp, Context context) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, context.getResources().getDisplayMetrics());
     }
 
-    public void setHasPicStatus(Context context){
-        button.clearAnimation();
-        button.setBackground(context.getResources().getDrawable(R.drawable.picture_btn_has_pic));
+    public void setHasPicStatus(final Context context) {
+        Activity activity = (Activity) context;
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                button.clearAnimation();
+                button.setBackground(context.getResources().getDrawable(R.drawable.picture_btn_has_pic));
+            }
+        });
     }
 
     public ButtonPressedCallBack getCallBack() {
@@ -250,7 +258,7 @@ public class ImageFileConcept extends LinearLayout  {
     }
 
 
-    public interface ButtonPressedCallBack{
+    public interface ButtonPressedCallBack {
         void onButtonClicked(JSONObject element);
     }
 

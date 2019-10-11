@@ -211,7 +211,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
 
         View titleHolder = LayoutInflater.from(context).inflate(R.layout.layout_page_title_library, this, false);
         TextView titleTxt = titleHolder.findViewById(R.id.titleTxt);
-        titleTxt.setText(getTitleFromElement(page));
+        titleTxt.setText(getTitleFromElement(page,false));
         innerLayout.addView(titleHolder);
 
         //endregion
@@ -819,7 +819,6 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
             object.put(key_TYPE, conf_comment);
             object.put(GlobalFuncs.conf_id, commentario.getElementId());
             object.put(key_VALUE, comment);
-
 
         } catch (JSONException e) {
             e.printStackTrace();

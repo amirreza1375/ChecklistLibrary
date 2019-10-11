@@ -44,6 +44,7 @@ import android.widget.Toast;
 
 
 import com.example.checklist.Config;
+import com.example.checklist.PageGenerator.CheckListPager;
 import com.example.checklist.R;
 
 
@@ -59,6 +60,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.example.checklist.GlobalFuncs.log;
+import static com.example.checklist.GlobalFuncs.showToast;
 
 /**
  * First of all sub folder should named in pictures element acrtivity
@@ -76,12 +78,12 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
     public static String FLAG_CUSTOM_CAMERA = "com.example.checklist.Camera.ActivityCamera";
 
     public static String IMAGE_RESULT = "path";
-    String App_Folder_Name = ".Operator Track - Maintenance";
+    String App_Folder_Name ;
     String sub_folder_name = "Pictures";
     public static String sub_folder_path = "";
 
     private int zoom = 0;
-    private boolean isAppClosed ;
+    private boolean isAppClosed;
 
     private int minWidthRange = 600;
     private int maxWidthRange = 800;
@@ -100,7 +102,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
 
     private boolean has_flash = false;
 
-    private Uri imageUri;
+//    private Uri imageUri;
     private LinearLayout cancel;
     private LinearLayout tick;
     private int camera_id = Camera.CameraInfo.CAMERA_FACING_BACK;
@@ -129,7 +131,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
     private String path;
     private ImageView flash;
     private ImageView camera_rotate;
-//    private TextView edit;
+    //    private TextView edit;
     private int max_zoom = 0;
     private String mCurrentPhotoPath;
     private LinearLayout options;
@@ -248,7 +250,6 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
     }
 
 
-
     @Override
     public void onBackPressed() {
         this.isAppClosed = false;
@@ -303,6 +304,9 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
 //            edit.setVisibility(View.GONE);
 //        }
 
+        this.App_Folder_Name = CheckListPager.appFolder;
+        this.sub_folder_name = CheckListPager.picturesFolder;
+
         // Create an instance of Camera
         if (!isFromEdit) {
             create_camera();
@@ -350,35 +354,49 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
      *
      * @return treu or false
      */
-    private boolean isPortrait() {
-        boolean isP = false;
-        InputStream in;
-        try {
-            in = getContentResolver().openInputStream(imageUri);
-            android.support.media.ExifInterface exifInterface = new android.support.media.ExifInterface(in);
-            int o = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, -1);
-            Log.i(TAG, "isPortrait: ooo" + o);
+//    private boolean isPortrait() {
+//        boolean isP = false;
+//        InputStream in;
+//        try {
+//            in = getContentResolver().openInputStream(imageUri);
+//            android.support.media.ExifInterface exifInterface = new android.support.media.ExifInterface(in);
+//            int o = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, -1);
+//            Log.i(TAG, "isPortrait: ooo" + o);
+//
+//            if (o == 6) {
+//                isP = true;
+//            } else if (o == 8) {
+//                isP = true;
+//            } else {
+//                isP = false;
+//            }
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            log(e.getMessage());
+//        }
+//        return isP;
+//    }
 
-            if (o == 6) {
-                isP = true;
-            } else if (o == 8) {
-                isP = true;
-            } else {
-                isP = false;
-            }
+//    public Uri getImageUri(Context inContext, Bitmap inImage) {
+//        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+//        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+//        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+//        if (path != null) {
+//            if (!path.equals(""))
+//                return Uri.parse(path);
+//            else
+//                closeCamera();
+//            return Uri.EMPTY;
+//        } else {
+//            closeCamera();
+//            return Uri.EMPTY;
+//        }
+//    }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            log(e.getMessage());
-        }
-        return isP;
-    }
-
-    public Uri getImageUri(Context inContext, Bitmap inImage) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
-        return Uri.parse(path);
+    private void closeCamera() {
+        setResult(RESULT_CANCELED);
+        finish();
     }
 
     /**
@@ -389,55 +407,80 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
 
             mPicture = new Camera.PictureCallback() {
                 @Override
-                public void onPictureTaken(byte[] data, Camera camera) {
+                public void onPictureTaken(final byte[] data, Camera camera) {
 
-                    current_bm = BitmapFactory.decodeByteArray(data, 0, data.length);
-                    imageUri = getImageUri(ActivityCamera.this, current_bm);
-                    isPortrait();
-                    getSharedPreferences(Config.sharedPreferencName, MODE_PRIVATE).getString(Config.email, "");
-                    Date today = Calendar.getInstance().getTime();
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+                    int x = last_known_orientation;
+                    int y = last_known_y;
+                    int z = last_known_z;
 
-                    String date = dateFormat.format(today).replace("/", "-");
+//                    new Thread(new Runnable() {
+//                        @Override
+//                        public void run() {
+                            if (mCamera != null) {
+                                mCamera.stopPreview();
+                                MediaPlayer mediaPlayer = MediaPlayer.create(ActivityCamera.this, R.raw.defult);
+                                mediaPlayer.start();
+                            }
 
-                    Log.i(TAG, "onPictureTaken: " + "width = " + current_bm.getWidth() + "higth = " + current_bm.getHeight());
-                    Log.i(TAG, "onPictureTaken: " + getResources().getConfiguration().orientation);
-                    MediaPlayer mediaPlayer = MediaPlayer.create(ActivityCamera.this, R.raw.defult);
-                    mediaPlayer.start();
+                            current_bm = BitmapFactory.decodeByteArray(data, 0, data.length);
+
+                            String model = getDeviceName();
+
+                            if (camera_id == Camera.CameraInfo.CAMERA_FACING_BACK) {
+                                //  if (last_known_orientation == 0) {
+                                if (model.equals("LGE")){
+                                    path = String.valueOf(createImageFile(rotate(current_bm, 90),x,y,z));
+                                }else {
+                                    path = String.valueOf(createImageFile(current_bm,x,y,z));
+                                }
+                            } else {
+                                path = String.valueOf(createImageFile(rotate(current_bm, 270),x,y,z));
+                            }
+
+//                    Log.i(TAG, "onPictureTaken: " + last_known_orientation);
+
+                            SharedPreferences.Editor editor = getSharedPreferences(Config.sharedPreferencName, MODE_PRIVATE).edit();
+                            editor.putString(Config.img_path, path);
+                            editor.apply();
+//                        }
+//                    }).start();
+
+//                    imageUri = getImageUri(ActivityCamera.this, current_bm);
+//                    isPortrait();
+//                    getSharedPreferences(Config.sharedPreferencName, MODE_PRIVATE).getString(Config.email, "");
+//                    Date today = Calendar.getInstance().getTime();
+//                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+
+//                    String date = dateFormat.format(today).replace("/", "-");
+
+//                    Log.i(TAG, "onPictureTaken: " + "width = " + current_bm.getWidth() + "higth = " + current_bm.getHeight());
+//                    Log.i(TAG, "onPictureTaken: " + getResources().getConfiguration().orientation);
+//                    new Thread(new Runnable() {
+//                        @Override
+//                        public void run() {
+
+//                        }
+//                    }).start();
+
 //                camera_or(String.valueOf(createImageFile(current_bm)));
-                    int rotate_dif = 0;
-                    if (Build.MANUFACTURER.equals("HUAWEI")) {
-                        rotate_dif = 0;
-                    }
+//                    int rotate_dif = 0;
+//                    if (Build.MANUFACTURER.equals("HUAWEI")) {
+//                        rotate_dif = 0;
+//                    }
 
-                    Log.i(TAG, "onPictureTaken: " + last_known_orientation);
+//                    Log.i(TAG, "onPictureTaken: " + last_known_orientation);
 
-                    if (camera_id == Camera.CameraInfo.CAMERA_FACING_BACK) {
-                        //  if (last_known_orientation == 0) {
-                        path = String.valueOf(createImageFile(current_bm));
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            preview.bringToFront();
 
+                            top_choice.setVisibility(View.VISIBLE);
 
-                    } else {
-                        path = String.valueOf(createImageFile(rotate(current_bm, 270)));
-                    }
+                            top_choice.bringToFront();
+                        }
+                    });
 
-                    Log.i(TAG, "onPictureTaken: " + last_known_orientation);
-
-
-                    SharedPreferences.Editor editor = getSharedPreferences(Config.sharedPreferencName, MODE_PRIVATE).edit();
-                    editor.putString(Config.img_path, path);
-                    editor.apply();
-
-                    preview.bringToFront();
-//                    edit.setVisibility(View.VISIBLE);
-//                    edit.bringToFront();
-
-                    if (mCamera != null) {
-                        mCamera.stopPreview();
-                    }
-                    top_choice.setVisibility(View.VISIBLE);
-
-                    top_choice.bringToFront();
 
                 }
 
@@ -458,7 +501,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
                 params.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
             }
             List<Camera.Size> sizes = params.getSupportedPictureSizes();
-            int cindex = getCameraSize(minWidthRange,maxWidthRange);
+            int cindex = getCameraSize(minWidthRange, maxWidthRange);
             params.setPictureSize(sizes.get(cindex).width, sizes.get(cindex).height);
             params.setPreviewSize(sizes.get(cindex).width, sizes.get(cindex).height);
             zooms = params.getZoomRatios();
@@ -500,6 +543,13 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
         return false;
     }
 
+    public  String getDeviceName() {
+        String manufacturer = Build.MANUFACTURER;
+//        String model = Build.MODEL;
+//        showToast(this,manufacturer);
+        return manufacturer;
+    }
+
     private int getCameraSize(int minRange, int maxRange) {
 
         int cindex = -1;
@@ -519,9 +569,9 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
         }
 
         if (cindex == -1) {//no match found
-            if (isFromZero){
+            if (isFromZero) {
                 cindex = 1;
-            }else {
+            } else {
                 cindex = sizes.size() - 2;
             }
         }
@@ -560,12 +610,12 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
      * @return
      */
 
-    private File createImageFile(Bitmap bm) {
-        Log.i("ACCC", "createImageFile: x = " + last_known_orientation);
-        Log.i("ACCC", "createImageFile: y = " + last_known_y);
-        Log.i("ACCC", "createImageFile: z = " + last_known_z);
-        if (last_known_z == 0) {
-            if (last_known_orientation == 0) {
+    private File createImageFile(Bitmap bm,int x,int y,int z) {
+//        Log.i("ACCC", "createImageFile: x = " + last_known_orientation);
+//        Log.i("ACCC", "createImageFile: y = " + last_known_y);
+//        Log.i("ACCC", "createImageFile: z = " + last_known_z);
+        if (z == 0) {
+            if (x == 0) {
                 if (bm.getHeight() < bm.getWidth()) {
 //                    Toast.makeText(this, "1 -> rotate 90", Toast.LENGTH_SHORT).show();
                     bm = rotate(bm, -90);
@@ -575,7 +625,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
 //                        Toast.makeText(this, "2 -> rotate 90", Toast.LENGTH_SHORT).show();
                     }
                 }
-            } else if (last_known_orientation == 2) {
+            } else if (x == 2) {
                 if (bm.getHeight() > bm.getWidth()) {
                     //its not ok
 //                    Toast.makeText(this, "3 -> rotate 90", Toast.LENGTH_SHORT).show();
@@ -593,7 +643,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
                 }
             }
         } else {
-            if (last_known_y == 0) {
+            if (y == 0) {
                 if (bm.getHeight() < bm.getWidth()) {
 //                    Toast.makeText(this, "6 -> rotate 90", Toast.LENGTH_SHORT).show();
                     bm = rotate(bm, -90);
@@ -621,7 +671,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
                 + File.separator
                 + sub_folder_path);
         // myDir.mkdirs();
-        String fname = System.currentTimeMillis() + "_" + last_known_orientation + ".jpg";
+        String fname = System.currentTimeMillis() + "_" + x + ".jpg";
         File file = new File(myDir, fname);
         Log.i(TAG, "" + file);
         if (file.exists())
@@ -725,13 +775,12 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
 //                mCamera.release();
             }
         }
-        if (isAppClosed){
+        if (isAppClosed) {
             this.isAppClosed = false;
             setResult(1);
             finish();
         }
     }
-
 
 
     @Override
@@ -812,7 +861,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
 
 //        params.setJpegQuality(100);
         List<Camera.Size> sizes = params.getSupportedPictureSizes();
-        int cindex  = getCameraSize(minWidthRange,maxWidthRange);
+        int cindex = getCameraSize(minWidthRange, maxWidthRange);
 
         params.setPictureSize(sizes.get(cindex).width, sizes.get(cindex).height);
         params.setPreviewSize(sizes.get(cindex).width, sizes.get(cindex).height);
@@ -880,7 +929,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
 
 
         List<Camera.Size> sizes = params.getSupportedPictureSizes();
-        int cindex  = getCameraSize(minWidthRange,maxWidthRange);
+        int cindex = getCameraSize(minWidthRange, maxWidthRange);
 
         params.setPictureSize(sizes.get(cindex).width, sizes.get(cindex).height);
         params.setPreviewSize(sizes.get(cindex).width, sizes.get(cindex).height);

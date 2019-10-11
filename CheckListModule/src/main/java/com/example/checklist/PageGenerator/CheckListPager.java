@@ -94,6 +94,8 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
     private int cachedPage;
     private ArrayList<ProductModel> productModels;
     private String checklistSurverId;
+    public static String appFolder;
+    public static String picturesFolder;
 
     public static boolean setMandatories = true;
 
@@ -104,7 +106,7 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
             , JSONArray checkListAnswer, ArrayList<ImageSliderModel> imageSliderModels
             , String signatureFolderPath, CheckListListener listListener
             , int shopId, ArrayList<LayoutModel> layoutModels, int cachedPage, ArrayList<ProductModel> productModels
-            ,String checklistSurverId) {
+            ,String checklistSurverId,String appFolder,String picturesFolder) {
         super(context);
         this.context = context;
         this.object = Object;
@@ -121,6 +123,8 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
         this.cachedPage = cachedPage;
         this.productModels = productModels;
         this.checklistSurverId = checklistSurverId;
+        this.appFolder = appFolder;
+        this.picturesFolder = picturesFolder;
         pages = new ArrayList<>();
         pagesByPosition = new HashMap<>();
         conditions = new ArrayList<>();
@@ -1017,8 +1021,8 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
                 ArrayList<PicturePickerItemModel> temp = page.getSignatures();
 
                 for (int j = 0; j < temp.size(); j++) {
-                    if (temp.get(i).getPath() != null && temp.get(i).getName() != null)
-                        models.add(temp.get(i));
+                    if (temp.get(j).getPath() != null && temp.get(j).getName() != null)
+                        models.add(temp.get(j));
 
                 }
 

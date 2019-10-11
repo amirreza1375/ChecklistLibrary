@@ -6,9 +6,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
+import static com.example.checklist.GlobalFuncs.conf_id;
 import static com.example.checklist.GlobalFuncs.conf_productCount;
 import static com.example.checklist.GlobalFuncs.conf_type;
 import static com.example.checklist.GlobalFuncs.conf_value;
+import static com.example.checklist.GlobalFuncs.convert_ArrayList_to_JSONArray;
+import static com.example.checklist.GlobalFuncs.convert_JSONArray_to_ArrayList;
 import static com.example.checklist.GlobalFuncs.log;
 
 public class ServerJSONCleanUp {
@@ -101,7 +106,28 @@ public class ServerJSONCleanUp {
 
 
         }
-        return finalJSON;
+        return removeEmpryValues(finalJSON);
+
+    }
+
+    private JSONArray removeEmpryValues(JSONArray array){
+        ArrayList<JSONObject> values = convert_JSONArray_to_ArrayList(array);
+
+        for (int i = 0 ; i < values.size() ; i++){
+
+            JSONObject value = values.get(i);
+
+            if (!value.has(conf_id)){
+
+                values.remove(i);
+
+                i--;
+
+            }
+
+        }
+
+        return convert_ArrayList_to_JSONArray(values);
 
     }
 
@@ -150,6 +176,12 @@ public class ServerJSONCleanUp {
 
         try {
             position = answer.getInt(GlobalFuncs.conf_position);
+            if (!answer.has(GlobalFuncs.conf_value)){
+                return new JSONObject();
+            }
+            if (answer.getString(GlobalFuncs.conf_value).equals("")){
+                return new JSONObject();
+            }
             id = answer.getString(GlobalFuncs.conf_id);
 
             finalCommentJSON.put(GlobalFuncs.conf_position,position);
@@ -176,6 +208,12 @@ public class ServerJSONCleanUp {
 
         try {
             position = answer.getInt(GlobalFuncs.conf_position);
+            if (!answer.has(GlobalFuncs.conf_value)){
+                return new JSONObject();
+            }
+            if (answer.getString(GlobalFuncs.conf_value).equals("")){
+                return new JSONObject();
+            }
             id = answer.getString(GlobalFuncs.conf_id);
 
             finalCommentJSON.put(GlobalFuncs.conf_position,position);
@@ -205,6 +243,10 @@ public class ServerJSONCleanUp {
             id = answer.getString(GlobalFuncs.conf_id);
 
             JSONObject radioValue = answer.getJSONObject(GlobalFuncs.conf_value);
+
+            if (radioValue.getString(GlobalFuncs.conf_value).equals("")){
+                return new JSONObject();
+            }
 
             finalRadioJSON.put(GlobalFuncs.conf_position,position);
             finalRadioJSON.put(GlobalFuncs.conf_type,type);

@@ -3,14 +3,19 @@ package com.example.checklist.Camera;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.GestureDetector;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -28,6 +33,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -43,6 +50,9 @@ import static com.example.checklist.GlobalFuncs.showToast;
 
 public class ActivityPicture extends AppCompatActivity implements View.OnClickListener
         , PictureElementMaker.TakePictureItemClickListener {
+
+    public static final int CAMERA_REQ_CODE = 110;
+
 
     public static String data_str = "";
     private static final String TAG = "ActivityPicture";
@@ -129,6 +139,11 @@ public class ActivityPicture extends AppCompatActivity implements View.OnClickLi
         this.activityClosed = false;
         setResult(-1);
         super.onBackPressed();
+    }
+
+    public void takePhoto() {
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(cameraIntent, CAMERA_REQ_CODE);
     }
 
     @Override
@@ -288,16 +303,22 @@ public class ActivityPicture extends AppCompatActivity implements View.OnClickLi
     public void onPictureItemClicked(PicturesRecyclerView.ViewHolder holder, PicturePickerItemModel model) {
         this.activityClosed = false;
         Intent intent = null;
-        try {
+//        try {
             this.picturePickerItemModel = model;
+//            takePhoto();
+        try {
             intent = new Intent(ActivityPicture.this
                     , Class.forName(ActivityCamera.FLAG_CUSTOM_CAMERA));
             startActivityForResult(intent, 101);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            log(e.getMessage());
         }
+
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//            log(e.getMessage());
+//        }
 
     }
 
@@ -316,6 +337,27 @@ public class ActivityPicture extends AppCompatActivity implements View.OnClickLi
         });
     }
 
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
+    }
+
+    public String getRealPathFromURI(Uri uri) {
+        String path = "";
+        if (getContentResolver() != null) {
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            if (cursor != null) {
+                cursor.moveToFirst();
+                int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+                path = cursor.getString(idx);
+                cursor.close();
+            }
+        }
+        return path;
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -327,6 +369,21 @@ public class ActivityPicture extends AppCompatActivity implements View.OnClickLi
                 setResult(0);
                 finish();
             }
+        }
+
+        if (requestCode == CAMERA_REQ_CODE && resultCode == RESULT_OK) {
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+//            imageView.setImageBitmap(photo);
+//            knop.setVisibility(Button.VISIBLE);
+
+            // CALL THIS METHOD TO GET THE URI FROM THE BITMAP
+            Uri tempUri = getImageUri(getApplicationContext(), photo);
+
+            // CALL THIS METHOD TO GET THE ACTUAL PATH
+            File finalFile = new File(getRealPathFromURI(tempUri));
+
+            addImagePath(finalFile.toString());
+
         }
     }
 

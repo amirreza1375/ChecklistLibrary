@@ -194,7 +194,7 @@ public class MultiText extends LinearLayout implements TextWatcher {
                 }
 
                 TextView title = comment.findViewById(R.id.title);
-                title.setText(item.getString(conf_title));
+                title.setText(getTitleFromElement(item));
 
                 EditText edt = comment.findViewById(R.id.comment);
                 String hint = item.has(conf_placeHolder) ? item.getString(conf_placeHolder) : "Guardar";
@@ -210,11 +210,10 @@ public class MultiText extends LinearLayout implements TextWatcher {
                 edt.setInputType(getTypeFromString(item));
 
                 TextView maxLengthTxt = comment.findViewById(R.id.max_length);
-                int itemMaxLength = item.has(conf_maxLength) ? item.getInt(conf_maxLength) : 20;
                 InputFilter[] filterArray = new InputFilter[1];
-                filterArray[0] = new InputFilter.LengthFilter(itemMaxLength);
+                filterArray[0] = new InputFilter.LengthFilter(maxLength);
                 edt.setFilters(filterArray);
-                maxLengthTxt.setText("Max : " + itemMaxLength);
+                maxLengthTxt.setText("Max : " + maxLength);
 
                 editTexts.add(edt);
                 names.add(item.getString("name"));

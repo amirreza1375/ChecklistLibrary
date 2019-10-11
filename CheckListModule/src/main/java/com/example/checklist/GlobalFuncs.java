@@ -84,13 +84,20 @@ public class GlobalFuncs {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
     }
 
-    public static String  getTitleFromElement(JSONObject element) {
+    public static String getTitleFromElement(JSONObject element, boolean isRequired) {
 
         try {
+            if (element.has("titleLocation")) {
+                if (element.getString("titleLocation").equals("hidden")) {
+                    return "";
+                }
+            }
             String title = element.has(conf_title) ? element.getString(conf_title) : "";
-            if (title.equals("")){
+            if (title.equals("")) {
                 title = element.getString(conf_name);
             }
+            if (isRequired)
+                return title + "*";
             return title;
         } catch (JSONException e) {
             e.printStackTrace();
@@ -99,9 +106,9 @@ public class GlobalFuncs {
         }
     }
 
-    public static ArrayList<JSONObject> convert_JSONArray_to_ArrayList(JSONArray array){
+    public static ArrayList<JSONObject> convert_JSONArray_to_ArrayList(JSONArray array) {
         ArrayList<JSONObject> objects = new ArrayList<>();
-        for (int i = 0 ; i < array.length() ; i++){
+        for (int i = 0; i < array.length(); i++) {
             try {
                 objects.add(array.getJSONObject(i));
             } catch (JSONException e) {
@@ -112,15 +119,15 @@ public class GlobalFuncs {
         return objects;
     }
 
-    public static JSONArray convert_ArrayList_to_JSONArray(ArrayList<JSONObject> objects){
+    public static JSONArray convert_ArrayList_to_JSONArray(ArrayList<JSONObject> objects) {
         JSONArray array = new JSONArray();
-        for (int i = 0 ; i < objects.size() ; i++){
+        for (int i = 0; i < objects.size(); i++) {
             array.put(objects.get(i));
         }
         return array;
     }
 
-    public static TextView createTitle(Context context , boolean isRequired,JSONObject element){
+    public static TextView createTitle(Context context, boolean isRequired, JSONObject element) {
 
         LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT
                 , LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -132,14 +139,13 @@ public class GlobalFuncs {
         titleTxt.setTextSize(16);
         titleTxt.setTextColor(Color.BLACK);
         titleTxt.setLayoutParams(titleParams);
-        if (isRequired)
-            titleTxt.setText(getTitleFromElement(element)+"*");
-        else
-            titleTxt.setText(getTitleFromElement(element));
+        titleTxt.setText(getTitleFromElement(element, isRequired));
+
         return titleTxt;
+
     }
 
-    public static void setOrgProps(Context context , LinearLayout org){
+    public static void setOrgProps(Context context, LinearLayout org) {
         LinearLayout.LayoutParams orgParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT
                 , LinearLayout.LayoutParams.WRAP_CONTENT);
         orgParams.setMargins(dpToPx(8, context), dpToPx(8, context)
@@ -147,24 +153,25 @@ public class GlobalFuncs {
         org.setOrientation(LinearLayout.VERTICAL);
         org.setLayoutParams(orgParams);
     }
-    public static JSONArray convert_PictureModel_to_JSONArrary(ArrayList<PicturePickerItemModel> models){
+
+    public static JSONArray convert_PictureModel_to_JSONArrary(ArrayList<PicturePickerItemModel> models) {
 
         JSONArray array = new JSONArray();
 
-        for (int i = 0 ; i < models.size() ; i++){
-            if (models.get(i) != null){
+        for (int i = 0; i < models.size(); i++) {
+            if (models.get(i) != null) {
                 JSONObject object = new JSONObject();
                 try {
-                    object.put(PicturePickerItemModel.conf_category,models.get(i).getCategory());
-                    object.put(PicturePickerItemModel.conf_id,models.get(i).getId());
-                    object.put(PicturePickerItemModel.conf_count,models.get(i).getCount());
-                    object.put(PicturePickerItemModel.conf_hasPic,models.get(i).isHasPic());
-                    object.put(PicturePickerItemModel.conf_catId,models.get(i).getCat_id());
-                    object.put(PicturePickerItemModel.conf_path,models.get(i).getPath());
-                    object.put(PicturePickerItemModel.conf_status,models.get(i).isStatus());
-                    object.put(PicturePickerItemModel.conf_index,models.get(i).getIndex());
-                    object.put(PicturePickerItemModel.conf_position,models.get(i).getPosition());
-                    object.put(PicturePickerItemModel.conf_name,models.get(i).getName());
+                    object.put(PicturePickerItemModel.conf_category, models.get(i).getCategory());
+                    object.put(PicturePickerItemModel.conf_id, models.get(i).getId());
+                    object.put(PicturePickerItemModel.conf_count, models.get(i).getCount());
+                    object.put(PicturePickerItemModel.conf_hasPic, models.get(i).isHasPic());
+                    object.put(PicturePickerItemModel.conf_catId, models.get(i).getCat_id());
+                    object.put(PicturePickerItemModel.conf_path, models.get(i).getPath());
+                    object.put(PicturePickerItemModel.conf_status, models.get(i).isStatus());
+                    object.put(PicturePickerItemModel.conf_index, models.get(i).getIndex());
+                    object.put(PicturePickerItemModel.conf_position, models.get(i).getPosition());
+                    object.put(PicturePickerItemModel.conf_name, models.get(i).getName());
 
                     array.put(object);
                 } catch (JSONException e) {
@@ -175,12 +182,12 @@ public class GlobalFuncs {
         }
         return array;
     }
-    public static ArrayList<PicturePickerItemModel> convert_JSONArray_to_PictureModel(JSONArray array){
+
+    public static ArrayList<PicturePickerItemModel> convert_JSONArray_to_PictureModel(JSONArray array) {
 
         ArrayList<PicturePickerItemModel> models = new ArrayList<>();
 
-        for (int i = 0 ; i < array.length() ; i++){
-
+        for (int i = 0; i < array.length(); i++) {
 
 
             PicturePickerItemModel model = new PicturePickerItemModel();
@@ -208,6 +215,7 @@ public class GlobalFuncs {
 
         return models;
     }
+
     public static void showToast(final Activity activity, final String message) {
         activity.runOnUiThread(new Runnable() {
             @Override
@@ -231,23 +239,22 @@ public class GlobalFuncs {
                 shops.add(Integer.parseInt(shop_id));
             }
             return shops;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             log(e.getMessage());
             return new ArrayList<Integer>();
         }
     }
 
-    public static boolean checkStoragePermission(Context context){
+    public static boolean checkStoragePermission(Context context) {
         return ActivityCompat.checkSelfPermission
                 (context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED;
     }
 
 
-
-    public static void log(String msg){
-        Log.i(LOG, "log -> "+msg);
+    public static void log(String msg) {
+        Log.i(LOG, "log -> " + msg);
     }
 
     public static void hideKeyboard(Activity activity) {
@@ -261,39 +268,39 @@ public class GlobalFuncs {
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    private ArrayList<Character> convertArrayToArrayList(char[] chars){
+    private ArrayList<Character> convertArrayToArrayList(char[] chars) {
         ArrayList<Character> characters = new ArrayList<>();
-        for(char c : chars){
+        for (char c : chars) {
             characters.add(c);
         }
         return characters;
     }
 
-    private String convertCharArrayToString(ArrayList<Character> characters){
+    private String convertCharArrayToString(ArrayList<Character> characters) {
         String str = "";
-        for (char c : characters){
+        for (char c : characters) {
             str = str + c;
         }
         return str;
     }
 
-    private String removeNumbersFromAdress(String adress){
+    private String removeNumbersFromAdress(String adress) {
 
         char charArray[] = adress.toCharArray();
 
         ArrayList<Character> characters = convertArrayToArrayList(charArray);
 
-        for(int i = characters.size() - 1 ; i >= 0 ; i --){
+        for (int i = characters.size() - 1; i >= 0; i--) {
 
             char c = characters.get(i);
 
-            try{
-                if(Character.isDigit(c)){
+            try {
+                if (Character.isDigit(c)) {
                     characters.remove(i);
                     i++;
                 }
 
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 

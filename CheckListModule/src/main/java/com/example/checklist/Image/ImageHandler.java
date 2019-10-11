@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 
 import static com.example.checklist.GlobalFuncs.log;
@@ -13,7 +14,7 @@ import static com.example.checklist.GlobalFuncs.log;
 public class ImageHandler {
 
     private Context context;
-    private int maxSize;
+    private int maxSize ;
 
     public ImageHandler(Context context,int maxSize){
 
@@ -26,49 +27,56 @@ public class ImageHandler {
 
 
     private  String resizeAndCompressImageBeforeSend(Context context,String filePath,String fileName){
-        final int MAX_IMAGE_SIZE = maxSize * 1024; // max final file size in kilobytes
+        File image = new File(context.getCacheDir()+"/"+fileName);
+        if(image.exists()){
+            return image.getAbsolutePath();
+        }else {
 
-        // First decode with inJustDecodeBounds=true to check dimensions of image
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(filePath,options);
+            final int MAX_IMAGE_SIZE = maxSize * 1024; // max final file size in kilobytes
 
-        // Calculate inSampleSize(First we are going to resize the image to 800x800 image, in order to not have a big but very low quality image.
-        //resizing the image will already reduce the file size, but after resizing we will check the file size and start to compress image
-        options.inSampleSize = calculateInSampleSize(options, 800, 800);
+            // First decode with inJustDecodeBounds=true to check dimensions of image
+            final BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(filePath, options);
 
-        // Decode bitmap with inSampleSize set
-        options.inJustDecodeBounds = false;
-        options.inPreferredConfig= Bitmap.Config.ARGB_8888;
+            // Calculate inSampleSize(First we are going to resize the image to 800x800 image, in order to not have a big but very low quality image.
+            //resizing the image will already reduce the file size, but after resizing we will check the file size and start to compress image
+            options.inSampleSize = calculateInSampleSize(options, 800, 800);
 
-        Bitmap bmpPic = BitmapFactory.decodeFile(filePath,options);
+            // Decode bitmap with inSampleSize set
+            options.inJustDecodeBounds = false;
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
+            Bitmap bmpPic = BitmapFactory.decodeFile(filePath, options);
 
 
-        int compressQuality = 100; // quality decreasing by 5 every loop.
-        int streamLength;
-        do{
-            ByteArrayOutputStream bmpStream = new ByteArrayOutputStream();
-            Log.d("compressBitmap", "Quality: " + compressQuality);
-            bmpPic.compress(Bitmap.CompressFormat.JPEG, compressQuality, bmpStream);
-            byte[] bmpPicByteArray = bmpStream.toByteArray();
-            streamLength = bmpPicByteArray.length;
-            compressQuality -= 5;
-            Log.d("compressBitmap", "Size: " + streamLength/1024+" kb");
-        }while (streamLength >= MAX_IMAGE_SIZE);
+            int compressQuality = 100; // quality decreasing by 5 every loop.
+            int streamLength;
+            do {
+                ByteArrayOutputStream bmpStream = new ByteArrayOutputStream();
+//                Log.d("compressBitmap", "Quality: " + compressQuality);
+                bmpPic.compress(Bitmap.CompressFormat.JPEG, compressQuality, bmpStream);
+                byte[] bmpPicByteArray = bmpStream.toByteArray();
+                streamLength = bmpPicByteArray.length;
+                compressQuality -= 5;
+//                Log.d("compressBitmap", "Size: " + streamLength / 1024 + " kb");
+            } while (streamLength >= MAX_IMAGE_SIZE && compressQuality > 0 && compressQuality < 100);
 
-        try {
-            //save the resized and compressed file to disk cache
-            Log.d("compressBitmap","cacheDir: "+context.getCacheDir());
-            FileOutputStream bmpFile = new FileOutputStream(context.getCacheDir()+fileName);
-            bmpPic.compress(Bitmap.CompressFormat.JPEG, compressQuality, bmpFile);
-            bmpFile.flush();
-            bmpFile.close();
-        } catch (Exception e) {
-            log(e.getMessage());
-            Log.e("compressBitmap", "Error on saving file");
+            try {
+                //save the resized and compressed file to disk cache
+//                Log.d("compressBitmap", "cacheDir: " + context.getCacheDir());
+                FileOutputStream bmpFile = new FileOutputStream(context.getCacheDir() + "/" + fileName);
+                bmpPic.compress(Bitmap.CompressFormat.JPEG, compressQuality, bmpFile);
+                bmpFile.flush();
+                bmpFile.close();
+            } catch (Exception e) {
+                log(e.getMessage());
+//                Log.e("compressBitmap", "Error on saving file");
+            }
+            //return the path of resized and compressed file
+            String path = context.getCacheDir() + "/" + fileName;
+            return path;
         }
-        //return the path of resized and compressed file
-        return  context.getCacheDir()+fileName;
     }
 
 
@@ -98,13 +106,13 @@ public class ImageHandler {
     }
 
     public void ResizeImage(final Context context, final String filePath, final String fileName, final ImageResizerListener listener){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
                 String path = resizeAndCompressImageBeforeSend(context,filePath,fileName);
                 listener.onImageResized(path);
-            }
-        }).start();
+//            }
+//        }).start();
     }
 
     public interface ImageResizerListener{

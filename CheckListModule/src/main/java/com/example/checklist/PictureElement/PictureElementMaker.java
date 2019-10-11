@@ -146,7 +146,7 @@ public class PictureElementMaker extends LinearLayout implements PicturesRecycle
 
                 }//end of types count
 
-                countIndex = countLastIndex;//add last j to index
+                countIndex += countLastIndex;//add last j to index
 
             }//end of names
 

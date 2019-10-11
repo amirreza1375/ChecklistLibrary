@@ -162,7 +162,7 @@ public class Commentario extends LinearLayout implements TextWatcher {
 
     private void getVariablesFromElement(JSONObject element) {
         try {
-            tipo = element.has("tipo") ? element.getString("tipo") : "";
+            tipo = element.has("Tipo") ? element.getString("Tipo") : "";
             id = element.has(conf_id) ? element.getString(conf_id) : "";
             name = element.has(conf_name) ? element.getString(conf_name) : "";
             maxLength = element.has("maxLength") ? element.getInt("maxLength") : 100;
@@ -206,11 +206,11 @@ public class Commentario extends LinearLayout implements TextWatcher {
 
     private void handleInputType(String tiop) {
         switch (tiop) {
-            case "Integer":
-                this.TYPE = InputType.TYPE_NUMBER_FLAG_DECIMAL;
+            case "number":
+                this.TYPE = InputType.TYPE_CLASS_NUMBER;
                 break;
             case "Float":
-                this.TYPE = InputType.TYPE_CLASS_NUMBER;
+                this.TYPE = InputType.TYPE_NUMBER_FLAG_DECIMAL;
                 break;
             default:
                 this.TYPE = InputType.TYPE_CLASS_TEXT;

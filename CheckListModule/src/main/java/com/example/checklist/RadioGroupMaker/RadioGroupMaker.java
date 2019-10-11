@@ -26,6 +26,7 @@ import static com.example.checklist.GlobalFuncs.conf_isRequired;
 import static com.example.checklist.GlobalFuncs.conf_name;
 import static com.example.checklist.GlobalFuncs.conf_text;
 import static com.example.checklist.GlobalFuncs.conf_title;
+import static com.example.checklist.GlobalFuncs.conf_value;
 import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.GlobalFuncs.setOrgProps;
 import static com.example.checklist.PageGenerator.CheckListPager.setMandatories;
@@ -123,7 +124,15 @@ public class RadioGroupMaker extends LinearLayout {
     public JSONObject getValue(boolean isNextClicked) {
         if (choosenIndex == -1) {
             isMandatoryAnswered(isNextClicked);
-            return new JSONObject();
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put(conf_name,name);
+                jsonObject.put(conf_id,id);
+                jsonObject.put(conf_value,"");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return jsonObject;
         } else
             return values.get(choosenIndex);
     }

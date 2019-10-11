@@ -224,6 +224,7 @@ public class CheckBoxGroup extends LinearLayout {
                 checkBox.setChecked(true);
                 checkBoxStatuses.put(checkBox.getId(), true);
                 if (disableOthers != -1)
+                    if (disableOthers == checkBox.getId())
                     disableOthersById(checkBox.getId(), true);
                 break;
             }
@@ -250,8 +251,8 @@ public class CheckBoxGroup extends LinearLayout {
 
     private void disableOthersById(int id, boolean isChecked) {
         for (int i = 0; i < checkBoxes.size(); i++) {
-
-            if (checkBoxes.get(i).getId() != id) {
+                long checkBoxId = checkBoxes.get(i).getId();
+            if (checkBoxId != id) {
                 checkBoxes.get(i).setEnabled(!isChecked);
                 checkBoxes.get(i).setChecked(false);
                 checkBoxStatuses.put(checkBoxes.get(i).getId(), false);
@@ -329,7 +330,7 @@ public class CheckBoxGroup extends LinearLayout {
             choices = element.has(conf_choices) ? element.getJSONArray(conf_choices) : new JSONArray();
             id = element.has(conf_id) ? element.getString(conf_id) : "";
             name = element.has(conf_name) ? element.getString(conf_name) : "";
-            max = element.has(conf_rangeMax) ? element.getInt(conf_rangeMax) : 100;
+            max = element.has(conf_rangeMax) ? element.getInt(conf_rangeMax) : choices.length();
             min = element.has(conf_rangeMin) ? element.getInt(conf_rangeMin) : 0;
             isRequired = element.has(conf_required) ? element.getBoolean(conf_required) : false;
         } catch (JSONException e) {
