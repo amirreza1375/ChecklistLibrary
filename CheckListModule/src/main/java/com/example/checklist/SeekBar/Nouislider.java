@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.example.checklist.BaseViewModel.BaseView;
 import com.example.checklist.MultiTextGenerator.MultiText;
 import com.example.checklist.R;
 
@@ -19,7 +20,7 @@ import static com.example.checklist.GlobalFuncs.dpToPx;
 import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.PageGenerator.CheckListPager.setMandatories;
 
-public class Nouislider extends LinearLayout {
+public class Nouislider extends BaseView {
 
     //region element keys
     private String conf_title = "title";
@@ -39,8 +40,6 @@ public class Nouislider extends LinearLayout {
     //endregion
 
     //region used variables
-    private String name ;
-    private String id;
     private boolean isRequired;
     private int rangMin = 0;
     private int rangeMax = 0;
@@ -66,13 +65,17 @@ public class Nouislider extends LinearLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    public Nouislider(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
+
     //endregion
 
     private void init(Context context) {
         try {
+            try {
+                visibleSi = element.getString("visibleIf");
+                isVisibleSi = true;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
             getSeekBarPropsFromElement(element);
 
@@ -242,7 +245,7 @@ public class Nouislider extends LinearLayout {
 
     private void getSeekBarPropsFromElement(JSONObject element) {
         try {
-            id = element.has(conf_id) ? element.getString(conf_id) : "";
+            viewID = element.has(conf_id) ? element.getString(conf_id) : "";
             name = element.has(conf_name) ? element.getString(conf_name) : "";
             rangeMax = element.has(conf_rangeMax) ? element.getInt(conf_rangeMax) : 100;
             rangMin = element.has(conf_rangeMin) ? element.getInt(conf_rangeMin) : 0;
@@ -284,9 +287,6 @@ public class Nouislider extends LinearLayout {
         return element;
     }
 
-    public String getElementId() {
-        return id;
-    }
 
     public String getName() {
         return name;

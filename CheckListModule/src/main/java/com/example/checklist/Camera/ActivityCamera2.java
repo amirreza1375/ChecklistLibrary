@@ -48,6 +48,8 @@ import static com.example.checklist.Camera.ActivityCamera.IMAGE_RESULT;
 
 public class ActivityCamera2 extends AppCompatActivity {
     private static final String TAG = "AndroidCameraApi";
+    public static String FLAG_CUSTOM_CAMERA = "com.example.checklist.Camera.ActivityCamera2";
+
     private Button takePictureButton;
     private TextureView textureView;
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();

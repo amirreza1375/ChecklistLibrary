@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.checklist.BaseViewModel.BaseView;
 import com.example.checklist.Config;
 import com.example.checklist.GlobalFuncs;
 
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 import static com.example.checklist.GlobalFuncs.conf_id;
 import static com.example.checklist.GlobalFuncs.log;
 
-public class PictureElementMaker extends LinearLayout implements PicturesRecyclerView.ItemClickCallBack {
+public class PictureElementMaker extends BaseView implements PicturesRecyclerView.ItemClickCallBack {
 
     //region element keys
     private String imagetypeName = "imagetypeName";
@@ -37,7 +38,6 @@ public class PictureElementMaker extends LinearLayout implements PicturesRecycle
     private RecyclerView recyclerView;
     private JSONObject element;
     private boolean status;
-    private String id;
     private TakePictureItemClickListener mlistener;
 
     public PictureElementMaker(Context context, JSONObject element, boolean status
@@ -92,11 +92,12 @@ public class PictureElementMaker extends LinearLayout implements PicturesRecycle
         for (int i = 0; i < answerModels.size(); i++) {
             PicturePickerItemModel answerModel = answerModels.get(i);
             //we should check id first
-            if (id.equals(answerModel.getId())) {//then check index
+            if (viewID.equals(answerModel.getId())) {//then check index
                 for (int j = 0; j < models.size(); j++) {
                     PicturePickerItemModel model = models.get(j);
                     if (answerModel.getIndex() == model.getIndex()) {
                         models.get(j).setPath(answerModel.getPath());
+                        break;
                     }
                 }
             }
@@ -135,7 +136,7 @@ public class PictureElementMaker extends LinearLayout implements PicturesRecycle
                     model.setCategory(imageTypeNames[i]);
                     model.setCat_id(Integer.parseInt(imageTypes[i]));
                     model.setStatus(status);
-                    model.setId(id);
+                    model.setId(viewID);
                     model.setPosition(position);
                     model.setName(name);
 
@@ -200,7 +201,7 @@ public class PictureElementMaker extends LinearLayout implements PicturesRecycle
 
     private void getVariablesFromElement(JSONObject element) {
         try {
-            id = element.getString(conf_id);
+            viewID = element.getString(conf_id);
         } catch (JSONException e) {
             e.printStackTrace();
             log(e.getMessage());
@@ -217,9 +218,6 @@ public class PictureElementMaker extends LinearLayout implements PicturesRecycle
         return mlistener;
     }
 
-    public String getElementId(){
-        return this.id;
-    }
 
     public void setMlistener(TakePictureItemClickListener mlistener) {
         this.mlistener = mlistener;

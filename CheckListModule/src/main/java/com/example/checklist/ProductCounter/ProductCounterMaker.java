@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
+import com.example.checklist.BaseViewModel.BaseView;
 import com.example.checklist.MultiTextGenerator.MultiText;
 
 import org.json.JSONArray;
@@ -24,7 +25,7 @@ import static com.example.checklist.GlobalFuncs.conf_value;
 import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.GlobalFuncs.setOrgProps;
 
-public class ProductCounterMaker extends LinearLayout {
+public class ProductCounterMaker extends BaseView {
 
     private String negativeBtnTitle = "ProductNegativeButton";
     private String positiveBtnTitle = "ProductPositiveButton";
@@ -42,7 +43,6 @@ public class ProductCounterMaker extends LinearLayout {
     private String negativeBtnTxt;
     private String positiveBtnTxt;
     private String titleTxt;
-    private String elementId;
     private String elementName;
 
     public ProductCounterMaker(Context context, JSONObject element, JSONObject answer, boolean enabled
@@ -71,6 +71,13 @@ public class ProductCounterMaker extends LinearLayout {
     }
 
     private void init(Context context) {
+        try {
+            visibleSi = element.getString("visibleIf");
+            isVisibleSi = true;
+            name = element.getString(conf_name);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         setOrgProps(context, this);
 
@@ -96,7 +103,7 @@ public class ProductCounterMaker extends LinearLayout {
 
     private void setElementId(JSONObject element) {
         try {
-            this.elementId = element.getString(conf_id);
+            this.viewID = element.getString(conf_id);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -184,7 +191,7 @@ public class ProductCounterMaker extends LinearLayout {
         try {
 
             elementAnswer.put(conf_type, conf_productCount);
-            elementAnswer.put(conf_id, elementId);
+            elementAnswer.put(conf_id, viewID);
             elementAnswer.put(conf_name, elementName);
             elementAnswer.put(conf_position,position);
 
@@ -196,7 +203,7 @@ public class ProductCounterMaker extends LinearLayout {
                 JSONObject value = new JSONObject();
 
                 value.put(conf_type, conf_productCount);
-                value.put(conf_id, elementId);
+                value.put(conf_id, viewID);
                 value.put(conf_name, elementName);
                 value.put(conf_position,position);
                 value.put(conf_isAnswered, productCounter.getIsAnswered());

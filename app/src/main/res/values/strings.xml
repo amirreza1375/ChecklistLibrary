@@ -1,3 +1,127 @@
 <resources>
-    <string name="app_name">CheclistLibrary</string>
+    <string name="app_name">Commentario</string>
+
+    <string name="max_length_msg">caracteres maximos : </string>
+
+        //login
+        <string name="email">Correo Electronico</string>
+        <string name="password">Contraseña</string>
+        <string name="invalid_email">Email inválido</string>
+        <string name="empty">Vacío</string>
+        <string name="sign_in_btn">Iniciar</string>
+        <string name="forget_pass_txt">Olvidaste tu contraseña?</string>
+        <string name="send_pass_btn">Enviar contraseña</string>
+        <string name="no_internet">No está conectado a Internet , Verifique su conexión e intente nuevamente</string>
+        <string name="cnn_time_out_msg">ocurrió un error por favor intente de nuevo más tarde</string>
+
+
+        //drawer
+        <string name="setting">Ajustes de perfil</string>
+        <string name="about">Acerca de</string>
+        <string name="update">Actualizar datos</string>
+        <string name="log_out">Cerrar sesión</string>
+        <string name="check_list">Checklist</string>
+
+        //alert log out
+        <string name="msg">Estás seguro de que quieres cerrar la sesión?</string>
+        <string name="log_out_yes">Si</string>
+        <string name="log_out_no">No</string>
+        <string name="errorHandlingMessage">Ocurrió un error</string>
+        <string name="AuthenticationFailed">Mal correo electrónico / contraseña</string>
+        <string name="drafts">Borradores</string>
+        <string name="finished">Atras</string>
+        <string name="Shops">Tiendas</string>
+        <string name="save">Guardar</string>
+        //////////////////==================
+        <string name="fragment_shop_title">Tiendas</string>
+        <string name="main_prgrss_title">Obteniendo datos ...</string>
+        <string name="main_prgrss_msg">Por favor espera...</string>
+        <string name="fragment_product_title">Producto</string>
+        <string name="fragment_name_finish">Terminar</string>
+        <string name="fragment_check_lists_title">Check lists</string>
+        <string name="permission_Location">Necesitamos este permiso para encontrar tiendas cercanas</string>
+        ////======================================================================////
+        <string name="take_picture">Tomar la foto</string>
+        <string name="show_picture">Mostrar imagen</string>
+        <string name="check_list_back_btn">Atras</string>
+        <string name="cehck_list_done_btn">Siguiente</string>
+        <string name="cehck_list_save_btn">Guardar</string>
+        //login
+        <!-- TODO: Remove or change this placeholder text -->
+        <string name="fragment_name_product">Products</string>
+        <string name="change_pass_succesful">Enlace de cambio de contraseña enviado a su correo electrónico</string>
+        <string name="change_pass_error">No hay respuesta para su correo electrónico intente de nuevo</string>
+        <string name="change_pass_failed">Conexión fallida, compruebe su internet y vuelva a intentarlo</string>
+        //////==================================================================================////////
+        <string name="about_text">Aplicación Creada para el levantamiento en terreno de stock y orden de productos.</string>
+        <string name="ok_text">De acuerdo</string>
+
+        <string name="setting_btn">Salvar</string>
+
+        <string name="fragment_check_list_title">Respuestas</string>
+
+        <string name="draft_status_alert_msg">¿Desea guardar la lista de verificación como borrador?</string>
+        <string name="draft_status_alert_cnl">Cancelar</string>
+        <string name="draft_status_alert_pos">Si</string>
+        <string name="draft_status_alert_neg">No</string>
+
+        <string name="uploading_pic">Subiendo imagen ...</string>
+        <string name="short_pass">La contraseña es demasiado corta</string>
+
+        <string name="change_pass_title">enviando datos ...</string>
+
+        <string name="password_not_match_msg">Las contraseñas no coinciden</string>
+        <string name="pass_changed_msg">Contraseña cambiada con éxito</string>
+        <string name="turn_gps_on_msg">Enciende tu GPS</string>
+        <string name="permission_msg">Deberías dar este permiso</string>
+        <string name="no_shops_around">No hay una tienda asignada</string>
+
+        <string name="check_finished_msg">Terminado</string>
+
+        <string name="send_ticket">Informe de problema</string>
+        <string name="support">Soporte</string>
+        <string name="send_txt">Enviar</string>
+        <string name="subject">Asunto</string>
+        <string name="Content">Explicación</string>
+
+        <string name="sub_title">Por favor seleccione Opción Única</string>
+        <string name="sub_title_m">Por favor seleccione Opción Múltiple</string>
+        <string name="ticket_subject_hint">Ingrese su asunto</string>
+        <string name="ticket_content_hint">Ingrese su Explicación</string>
+        <string name="mandatory_message">Por favor responda las preguntas necesarias</string>
+        <string name="ticket_subject_error">Por favor ingrese tema</string>
+        <string name="ticket_content_error">Por favor ingrese el contenido</string>
+
+        <string name="forget_pass_title">Cambia la contraseña
+    </string>
+        <string name="empty_field">Por favor introduzca su correo electrónico</string>
+        <string name="common_issues">Problemas comunes</string>
+        <string name="my_issues">Problemas comunes</string>
+        <string name="ticket_send_msg">Su problema enviado con éxito</string>
+
+        <string name="shops_direction_msg">¿Quieres establecer la dirección en esta tienda?</string>
+        <string name="save_to_draft_msg">¿Quieres guardar esto como borrador?</string>
+
+        <string name="permission_msg_picture">La aplicación no se concede para completar esta acción, otorgue permisos relacionados de Settingsv</string>
+
+
+        //                  ---------------------------------------------------------------------
+
+    <string name="previewLastPageMessage">Lista de verificación terminada ¿quieres cerrar?</string>
+    <string name="closeAlert">Cerrar</string>
+    <string name="closeCheckList">Cerrar lista de verificación</string>
+
+        <string name="last24haours">Últimas 24 horas</string>
+        <string name="check_list_filter_pre_text">Mostrar </string>
+        <string name="filter">Filtrar</string>
+        <string name="cancel">Cancelar</string>
+        <string name="delete">Eliminar</string>
+        <string name="no">No</string>
+        <string name="remove_row_msg">¿Está seguro de que desea eliminar los datos de esta lista de verificación?</string>
+    <string name="emptyPageCheckList">No se ha encontrado ninguna página, por favor verifique los datos de su lista de verificación</string>
+    <string name="notSaveInPreview">La lista de verificación está en modo de vista previa</string>
+    <string name="noDataAssigned">No hay datos asignados</string>
+    <string name="ImageNoExist">La imagen no existe, por favor intente actualizar</string>
+    <string name="ImageHasProblem">La imagen no se ha descargado bien. Por favor, intente actualizar.</string>
+
 </resources>

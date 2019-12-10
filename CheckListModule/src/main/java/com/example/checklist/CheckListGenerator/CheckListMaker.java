@@ -10,11 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.checklist.BaseViewModel.BaseView;
 import com.example.checklist.Camera.ActivityPicture;
 import com.example.checklist.CheckBox.CheckBoxGroup;
 import com.example.checklist.Commentario.Commentario;
@@ -59,6 +61,7 @@ import static com.example.checklist.GlobalFuncs.conf_html;
 import static com.example.checklist.GlobalFuncs.conf_id;
 import static com.example.checklist.GlobalFuncs.conf_imagePicker;
 import static com.example.checklist.GlobalFuncs.conf_multiText;
+import static com.example.checklist.GlobalFuncs.conf_name;
 import static com.example.checklist.GlobalFuncs.conf_optico;
 import static com.example.checklist.GlobalFuncs.conf_position;
 import static com.example.checklist.GlobalFuncs.conf_productCount;
@@ -69,6 +72,9 @@ import static com.example.checklist.GlobalFuncs.conf_signature;
 import static com.example.checklist.GlobalFuncs.conf_tipo;
 import static com.example.checklist.GlobalFuncs.conf_tipoNA;
 import static com.example.checklist.GlobalFuncs.conf_type;
+import static com.example.checklist.GlobalFuncs.conf_value;
+import static com.example.checklist.GlobalFuncs.convert_ArrayList_to_JSONArray;
+import static com.example.checklist.GlobalFuncs.convert_JSONArray_to_ArrayList;
 import static com.example.checklist.GlobalFuncs.convert_JSONArray_to_PictureModel;
 import static com.example.checklist.GlobalFuncs.convert_PictureModel_to_JSONArrary;
 import static com.example.checklist.GlobalFuncs.dpToPx;
@@ -83,7 +89,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
 
     private boolean isNextEnabled = false;
 
-    private static final String TAG = "CheckListMaker";
+    public static final String TAG = "CheckListMaker";
 
     public static String key_TYPE = "type";
     public static String key_POSITION = "position";
@@ -126,7 +132,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
     private ImagesViewer imagesViewer;
     private MultiText multiText;
     private RatingGenerator ratingGenerator;
-    private ArrayList<View> views;
+    private ArrayList<BaseView> views;
 
     private View btnNext;
     private View btnPre;
@@ -211,7 +217,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
 
         View titleHolder = LayoutInflater.from(context).inflate(R.layout.layout_page_title_library, this, false);
         TextView titleTxt = titleHolder.findViewById(R.id.titleTxt);
-        titleTxt.setText(getTitleFromElement(page,false));
+        titleTxt.setText(getTitleFromElement(page, false));
         innerLayout.addView(titleHolder);
 
         //endregion
@@ -607,10 +613,11 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
             if (views.get(i) instanceof ImageFileConcept) {
 
                 ImageFileConcept temp = (ImageFileConcept) views.get(i);
-
-                if (!temp.isMandatoryPictureTaken()) {
-                    FLAG_ALL_TAKEN = false;
+                if (!temp.isShowen()) {
+                    if (!temp.isMandatoryPictureTaken()) {
+                        FLAG_ALL_TAKEN = false;
 //                    temp.setMandatoryError();
+                    }
                 }
 
             }
@@ -662,14 +669,17 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
             if (views.get(i) instanceof DropDown) {
                 JSONObject commentValue = getDropDownValue(views.get(i));
                 array.put(commentValue);
+                continue;
             }
             if (views.get(i) instanceof SignatureElement) {
                 JSONObject signatureValue = getSignatureValue(views.get(i));
                 array.put(signatureValue);
+                continue;
             }
             if (views.get(i) instanceof ProductCounterMaker) {
                 JSONObject productCounter = getProductCounterValue(views.get(i), isNextClicked);
                 array.put(productCounter);
+                continue;
             }
 
         }
@@ -786,7 +796,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
             e.printStackTrace();
             log(e.getMessage());
         }
-        addCheckBoxConditions(items);
+        addCheckBoxConditions(items, checkBoxGroup.getElementId());
         return object;
     }
 
@@ -808,6 +818,40 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
         return object;
     }
 
+    //region TimeTracker
+
+    public void updateCommetarios(JSONArray TTData) {
+        for (int i = 0; i < views.size(); i++) {
+            if (views.get(i) instanceof Commentario) {
+                Commentario commentario = (Commentario) views.get(i);
+                if (commentario.getCommentTipo() == Config.tipo.TIME_TRACKER) {
+                    String value = getValueFromCommentarioID(TTData, commentario);
+                    commentario.setCommentValue(value);
+                }
+            }
+        }
+    }
+
+    private String getValueFromCommentarioID(JSONArray TTData, Commentario commentario) {
+
+        for (int i = 0; i < TTData.length(); i++) {
+            try {
+                JSONObject object = TTData.getJSONObject(i);
+                if (object.getString("id").equals(commentario.getElementId())) {
+                    return object.getString("value");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+
+            }
+
+        }
+        return "";
+
+    }
+
+
+    //endregion
 
     private JSONObject getCommentarioValue(boolean isNextClicked, View view) {
         Commentario commentario = (Commentario) view;
@@ -827,9 +871,105 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
         return object;
     }
 
+    private void updateItemsByConditionChanged() {
+        for (BaseView view : views) {
+            if (view.isVisibleSi()) {
+                if (isIdExistInConditions(view.getVisibleSiName(), view.getVisibleSiValue())) {
+                        showView(view);
+                        view.setShowen(true);
+
+                } else {
+                        hideView(view);
+                        view.setShowen(false);
+
+                }
+            }
+        }
+    }
+
+    private void removeElementData(BaseView baseView){
+        removeElementConditions(baseView.getElementId());
+        if (baseView instanceof CheckBoxGroup){
+            CheckBoxGroup checkBoxGroup = (CheckBoxGroup) baseView;
+            checkBoxGroup.clearData();
+//            Log.i(TAG, "removeElementData: "+baseView.getName());
+        }else if (baseView instanceof RadioGroupMaker){
+            RadioGroupMaker radioGroupMaker = (RadioGroupMaker) baseView;
+            radioGroupMaker.clearData();
+//            Log.i(TAG, "removeElementData: "+baseView.getName());
+        }
+    }
+
+    private void removeElementConditions(String elementId) {
+        ArrayList<JSONObject> conditionsArr = convert_JSONArray_to_ArrayList(conditions);
+        for (int i = 0 ; i < conditionsArr.size() ; i++){
+
+            try {
+                if (conditionsArr.get(i).getString(conf_id).equals(elementId)){
+//                    Log.i(TAG, "removeElementConditions: id = "+elementId + " name = "+conditionsArr.get(i).getString(conf_name));
+                    conditionsArr.remove(i);
+                    i--;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+//                Log.i(TAG, "removeElementConditions: error = "+e.getMessage());
+            }
+
+        }
+        conditions = convert_ArrayList_to_JSONArray(conditionsArr);
+    }
+
+
+    private boolean isIdExistInConditions(String visibleSiName, String visibleSiValue) {
+        for (int i = 0; i < conditions.length(); i++) {
+            try {
+                JSONObject condition = conditions.getJSONObject(i);
+                String conditionName = condition.getString(conf_name).trim();
+                String conditionValue = condition.getString(conf_value).trim();
+                boolean conditionStatus = condition.getBoolean("status");
+                if (conditionStatus) {
+                    if (conditionName.equals(visibleSiName.trim()) && conditionValue.equals(visibleSiValue.trim())) {
+                        return true;
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    private void hideView(BaseView view) {
+//        Log.i(TAG, "hideView: "+view.getName());
+        view.setVisibility(GONE);
+        removeElementData(view);
+    }
+
+    private void showView(BaseView view) {
+//        Log.i(TAG, "showView: "+view.getName());
+        view.setVisibility(VISIBLE);
+    }
+
     //endregion
 
-    private void addCheckBoxConditions(JSONArray items) {
+    private void removeCheckBoxConditionsWithIdAnd(String id) {
+        ArrayList<JSONObject> conditions = convert_JSONArray_to_ArrayList(this.conditions);
+        for (int i = 0; i < conditions.size(); i++) {
+            JSONObject condition = conditions.get(i);
+            try {
+                if (condition.getString(conf_id).equals(id)) {
+                    conditions.remove(i);
+                    i--;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        this.conditions = convert_ArrayList_to_JSONArray(conditions);
+    }
+
+    private void addCheckBoxConditions(JSONArray items, String id) {
+        removeCheckBoxConditionsWithIdAnd(id);
         for (int i = 0; i < items.length(); i++) {
 
             try {
@@ -838,6 +978,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
                 item.put(conf_position, position);
                 item.put(conf_id, item.getString(conf_id));
                 conditions.put(item);
+                updateItemsByConditionChanged();
             } catch (JSONException e) {
                 e.printStackTrace();
                 log(e.getMessage());
@@ -875,12 +1016,31 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
 
     }
 
+    private void removeRadioConditionsWithId(String id) {
+        ArrayList<JSONObject> conditions = convert_JSONArray_to_ArrayList(this.conditions);
+        for (int i = 0; i < conditions.size(); i++) {
+            JSONObject condition = conditions.get(i);
+            try {
+                if (condition.getString(conf_id).equals(id)) {
+                    conditions.remove(i);
+                    i--;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        this.conditions = convert_ArrayList_to_JSONArray(conditions);
+    }
+
 
     private void addRadioCondition(JSONObject radioItem) {
+
         try {
+            removeRadioConditionsWithId(radioItem.getString(conf_id));
             radioItem.put(conf_type, conf_radioButton);
             radioItem.put(conf_position, position);
             conditions.put(radioItem);
+            updateItemsByConditionChanged();
         } catch (JSONException e) {
             e.printStackTrace();
             log(e.getMessage());
@@ -955,7 +1115,7 @@ public class CheckListMaker extends ScrollView implements View.OnClickListener
         findImageFileConcept(views);
     }
 
-    private void findImageFileConcept(ArrayList<View> views) {
+    private void findImageFileConcept(ArrayList<BaseView> views) {
         for (int i = 0; i < views.size(); i++) {
             if (views.get(i) instanceof ImageFileConcept) {
                 ImageFileConcept imageFileConcept = (ImageFileConcept) views.get(i);

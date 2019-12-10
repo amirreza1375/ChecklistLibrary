@@ -1,22 +1,26 @@
 package com.example.checklist.Commentario;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.checklist.BaseViewModel.BaseView;
+import com.example.checklist.Config;
 import com.example.checklist.MultiTextGenerator.MultiText;
 import com.example.checklist.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
+import static com.example.checklist.Config.TIME_TRACKER_TIPO;
 import static com.example.checklist.GlobalFuncs.conf_id;
 import static com.example.checklist.GlobalFuncs.conf_isRequired;
 import static com.example.checklist.GlobalFuncs.conf_name;
@@ -41,9 +45,10 @@ import static com.example.checklist.PageGenerator.CheckListPager.setMandatories;
  * {@link String visible_id} -> id that shows or hides componnent as condition
  */
 
-public class Commentario extends LinearLayout implements TextWatcher {
+public class Commentario extends BaseView implements TextWatcher {
 
     //region used variables
+    private boolean IsTextChanged = true;
     private MultiText.MandatoryListener listener;
     private String requiredStr = "*";
     private int TYPE = 0;
@@ -52,10 +57,10 @@ public class Commentario extends LinearLayout implements TextWatcher {
 //    private LinearLayout commentario;
     //endregion
 
+    private Config.tipo commentTipo;
+
     //region variables
-    private String id;
     private Context context;
-    private String name;
     private String item_id;
     private String title;
     private int maxLength;
@@ -93,11 +98,20 @@ public class Commentario extends LinearLayout implements TextWatcher {
 
     private void init() {
 
+        try {
+            visibleSi = element.getString("visibleIf");
+            isVisibleSi = true;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
         getVariablesFromElement(element);
-        handleInputType(tipo);
+
 
 //        commentario = new LinearLayout(context);
         comment = new EditText(context);
+        handleInputType(tipo);
 
         //region local views
 
@@ -127,6 +141,8 @@ public class Commentario extends LinearLayout implements TextWatcher {
         setOrientation(LinearLayout.VERTICAL);
         //endregion
 
+
+
         //region set edittext props
 
         comment.setPadding(16, 0, 16, 0);
@@ -136,7 +152,30 @@ public class Commentario extends LinearLayout implements TextWatcher {
                         , dpToPx(42, context));
         comment.setLayoutParams(commentParams);
 
-        comment.setBackground(context.getResources().getDrawable(R.drawable.ticket_edt));
+        //region edt holder
+
+        LinearLayout edtHolder = new LinearLayout(context);
+        edtHolder.setOrientation(HORIZONTAL);
+
+        if (tipo.equals("Price")){
+            LinearLayout.LayoutParams dollarParams =
+                    new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT
+                            , ViewGroup.LayoutParams.WRAP_CONTENT);
+            dollarParams.setMargins(dpToPx(4,context),dpToPx(0,context),dpToPx(0,context),dpToPx(0,context));
+            TextView dollar = new TextView(context);
+
+            dollar.setTextColor(Color.BLACK);
+            dollar.setTextSize(16f);
+            dollar.setLayoutParams(dollarParams);
+            dollar.setText("$");
+            edtHolder.addView(dollar);
+        }
+
+        edtHolder.addView(comment);
+
+        //endregion
+        edtHolder.setBackground(context.getResources().getDrawable(R.drawable.ticket_edt));
+//        comment.setBackground(context.getResources().getDrawable(android.R.drawable.screen_background_light_transparent));
 
         comment.setText(pre_content);
 
@@ -148,22 +187,76 @@ public class Commentario extends LinearLayout implements TextWatcher {
         fArray[0] = new InputFilter.LengthFilter(maxLength);
         comment.setFilters(fArray);
 
-        comment.setInputType(TYPE);
+//        comment.setInputType(TYPE);
 
         comment.setEnabled(isFromFinish);
+
+
         //endregion
 
+        setCommentTipoStatus();
+
         addView(titleText);
-        addView(comment);
+        addView(edtHolder);
         addView(maxLengthTxt);
 
 
     }
 
+    //region price validator
+    private String getPriceWithValidates(CharSequence s) {
+
+        String price = s.toString();
+
+        if (price.length() < 4) {
+            return price;
+        }
+
+        //so price is greater than 3
+
+        String newPrice = removeDotsFromString(price);
+
+        char priceChars[] = newPrice.toCharArray();
+
+        String finalPrice = "";
+
+        int counter = 0;
+
+        for (int i = priceChars.length - 1; i >= 0; i--) {
+
+            finalPrice += priceChars[i];
+
+            counter++;
+
+            if (counter == 3 && i != 0) {
+                finalPrice += ".";
+                counter = 0;
+            }
+
+        }
+
+        return reverseString(finalPrice);
+    }
+
+    private String removeDotsFromString(String price) {
+        return price.replaceAll("\\.", "");
+    }
+
+    private String reverseString(String str) {
+        char chars[] = str.toCharArray();
+        String finalStr = "";
+        for (int i = chars.length - 1; i >= 0; i--) {
+            finalStr += chars[i];
+        }
+        return finalStr;
+    }
+    //endregion
+
     private void getVariablesFromElement(JSONObject element) {
         try {
+
             tipo = element.has("Tipo") ? element.getString("Tipo") : "";
-            id = element.has(conf_id) ? element.getString(conf_id) : "";
+            viewID = element.has(conf_id) ? element.getString(conf_id) : "";
             name = element.has(conf_name) ? element.getString(conf_name) : "";
             maxLength = element.has("maxLength") ? element.getInt("maxLength") : 100;
             isRequired = element.has(conf_isRequired) ? element.getBoolean(conf_isRequired) : false;
@@ -207,13 +300,14 @@ public class Commentario extends LinearLayout implements TextWatcher {
     private void handleInputType(String tiop) {
         switch (tiop) {
             case "number":
-                this.TYPE = InputType.TYPE_CLASS_NUMBER;
+            case "Price":
+                comment.setInputType(InputType.TYPE_CLASS_NUMBER);
                 break;
             case "Float":
-                this.TYPE = InputType.TYPE_NUMBER_FLAG_DECIMAL;
+                comment.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
                 break;
             default:
-                this.TYPE = InputType.TYPE_CLASS_TEXT;
+                comment.setInputType(InputType.TYPE_CLASS_TEXT);
                 break;
         }
     }
@@ -221,6 +315,15 @@ public class Commentario extends LinearLayout implements TextWatcher {
     public static int dpToPx(float dp, Context context) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
     }
+
+    private void setCommentTipoStatus(){
+        if (tipo.equals(TIME_TRACKER_TIPO)){
+            commentTipo = Config.tipo.TIME_TRACKER;
+            comment.setEnabled(false);
+
+        }
+    }
+
 
     //region text watcher
     @Override
@@ -230,6 +333,17 @@ public class Commentario extends LinearLayout implements TextWatcher {
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        if (tipo.equals("Price")){
+        if (IsTextChanged) {
+            IsTextChanged = false;
+            comment.setText(getPriceWithValidates(s));
+            comment.setSelection(comment.getText().length());
+        }else{
+            IsTextChanged = true;
+        }
+
+        }
 
         if (!isFirstTime)
             listener.onElementStatusChanged();
@@ -249,13 +363,19 @@ public class Commentario extends LinearLayout implements TextWatcher {
 
     }
 
+    public void setCommentValue(String value){
+        comment.setText(value);
+    }
+
+    public Config.tipo getCommentTipo(){
+        return commentTipo;
+    }
+
+
     public String getName() {
         return name;
     }
 
-    public String getElementId() {
-        return id;
-    }
 
     public void setName(String name) {
         this.name = name;

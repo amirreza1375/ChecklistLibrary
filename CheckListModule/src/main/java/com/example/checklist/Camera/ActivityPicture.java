@@ -120,6 +120,7 @@ public class ActivityPicture extends AppCompatActivity implements View.OnClickLi
     protected void onPause() {
         super.onPause();
         if (activityClosed) {
+            removeCurrentPageImages(position,elementId);
             putDataInSharedPrefrences(getPictures());
             this.activityClosed = false;
 //            setResult(-1);
@@ -142,7 +143,8 @@ public class ActivityPicture extends AppCompatActivity implements View.OnClickLi
     }
 
     public void takePhoto() {
-        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        Intent cameraIntent = new Intent(Intent.ACTION_MEDIA_MOUNTED,Uri.parse("file://" + Environment.getExternalStorageDirectory()
+        +"/Operator Track"));
         startActivityForResult(cameraIntent, CAMERA_REQ_CODE);
     }
 
@@ -178,6 +180,7 @@ public class ActivityPicture extends AppCompatActivity implements View.OnClickLi
         if (bundlee != null) {
             element = bundlee.getString("element");
             position = bundlee.getInt("position");
+
             String answerPicsStr = bundlee.getString(CheckListMaker.SavedPicturesFlag);
             try {
                 answerPictures = new JSONArray(answerPicsStr);
@@ -214,6 +217,7 @@ public class ActivityPicture extends AppCompatActivity implements View.OnClickLi
             parent.addView(elementMaker);
             elementMaker.getModels();
             this.elementId = elementMaker.getElementId();
+
         } catch (JSONException e) {
             e.printStackTrace();
             log(e.getMessage());
@@ -226,6 +230,29 @@ public class ActivityPicture extends AppCompatActivity implements View.OnClickLi
 //        Toast.makeText(this, model, Toast.LENGTH_SHORT).show();
 
 
+    }
+
+    private void removeCurrentPageImages(int position,String id) {
+        String picStr = getSharedPreferences(Config.sharedPreferencName, Context.MODE_PRIVATE).getString(Config.pictures, "");
+        if (picStr.equals("")) {
+            picStr = "[]";
+        }
+        try {
+            JSONArray pics = new JSONArray(picStr);
+            ArrayList<JSONObject> picsArray = convert_JSONArray_to_ArrayList(pics);
+            for (int i = 0; i < picsArray.size(); i++) {
+                if (picsArray.get(i).getInt("position") == position
+                && picsArray.get(i).getString("id").equals(id)) {
+                    picsArray.remove(i);
+                    i--;
+                }
+            }
+            SharedPreferences.Editor editor = getSharedPreferences(Config.sharedPreferencName, Context.MODE_PRIVATE).edit();
+            editor.putString(Config.pictures, String.valueOf(convert_ArrayList_to_JSONArray(picsArray))).apply();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            log(e.getMessage());
+        }
     }
 
     private void setMandatoryStatus(String elementStr) {
@@ -419,6 +446,7 @@ public class ActivityPicture extends AppCompatActivity implements View.OnClickLi
         }
         if (v == done) {
             if (takenPicturesCount() > 0) {
+                removeCurrentPageImages(position,elementId);
                 putDataInSharedPrefrences(getPictures());
                 this.activityClosed = false;
                 setResult(-1);

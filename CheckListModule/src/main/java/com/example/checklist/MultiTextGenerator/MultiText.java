@@ -15,6 +15,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.checklist.BaseViewModel.BaseView;
 import com.example.checklist.R;
 
 import org.json.JSONArray;
@@ -23,11 +24,12 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import static com.example.checklist.GlobalFuncs.conf_name;
 import static com.example.checklist.GlobalFuncs.dpToPx;
 import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.PageGenerator.CheckListPager.setMandatories;
 
-public class MultiText extends LinearLayout implements TextWatcher {
+public class MultiText extends BaseView implements TextWatcher {
 
 
     //region json keys
@@ -46,8 +48,6 @@ public class MultiText extends LinearLayout implements TextWatcher {
     private ArrayList<EditText> editTexts;
     private ArrayList<String> names;
     private String title;
-    private String id;
-    private String name;
     private JSONArray items;
     private boolean isRequired;
     private int TYPE;
@@ -90,6 +90,13 @@ public class MultiText extends LinearLayout implements TextWatcher {
     //endregion
 
     private void init(Context context) {
+        try {
+            visibleSi = element.getString("visibleIf");
+            isVisibleSi = true;
+            name = element.getString(conf_name);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         //region org props
         LayoutParams orgParams = new LayoutParams(LayoutParams.MATCH_PARENT
@@ -234,7 +241,7 @@ public class MultiText extends LinearLayout implements TextWatcher {
 
     private void getVariablesFromElement(JSONObject element) {
         try {
-            id = element.has(conf_id) ? element.getString(conf_id) : "";
+            viewID = element.has(conf_id) ? element.getString(conf_id) : "";
             title = element.has(conf_title) ? element.getString(conf_title) : "no title";
             name = element.has(conf_name) ? element.getString(conf_name) : "no name";
             maxLength = element.has(conf_maxLength) ? element.getInt(conf_maxLength) : 200;
@@ -276,7 +283,7 @@ public class MultiText extends LinearLayout implements TextWatcher {
 
                     JSONObject object = new JSONObject();
                     try {
-                        object.put("id", id);
+                        object.put("id", viewID);
                         object.put("name", names.get(i));
                         object.put("value", editTexts.get(i).getText().toString());
 
@@ -364,7 +371,4 @@ public class MultiText extends LinearLayout implements TextWatcher {
         void onElementStatusChanged();
     }
 
-    public String getElementId() {
-        return id;
-    }
 }

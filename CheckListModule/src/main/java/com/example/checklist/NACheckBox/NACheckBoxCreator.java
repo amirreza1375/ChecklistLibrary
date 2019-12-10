@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.checklist.BaseViewModel.BaseView;
 import com.example.checklist.MultiTextGenerator.MultiText;
 import com.example.checklist.R;
 
@@ -21,13 +22,14 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static com.example.checklist.GlobalFuncs.conf_name;
 import static com.example.checklist.GlobalFuncs.createTitle;
 import static com.example.checklist.GlobalFuncs.dpToPx;
 import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.GlobalFuncs.setOrgProps;
 import static com.example.checklist.PageGenerator.CheckListPager.setMandatories;
 
-public class NACheckBoxCreator extends LinearLayout{
+public class NACheckBoxCreator extends BaseView {
 
     //region element keys
     private String conf_disableOthers = "disableOther";
@@ -58,9 +60,7 @@ public class NACheckBoxCreator extends LinearLayout{
     private int min;
     private int max;
     private int disableOthers = 1;
-    private String name;
     private String title;
-    private String id;
     private ArrayList<String> answers;
     private int position;
     private JSONArray choices;
@@ -98,6 +98,15 @@ public class NACheckBoxCreator extends LinearLayout{
     //endregion
 
     private void init(Context context) {
+
+        try {
+            visibleSi = element.getString("visibleIf");
+            isVisibleSi = true;
+            name = element.getString(conf_name);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
 
         isMaxMinExist = isMaxMinExist(element);
         getSeekBarPropsFromElement(element);
@@ -323,7 +332,7 @@ public class NACheckBoxCreator extends LinearLayout{
                 JSONObject object = new JSONObject();
                 try {
                     object.put("name", name);
-                    object.put("id", id);
+                    object.put("id", viewID);
                     object.put("name", name);
                     object.put("value", i + "");
                     object.put("index", i);
@@ -345,7 +354,7 @@ public class NACheckBoxCreator extends LinearLayout{
         try {
             disableOthers = element.has(conf_disableOthers) ? element.getInt(conf_disableOthers) : -1;
             choices = element.has(conf_choices) ? element.getJSONArray(conf_choices) : new JSONArray();
-            id = element.has(conf_id) ? element.getString(conf_id) : "";
+            viewID = element.has(conf_id) ? element.getString(conf_id) : "";
             name = element.has(conf_name) ? element.getString(conf_name) : "";
             max = element.has(conf_rangeMax) ? element.getInt(conf_rangeMax) : 100;
             min = element.has(conf_rangeMin) ? element.getInt(conf_rangeMin) : 0;
@@ -364,8 +373,5 @@ public class NACheckBoxCreator extends LinearLayout{
         this.listener = listener;
     }
 
-    public String getElementId() {
-        return id;
-    }
 
 }

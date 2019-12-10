@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.checklist.BaseViewModel.BaseView;
 import com.example.checklist.R;
 import com.example.checklist.imageview.GestureImageView;
 
@@ -23,7 +24,7 @@ import java.util.ArrayList;
 
 import static com.example.checklist.GlobalFuncs.conf_name;
 
-public class LayoutMaker extends LinearLayout {
+public class LayoutMaker extends BaseView {
 
     private String correctAnswer = "correctAnswer";
 
@@ -55,6 +56,13 @@ public class LayoutMaker extends LinearLayout {
     }
 
     private void init(Context context){
+        try {
+            visibleSi = element.getString("visibleIf");
+            isVisibleSi = true;
+            name = element.getString(conf_name);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         getVariablesFromElement(element);
 

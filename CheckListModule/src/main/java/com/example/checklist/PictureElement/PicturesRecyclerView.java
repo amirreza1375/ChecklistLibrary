@@ -47,7 +47,7 @@ public class PicturesRecyclerView extends RecyclerView.Adapter<PicturesRecyclerV
         holder.cat_id = models.get(position).getId();
         holder.index = position;
 
-        holder.img.setImageResource(R.drawable.pic);
+        holder.img.setImageResource(R.drawable.ic_camera_alt_black_24dp);
 
         if (models.get(position).getPath() != null) {
             if (!models.get(position).getPath().equals("")) {

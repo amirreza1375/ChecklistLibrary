@@ -31,6 +31,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.RotateAnimation;
@@ -78,7 +79,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
     public static String FLAG_CUSTOM_CAMERA = "com.example.checklist.Camera.ActivityCamera";
 
     public static String IMAGE_RESULT = "path";
-    String App_Folder_Name ;
+    String App_Folder_Name;
     String sub_folder_name = "Pictures";
     public static String sub_folder_path = "";
 
@@ -102,7 +103,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
 
     private boolean has_flash = false;
 
-//    private Uri imageUri;
+    //    private Uri imageUri;
     private LinearLayout cancel;
     private LinearLayout tick;
     private int camera_id = Camera.CameraInfo.CAMERA_FACING_BACK;
@@ -151,6 +152,10 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
 
     private int last_known_z = 0;
     private int last_known_y = 0;
+
+    private int x, y, z;
+    private Bitmap currentBm;
+    private String model;
 
     private void getImageRatio() {
 
@@ -393,7 +398,6 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
 //            return Uri.EMPTY;
 //        }
 //    }
-
     private void closeCamera() {
         setResult(RESULT_CANCELED);
         finish();
@@ -409,39 +413,40 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
                 @Override
                 public void onPictureTaken(final byte[] data, Camera camera) {
 
-                    int x = last_known_orientation;
-                    int y = last_known_y;
-                    int z = last_known_z;
+                    x = last_known_orientation;
+                    y = last_known_y;
+                    z = last_known_z;
 
 //                    new Thread(new Runnable() {
 //                        @Override
 //                        public void run() {
-                            if (mCamera != null) {
-                                mCamera.stopPreview();
-                                MediaPlayer mediaPlayer = MediaPlayer.create(ActivityCamera.this, R.raw.defult);
-                                mediaPlayer.start();
-                            }
+                    if (mCamera != null) {
+                        mCamera.stopPreview();
+                        MediaPlayer mediaPlayer = MediaPlayer.create(ActivityCamera.this, R.raw.defult);
+                        mediaPlayer.start();
+                    }
 
-                            current_bm = BitmapFactory.decodeByteArray(data, 0, data.length);
+                    currentBm = BitmapFactory.decodeByteArray(data, 0, data.length);
 
-                            String model = getDeviceName();
+                    model = getDeviceName();
 
-                            if (camera_id == Camera.CameraInfo.CAMERA_FACING_BACK) {
-                                //  if (last_known_orientation == 0) {
-                                if (model.equals("LGE")){
-                                    path = String.valueOf(createImageFile(rotate(current_bm, 90),x,y,z));
-                                }else {
-                                    path = String.valueOf(createImageFile(current_bm,x,y,z));
-                                }
-                            } else {
-                                path = String.valueOf(createImageFile(rotate(current_bm, 270),x,y,z));
-                            }
+//                            if (camera_id == Camera.CameraInfo.CAMERA_FACING_BACK) {
+//                                //  if (last_known_orientation == 0) {
+//                                if (model.equals("LGE")){
+//                                    currentBm = current_bm;
+////                                    path = String.valueOf(createImageFile(rotate(current_bm, 90),x,y,z));
+//                                }else {
+////                                    path = String.valueOf(createImageFile(current_bm,x,y,z));
+//                                }
+//                            } else {
+////                                path = String.valueOf(createImageFile(rotate(current_bm, 270),x,y,z));
+//                            }
 
 //                    Log.i(TAG, "onPictureTaken: " + last_known_orientation);
 
-                            SharedPreferences.Editor editor = getSharedPreferences(Config.sharedPreferencName, MODE_PRIVATE).edit();
-                            editor.putString(Config.img_path, path);
-                            editor.apply();
+                    SharedPreferences.Editor editor = getSharedPreferences(Config.sharedPreferencName, MODE_PRIVATE).edit();
+                    editor.putString(Config.img_path, path);
+                    editor.apply();
 //                        }
 //                    }).start();
 
@@ -543,7 +548,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
         return false;
     }
 
-    public  String getDeviceName() {
+    public String getDeviceName() {
         String manufacturer = Build.MANUFACTURER;
 //        String model = Build.MODEL;
 //        showToast(this,manufacturer);
@@ -610,7 +615,9 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
      * @return
      */
 
-    private File createImageFile(Bitmap bm,int x,int y,int z) {
+    private File createImageFile(Bitmap bm, int x, int y, int z) {
+        if (bm == null)
+            return new File("");
 //        Log.i("ACCC", "createImageFile: x = " + last_known_orientation);
 //        Log.i("ACCC", "createImageFile: y = " + last_known_y);
 //        Log.i("ACCC", "createImageFile: z = " + last_known_z);
@@ -655,13 +662,14 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
                 }
             }
         }
-
+//
         Log.i(TAG, "createImageFile: width = " + bm.getWidth());
         Log.i(TAG, "createImageFile: height = " + bm.getHeight());
         Log.i(TAG, "createImageFile: " + bm.getByteCount());
 
         createMandatoryFolders();
 
+//
         String root = Environment.getExternalStorageDirectory().toString();
         File myDir = new File(root
                 + File.separator
@@ -686,25 +694,29 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
             log(e.getMessage());
             Log.i(TAG, "createImageFile: " + e);
         }
-        remove_image_from_pictures(fname);
+//        remove_image_from_pictures(fname);
         return file;
     }
 
     private void createMandatoryFolders() {
-        File APPFOLDER = new File(Environment.getExternalStorageDirectory()
-                .getAbsolutePath() + File.separator + App_Folder_Name);
-        if (!APPFOLDER.exists())
-            APPFOLDER.mkdirs();
+        try {
+            File APPFOLDER = new File(Environment.getExternalStorageDirectory()
+                    .getAbsolutePath() + File.separator + App_Folder_Name);
+            if (!APPFOLDER.exists())
+                APPFOLDER.mkdirs();
 
-        File PictureFolder = new File(APPFOLDER.getAbsolutePath()
-                , sub_folder_name);
-        if (!PictureFolder.exists())
-            PictureFolder.mkdirs();
+            File PictureFolder = new File(APPFOLDER.getAbsolutePath()
+                    , sub_folder_name);
+            if (!PictureFolder.exists())
+                PictureFolder.mkdirs();
 
-        File SubFolder = new File(PictureFolder.getAbsolutePath()
-                , sub_folder_path);
-        if (!SubFolder.exists())
-            SubFolder.mkdirs();
+            File SubFolder = new File(PictureFolder.getAbsolutePath()
+                    , sub_folder_path);
+            if (!SubFolder.exists())
+                SubFolder.mkdirs();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -797,6 +809,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
             perfotm_cancel_pic();
         }
         if (v == tick) {
+            saveImage();
             this.isAppClosed = false;
             Intent data = new Intent();
             data.putExtra(IMAGE_RESULT, path);
@@ -824,6 +837,19 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
 //        }
     }
 
+    private void saveImage() {
+        if (camera_id == Camera.CameraInfo.CAMERA_FACING_BACK) {
+            //  if (last_known_orientation == 0) {
+            if (model.equals("LGE")) {
+                path = String.valueOf(createImageFile(rotate(currentBm, 90), x, y, z));
+            } else {
+                path = String.valueOf(createImageFile(currentBm, x, y, z));
+            }
+        } else {
+            path = String.valueOf(createImageFile(rotate(currentBm, 270), x, y, z));
+        }
+    }
+
     /**
      * rotate camera if camera id changed
      */
@@ -843,6 +869,8 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
         mCamera.release();
         mCamera = getCameraInstance(camera_id);
         mPreview = new CameraPreview(this, mCamera);
+        LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        mPreview.setLayoutParams(params1);
         preview.addView(mPreview);
 
         // set Camera parameters

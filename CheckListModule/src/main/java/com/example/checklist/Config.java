@@ -1,6 +1,12 @@
 package com.example.checklist;
 
 public class Config {
+    public  enum tipo {
+        TIME_TRACKER , PRICE
+    }
+    public static String TIME_TRACKER_KEY = "time_tracker";
+    public static String TIME_TRACKER_TIPO = "TimeTracker";
+
     public static final String sharedPreferencName = "shared";
     public static String UserLog = "UserLog";
     public static String email = "userEmail";

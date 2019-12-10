@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.checklist.BaseViewModel.BaseView;
 import com.example.checklist.Config;
 import com.example.checklist.MultiTextGenerator.MultiText;
 import com.example.checklist.PictureElement.PicturePickerItemModel;
@@ -23,12 +24,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import static com.example.checklist.GlobalFuncs.conf_id;
+import static com.example.checklist.GlobalFuncs.conf_name;
 import static com.example.checklist.GlobalFuncs.createTitle;
 import static com.example.checklist.GlobalFuncs.dpToPx;
 import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.PageGenerator.CheckListPager.setMandatories;
 
-public class ImageFileConcept extends LinearLayout {
+public class ImageFileConcept extends BaseView {
 
     //region used variables
     private Button button;
@@ -43,7 +45,6 @@ public class ImageFileConcept extends LinearLayout {
     private String btnText;
     private boolean enable;
     private boolean hasPic;
-    private String elementId;
     private MultiText.MandatoryListener listener;
     private Context context;
     //endregion
@@ -71,6 +72,13 @@ public class ImageFileConcept extends LinearLayout {
     //endregion
 
     private void init(Context context) {
+        try {
+            visibleSi = element.getString("visibleIf");
+            isVisibleSi = true;
+            name = element.getString(conf_name);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         getVariablesFromElement(element);
 
@@ -183,7 +191,7 @@ public class ImageFileConcept extends LinearLayout {
                     JSONObject pic = pics.getJSONObject(i);
 
                     if (pic.getString(conf_id)
-                            .equals(elementId)) {
+                            .equals(viewID)) {
                         return true;
                     }
 
@@ -209,7 +217,7 @@ public class ImageFileConcept extends LinearLayout {
 
             isRequired = isR || isRE;
 
-            elementId = element.has(PicturePickerItemModel.conf_id) ? element.getString(conf_id) : "";
+             viewID = element.has(PicturePickerItemModel.conf_id) ? element.getString(conf_id) : "";
         } catch (JSONException e) {
             e.printStackTrace();
             log(e.getMessage());
@@ -241,13 +249,6 @@ public class ImageFileConcept extends LinearLayout {
     }
 
 
-    public String getElementId() {
-        return elementId;
-    }
-
-    public void setElementId(String elementId) {
-        this.elementId = elementId;
-    }
 
     public Button getButton() {
         return button;

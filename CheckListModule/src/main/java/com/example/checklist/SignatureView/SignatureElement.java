@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.Build;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
@@ -15,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.checklist.BaseViewModel.BaseView;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,6 +26,7 @@ import java.io.FileOutputStream;
 
 import static com.example.checklist.GlobalFuncs.checkStoragePermission;
 import static com.example.checklist.GlobalFuncs.conf_id;
+import static com.example.checklist.GlobalFuncs.conf_name;
 import static com.example.checklist.GlobalFuncs.conf_value;
 import static com.example.checklist.GlobalFuncs.createTitle;
 import static com.example.checklist.GlobalFuncs.dpToPx;
@@ -30,7 +34,7 @@ import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.GlobalFuncs.setOrgProps;
 import static com.example.checklist.GlobalFuncs.showToast;
 
-public class SignatureElement extends LinearLayout implements View.OnClickListener
+public class SignatureElement extends BaseView implements View.OnClickListener
             ,SignatureGenerator.SignatureListener {
 
     private static final String TAG = "SignetureElement";
@@ -40,7 +44,6 @@ public class SignatureElement extends LinearLayout implements View.OnClickListen
     private ImageView sigenatureViewver;
     private AlertDialog alertDialog;
 
-    private String elementId;
     private boolean isRequired;
     private JSONObject element;
     private Context context;
@@ -71,11 +74,16 @@ public class SignatureElement extends LinearLayout implements View.OnClickListen
         super(context, attrs, defStyleAttr);
     }
 
-    public SignatureElement(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
+
 
     public void init(Context context){
+        try {
+            visibleSi = element.getString("visibleIf");
+            isVisibleSi = true;
+            name = element.getString(conf_name);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         getVariablesFromElement(element);
 
@@ -86,7 +94,9 @@ public class SignatureElement extends LinearLayout implements View.OnClickListen
         cardParams.setMargins(dpToPx(2,context),dpToPx(4,context),dpToPx(2,context),dpToPx(4,context));
         cardView.setLayoutParams(cardParams);
         cardView.setRadius(dpToPx(4,context));
-        cardView.setElevation(dpToPx(4,context));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            cardView.setElevation(dpToPx(4,context));
+        }
 
         addView(cardView);
 
@@ -221,7 +231,7 @@ public class SignatureElement extends LinearLayout implements View.OnClickListen
 
     private void getVariablesFromElement(JSONObject element) {
         try {
-            elementId = element.has(conf_id) ? element.getString(conf_id) : "";
+            viewID = element.has(conf_id) ? element.getString(conf_id) : "";
 
 //            isRequired = element.has(conf_isRequired) ? element.getBoolean(conf_isRequired) : false;
         } catch (JSONException e) {
@@ -230,7 +240,4 @@ public class SignatureElement extends LinearLayout implements View.OnClickListen
         }
     }
 
-    public String getElementId() {
-        return elementId;
-    }
 }

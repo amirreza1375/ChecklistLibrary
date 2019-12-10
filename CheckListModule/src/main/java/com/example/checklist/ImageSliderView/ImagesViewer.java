@@ -23,6 +23,7 @@ import com.daimajia.slider.library.Animations.DescriptionAnimation;
 import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.TextSliderView;
+import com.example.checklist.BaseViewModel.BaseView;
 import com.example.checklist.R;
 import com.example.checklist.imageview.GestureImageView;
 
@@ -32,12 +33,13 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.ArrayList;
 
+import static com.example.checklist.GlobalFuncs.conf_name;
 import static com.example.checklist.GlobalFuncs.createTitle;
 import static com.example.checklist.GlobalFuncs.dpToPx;
 import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.GlobalFuncs.setOrgProps;
 
-public class ImagesViewer extends LinearLayout {
+public class ImagesViewer extends BaseView {
 
 
     public enum ImageStatus {
@@ -88,6 +90,13 @@ public class ImagesViewer extends LinearLayout {
 
 
     private void init(Context context){
+        try {
+            visibleSi = element.getString("visibleIf");
+            isVisibleSi = true;
+            name = element.getString(conf_name);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         if (imageFiles.size() == 0){
             removeView();

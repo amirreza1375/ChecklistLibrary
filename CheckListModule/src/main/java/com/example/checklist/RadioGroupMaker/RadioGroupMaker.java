@@ -3,12 +3,14 @@ package com.example.checklist.RadioGroupMaker;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.example.checklist.BaseViewModel.BaseView;
 import com.example.checklist.GlobalFuncs;
 import com.example.checklist.MultiTextGenerator.MultiText;
 import com.example.checklist.R;
@@ -19,6 +21,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import static com.example.checklist.CheckListGenerator.CheckListMaker.TAG;
 import static com.example.checklist.GlobalFuncs.conf_choices;
 import static com.example.checklist.GlobalFuncs.conf_disableOthers;
 import static com.example.checklist.GlobalFuncs.conf_id;
@@ -31,7 +34,7 @@ import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.GlobalFuncs.setOrgProps;
 import static com.example.checklist.PageGenerator.CheckListPager.setMandatories;
 
-public class RadioGroupMaker extends LinearLayout {
+public class RadioGroupMaker extends BaseView {
 
     //region variables
     private Context context;
@@ -43,10 +46,9 @@ public class RadioGroupMaker extends LinearLayout {
     //endregion
 
     //region used variables
+    private ArrayList<RadioButton> btns;
     private MultiText.MandatoryListener listener;
     private int choosenIndex = -1;
-    private String id;
-    private String name;
     private ArrayList<JSONObject> values;
     private int disableOthers = -1;
     //endregion
@@ -63,6 +65,7 @@ public class RadioGroupMaker extends LinearLayout {
         this.answer = answer;
         this.position = position;
         values = new ArrayList<>();
+        btns = new ArrayList<>();
         init(context);
     }
 
@@ -75,6 +78,12 @@ public class RadioGroupMaker extends LinearLayout {
     }
 
     private void init(Context context) {
+        try {
+            visibleSi = element.getString("visibleIf");
+            isVisibleSi = true;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         parsJSON(element);
 
@@ -123,11 +132,12 @@ public class RadioGroupMaker extends LinearLayout {
 
     public JSONObject getValue(boolean isNextClicked) {
         if (choosenIndex == -1) {
+            if (!isShowen)
             isMandatoryAnswered(isNextClicked);
             JSONObject jsonObject = new JSONObject();
             try {
                 jsonObject.put(conf_name,name);
-                jsonObject.put(conf_id,id);
+                jsonObject.put(conf_id,viewID);
                 jsonObject.put(conf_value,"");
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -150,7 +160,9 @@ public class RadioGroupMaker extends LinearLayout {
                 addAnswer(btn, answer);
                 btn.setEnabled(enabled);
                 radioGroup.addView(btn);
+                btns.add(btn);
                 addToValue(object, i);
+                Log.i(TAG, "addRadioButtons: ");
 
             }
 
@@ -159,7 +171,9 @@ public class RadioGroupMaker extends LinearLayout {
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
                     choosenIndex = checkedId;
                     removeMandatoryError();
+                    btns.get(checkedId).setChecked(true);
                     listener.onElementStatusChanged();
+                    Log.i(TAG, "onCheckedChanged: "+checkedId);
                 }
             });
 
@@ -178,6 +192,7 @@ public class RadioGroupMaker extends LinearLayout {
                     btn.getId()) {
                 choosenIndex = btn.getId();
                 btn.setChecked(true);
+                Log.i(TAG, "addAnswer: "+choosenIndex);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -190,7 +205,7 @@ public class RadioGroupMaker extends LinearLayout {
         JSONObject value = new JSONObject();
         try {
             value.put("name", name);
-            value.put("id", id);
+            value.put("id", viewID);
             value.put("status", true);
             value.put("index", item);
             value.put("value", object.getInt("value"));
@@ -227,7 +242,7 @@ public class RadioGroupMaker extends LinearLayout {
 
     private void parsJSON(JSONObject element) {
         try {
-            id = element.has(conf_id) ? element.getString(conf_id) : "";
+            viewID = element.has(conf_id) ? element.getString(conf_id) : "";
             name = element.has(conf_name) ? element.getString(conf_name) : "";
             disableOthers = element.has(conf_disableOthers) ? element.getInt(conf_disableOthers) : -1;
             isRequired = element.has(conf_isRequired) ? element.getBoolean(conf_isRequired) : false;
@@ -247,9 +262,17 @@ public class RadioGroupMaker extends LinearLayout {
         }
     }
 
-    public static int dpToPx(float dp, Context context) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
+    public void clearData(){
+        for (RadioButton btn : btns){
+            if (btn.isChecked()){
+                btn.setChecked(false);
+                Log.i(TAG, "clearData: "+btn.getId());
+            }
+        }
+        choosenIndex = -1;
     }
+
+
 
     public MultiText.MandatoryListener getListener() {
         return listener;
@@ -259,7 +282,6 @@ public class RadioGroupMaker extends LinearLayout {
         this.listener = listener;
     }
 
-    public String getElementId() {
-        return id;
-    }
+
+
 }

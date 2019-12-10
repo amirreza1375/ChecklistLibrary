@@ -1,1 +1,2 @@
-include ':app', ':CheckListModule'
+include ':app', ':CheckListModulee'
+project(':CheckListModulee').projectDir = new File('CheckListModule')

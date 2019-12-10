@@ -3,8 +3,10 @@ package com.example.checklist;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.util.TypedValue;
@@ -24,6 +26,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class GlobalFuncs {
+
+
 
     //region json keys
 
@@ -105,6 +109,8 @@ public class GlobalFuncs {
             return "no title";
         }
     }
+
+
 
     public static ArrayList<JSONObject> convert_JSONArray_to_ArrayList(JSONArray array) {
         ArrayList<JSONObject> objects = new ArrayList<>();
