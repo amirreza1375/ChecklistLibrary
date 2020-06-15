@@ -12,6 +12,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.checklist.BaseViewModel.BaseView;
+import com.example.checklist.BaseViewModel.ElemetActionListener;
+import com.example.checklist.BaseViewModel.MandatoryListener;
 import com.example.checklist.MultiTextGenerator.MultiText;
 import com.example.checklist.R;
 
@@ -53,9 +55,8 @@ public class NACheckBoxCreator extends BaseView {
     //region used variables
     private EditText editText;
     private Context context;
-    private MultiText.MandatoryListener listener;
+    private MandatoryListener listener;
     private boolean isMaxMinExist = false;
-    private boolean isRequired = false;
     private int choosenCount = 0;
     private int min;
     private int max;
@@ -73,8 +74,8 @@ public class NACheckBoxCreator extends BaseView {
     //region constructor
     public NACheckBoxCreator(Context context, JSONObject element
             , boolean enabled, ArrayList<String> answers, int position
-            , MultiText.MandatoryListener listener) {
-        super(context);
+            , MandatoryListener listener, ElemetActionListener callBack) {
+        super(context,callBack);
         this.context = context;
         this.element = element;
         this.enabled = enabled;
@@ -124,7 +125,7 @@ public class NACheckBoxCreator extends BaseView {
 
         //region title props
 
-        TextView titleTxt = createTitle(context, isRequired, element);
+        TextView titleTxt = createTitle(context, isMandatory, element);
         //endregion
 
         //region footer props
@@ -218,7 +219,8 @@ public class NACheckBoxCreator extends BaseView {
                 checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        listener.onElementStatusChanged();
+                        listener.onElementStatusChanged(true);
+                        callBack.onAction("N/A",getElementId(),element.toString(),position);
                         checkBoxStatuses.put(checkBox.getId(), isChecked);
                         int id = checkBox.getId();
                         if (id == disableOthers) {
@@ -296,7 +298,7 @@ public class NACheckBoxCreator extends BaseView {
     }
 
     private boolean isMandatoriesAnswered(boolean isNextClicked) {
-        if (isRequired) {
+        if (isMandatory) {
             boolean FLAG = false;
             for (int i = 0; i < checkBoxes.size(); i++) {
                 if (checkBoxes.get(i).isChecked()) {
@@ -358,18 +360,18 @@ public class NACheckBoxCreator extends BaseView {
             name = element.has(conf_name) ? element.getString(conf_name) : "";
             max = element.has(conf_rangeMax) ? element.getInt(conf_rangeMax) : 100;
             min = element.has(conf_rangeMin) ? element.getInt(conf_rangeMin) : 0;
-            isRequired = element.has(conf_required) ? element.getBoolean(conf_required) : false;
+            isMandatory = element.has(conf_required) ? element.getBoolean(conf_required) : false;
         } catch (JSONException e) {
             e.printStackTrace();
             log(e.getMessage());
         }
     }
 
-    public MultiText.MandatoryListener getListener() {
+    public MandatoryListener getListener() {
         return listener;
     }
 
-    public void setListener(MultiText.MandatoryListener listener) {
+    public void setListener(MandatoryListener listener) {
         this.listener = listener;
     }
 

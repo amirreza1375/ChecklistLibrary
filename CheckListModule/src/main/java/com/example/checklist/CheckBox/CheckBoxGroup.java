@@ -10,7 +10,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.checklist.BaseViewModel.BaseView;
-import com.example.checklist.MultiTextGenerator.MultiText;
+import com.example.checklist.BaseViewModel.ElemetActionListener;
+import com.example.checklist.BaseViewModel.MandatoryListener;
 import com.example.checklist.R;
 
 import org.json.JSONArray;
@@ -20,6 +21,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static com.example.checklist.GlobalFuncs.conf_rangeMax;
+import static com.example.checklist.GlobalFuncs.conf_rangeMin;
+import static com.example.checklist.GlobalFuncs.conf_required;
 import static com.example.checklist.GlobalFuncs.createTitle;
 import static com.example.checklist.GlobalFuncs.dpToPx;
 import static com.example.checklist.GlobalFuncs.log;
@@ -31,9 +35,8 @@ public class CheckBoxGroup extends BaseView {
     //region element keys
     private String conf_disableOthers = "disableOther";
     private String conf_title = "title";
-    private String conf_rangeMax = "rangeMax";
-    private String conf_rangeMin = "minSelect";
-    private String conf_required = "isRequired";
+
+
     private String conf_name = "name";
     private String conf_id = "id";
     private String conf_choices = "choices";
@@ -49,9 +52,8 @@ public class CheckBoxGroup extends BaseView {
 
     //region used variables
     private Context context;
-    private MultiText.MandatoryListener listener;
+    private MandatoryListener listener;
     private boolean isMaxMinExist = false;
-    private boolean isRequired = false;
     private int choosenCount = 0;
     private int min;
     private int max;
@@ -64,13 +66,15 @@ public class CheckBoxGroup extends BaseView {
     private HashMap<Integer, Boolean> checkBoxStatuses;
     private int maxId = -1;
     private int minId = -1;
+    private TextView titleTxt;
+    private TextView guidTxt;
     //endregion
 
     //region constructor
     public CheckBoxGroup(Context context, JSONObject element
             , boolean enabled, ArrayList<String> answers, int position
-            , MultiText.MandatoryListener listener) {
-        super(context);
+            , MandatoryListener listener, ElemetActionListener callBack) {
+        super(context,callBack);
 
         this.context = context;
         this.element = element;
@@ -111,7 +115,7 @@ public class CheckBoxGroup extends BaseView {
         //endregion
 
         //region guide text
-        TextView guidTxt = new TextView(context);
+        guidTxt = new TextView(context);
         guidTxt.setText(context.getString(R.string.sub_title_m));
         guidTxt.setTextColor(Color.RED);
         guidTxt.setTextSize(14);
@@ -119,7 +123,7 @@ public class CheckBoxGroup extends BaseView {
 
         //region title props
 
-        TextView titleTxt = createTitle(context, isRequired, element);
+        titleTxt = createTitle(context, isMandatory, element);
         //endregion
 
         //region footer props
@@ -209,7 +213,8 @@ public class CheckBoxGroup extends BaseView {
                         if (checkBox.getId() == disableOthers) {
                             disableOthersById(checkBox.getId(), isChecked);
                         }
-                        listener.onElementStatusChanged();
+                        checkMandatory();
+                        listener.onElementStatusChanged(true);
                         removeMandatoryError();
                     }
                 });
@@ -225,11 +230,26 @@ public class CheckBoxGroup extends BaseView {
 
     }
 
+    private void checkMandatory() {
+        boolean FLAG_ANSWERED = false;
+        for (int i = minId ; i <= maxId ; i++){
+            if (checkBoxStatuses.get(i) != null){
+                if (checkBoxStatuses.get(i)){
+                    FLAG_ANSWERED = true;
+                    break;
+                }
+            }
+        }
+        isViewAnswered = FLAG_ANSWERED;
+    }
+
+
     private void setAnswer(ArrayList<String> answers, CheckBox checkBox, String value) {
 
         for (int i = 0; i < answers.size(); i++) {
             if (value.equals(answers.get(i))) {
                 checkBox.setChecked(true);
+                isViewAnswered = true;
                 checkBoxStatuses.put(checkBox.getId(), true);
                 if (disableOthers != -1)
                     if (disableOthers == checkBox.getId())
@@ -279,7 +299,7 @@ public class CheckBoxGroup extends BaseView {
     }
 
     private boolean isMandatoriesAnswered(boolean isNextClicked) {
-        if (isRequired) {
+        if (isMandatory) {
             boolean FLAG = false;
             for (int i = 0; i < checkBoxes.size(); i++) {
                 if (checkBoxes.get(i).isChecked()) {
@@ -335,13 +355,9 @@ public class CheckBoxGroup extends BaseView {
 
     private void getSeekBarPropsFromElement(JSONObject element) {
         try {
-            disableOthers = element.has(conf_disableOthers) ? element.getInt(conf_disableOthers) : -1;
             choices = element.has(conf_choices) ? element.getJSONArray(conf_choices) : new JSONArray();
-            viewID = element.has(conf_id) ? element.getString(conf_id) : "";
-            name = element.has(conf_name) ? element.getString(conf_name) : "";
             max = element.has(conf_rangeMax) ? element.getInt(conf_rangeMax) : choices.length();
             min = element.has(conf_rangeMin) ? element.getInt(conf_rangeMin) : 0;
-            isRequired = element.has(conf_required) ? element.getBoolean(conf_required) : false;
         } catch (JSONException e) {
             e.printStackTrace();
             log(e.getMessage());
@@ -355,12 +371,18 @@ public class CheckBoxGroup extends BaseView {
             }
         }
     }
+    public TextView getTitle(){
+        return titleTxt;
+    }
+    public TextView getGuidTxt(){
+        return guidTxt;
+    }
 
-    public MultiText.MandatoryListener getListener() {
+    public MandatoryListener getListener() {
         return listener;
     }
 
-    public void setListener(MultiText.MandatoryListener listener) {
+    public void setListener(MandatoryListener listener) {
         this.listener = listener;
     }
 

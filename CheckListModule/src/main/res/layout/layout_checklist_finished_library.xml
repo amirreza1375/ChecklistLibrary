@@ -1,95 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    >
+
+
 
     <LinearLayout
+        android:layout_marginTop="32dp"
+        android:paddingBottom="8dp"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/animation_view"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:layout_marginTop="16dp"
-            app:lottie_autoPlay="true"
-            app:lottie_fileName="done.json"
-            app:lottie_loop="true"
-            app:lottie_repeatCount="0" />
+
+
+      <Button
+          android:maxLines="1"
+          android:textSize="15sp"
+          android:id="@+id/finish"
+          android:textColor="#fff"
+          android:layout_marginLeft="32dp"
+          android:layout_marginRight="32dp"
+          android:background="@drawable/finish_page_teminar_btn"
+          android:text="@string/fragment_name_finish"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content" />
 
         <LinearLayout
+            android:layout_marginRight="32dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="bottom"
-            android:orientation="vertical"
-            android:paddingBottom="8dp">
+            android:layout_height="wrap_content">
+           <LinearLayout
+               android:layout_marginRight="0.2dp"
+               android:background="@drawable/border_back"
+               android:id="@+id/back_checklist"
+               android:gravity="center"
+               android:layout_weight="1"
+               android:layout_width="0dp"
+               android:layout_height="match_parent">
+               <TextView
+                   android:layout_margin="4dp"
+                   android:textSize="15sp"
+                   android:textColor="#fff"
+                   android:text="@string/finished"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content" />
+           </LinearLayout>
 
-
-            <Button
-                android:id="@+id/finish"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="32dp"
-                android:layout_marginRight="32dp"
-                android:background="@drawable/finish_page_teminar_btn"
-                android:maxLines="1"
-                android:text="@string/fragment_name_finish"
-                android:textColor="#fff"
-                android:textSize="15sp" />
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="32dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginRight="32dp"
-                android:minHeight="42dp"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:id="@+id/back_checklist"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginRight="0.2dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/border_back"
-                    android:gravity="center">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="4dp"
-                        android:text="@string/finished"
-                        android:textColor="#fff"
-                        android:textSize="15sp" />
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:id="@+id/btn_save"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="0.2dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/border_save"
-                    android:gravity="center">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="4dp"
-                        android:text="@string/save"
-                        android:textColor="#fff"
-                        android:textSize="15sp" />
-                </LinearLayout>
-
+                android:layout_marginLeft="0.2dp"
+                android:background="@drawable/border_save"
+                android:id="@+id/btn_save"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_margin="4dp"
+                    android:textSize="15sp"
+                    android:textColor="#fff"
+                    android:text="@string/save"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
-
         </LinearLayout>
+
+
+
     </LinearLayout>
-</ScrollView>
+</LinearLayout>

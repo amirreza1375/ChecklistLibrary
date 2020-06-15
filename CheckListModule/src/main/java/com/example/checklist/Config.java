@@ -4,6 +4,9 @@ public class Config {
     public  enum tipo {
         TIME_TRACKER , PRICE
     }
+
+    public static final String DATABASE_NAME_MODULE = "tcmodule.db";
+    public static final int VERSION = 1;
     public static String TIME_TRACKER_KEY = "time_tracker";
     public static String TIME_TRACKER_TIPO = "TimeTracker";
 

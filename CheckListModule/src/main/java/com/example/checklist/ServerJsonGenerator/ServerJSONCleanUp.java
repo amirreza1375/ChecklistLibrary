@@ -52,16 +52,13 @@ public class ServerJSONCleanUp {
 
                 if (answer.getString(GlobalFuncs.conf_type)
                         .equals(GlobalFuncs.conf_checkBox)){//check box
-
                     //json array
                     JSONArray checks = cleanUpCheckBox(answer);
                     for (int j = 0 ; j < checks.length() ; j++){
 
                         finalJSON.put(checks.getJSONObject(j));
-
                     }
                     continue;
-
                 }
 
                 if (answer.getString(GlobalFuncs.conf_type)
@@ -117,12 +114,20 @@ public class ServerJSONCleanUp {
 
             JSONObject value = values.get(i);
 
-            if (!value.has(conf_id)){
+            try {
+                if (value.getString(conf_value).equals("")) {
+
+                    values.remove(i);
+
+                    i--;
+
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
 
                 values.remove(i);
 
                 i--;
-
             }
 
         }
@@ -169,35 +174,7 @@ public class ServerJSONCleanUp {
     }
 
     private JSONObject cleanUpNouidlider(JSONObject answer) {
-        JSONObject finalCommentJSON = new JSONObject();
-        int position;
-        String type = GlobalFuncs.conf_seekBar;
-        String id;
-
-        try {
-            position = answer.getInt(GlobalFuncs.conf_position);
-            if (!answer.has(GlobalFuncs.conf_value)){
-                return new JSONObject();
-            }
-            if (answer.getString(GlobalFuncs.conf_value).equals("")){
-                return new JSONObject();
-            }
-            id = answer.getString(GlobalFuncs.conf_id);
-
-            finalCommentJSON.put(GlobalFuncs.conf_position,position);
-            finalCommentJSON.put(GlobalFuncs.conf_type,type);
-            finalCommentJSON.put(GlobalFuncs.conf_id,id);
-
-            finalCommentJSON.put(GlobalFuncs.conf_value,answer.getString(GlobalFuncs.conf_value));
-            finalCommentJSON.put(GlobalFuncs.conf_name,answer.getString(GlobalFuncs.conf_name));
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-            log(e.getMessage());
-        }
-
-        return finalCommentJSON;
+        return answer;
     }
 
     private JSONObject cleanUpComment(JSONObject answer) {
@@ -233,49 +210,21 @@ public class ServerJSONCleanUp {
     }
 
     private JSONObject cleanUpRadioButton(JSONObject answer) {
-        JSONObject finalRadioJSON = new JSONObject();
-        int position;
-        String type = GlobalFuncs.conf_radioButton;
-        String id;
-
-        try {
-            position = answer.getInt(GlobalFuncs.conf_position);
-            id = answer.getString(GlobalFuncs.conf_id);
-
-            JSONObject radioValue = answer.getJSONObject(GlobalFuncs.conf_value);
-
-            if (radioValue.getString(GlobalFuncs.conf_value).equals("")){
-                return new JSONObject();
-            }
-
-            finalRadioJSON.put(GlobalFuncs.conf_position,position);
-            finalRadioJSON.put(GlobalFuncs.conf_type,type);
-            finalRadioJSON.put(GlobalFuncs.conf_id,id);
-
-            finalRadioJSON.put(GlobalFuncs.conf_name,radioValue.getString(GlobalFuncs.conf_name));
-            finalRadioJSON.put(GlobalFuncs.conf_index,radioValue.getString(GlobalFuncs.conf_index));
-            finalRadioJSON.put(GlobalFuncs.conf_value,radioValue.getString(GlobalFuncs.conf_value));
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-            log(e.getMessage());
-        }
-
-        return finalRadioJSON;
+        return answer;
     }
 
     private JSONArray cleanUpCheckBox(JSONObject object){
         JSONArray finalCheckJSON = new JSONArray();
         int position;
         String type = GlobalFuncs.conf_checkBox;
-        String id;
+        String id,name;
 
 
         //get variables
         try {
             position = object.getInt(GlobalFuncs.conf_position);
             id = object.getString(GlobalFuncs.conf_id);
+            name = object.getString(GlobalFuncs.conf_name);
 
             JSONArray checkValues = object.getJSONArray(GlobalFuncs.conf_value);
             for (int i = 0 ; i < checkValues.length() ; i++){
@@ -288,21 +237,17 @@ public class ServerJSONCleanUp {
                     temp.put(GlobalFuncs.conf_position, position);
                     temp.put(GlobalFuncs.conf_type, type);
                     temp.put(GlobalFuncs.conf_id, id);
-                    temp.put(GlobalFuncs.conf_name, checkValue.getString(GlobalFuncs.conf_name));
+                    temp.put(GlobalFuncs.conf_name, name);
                     temp.put(GlobalFuncs.conf_value, checkValue.getString(GlobalFuncs.conf_value));
                     temp.put(GlobalFuncs.conf_index, checkValue.getInt(GlobalFuncs.conf_index));
 
                     finalCheckJSON.put(temp);
                 }
-
             }
         } catch (JSONException e) {
             e.printStackTrace();
             log(e.getMessage());
         }
-
-
-
         return finalCheckJSON;
 
     }

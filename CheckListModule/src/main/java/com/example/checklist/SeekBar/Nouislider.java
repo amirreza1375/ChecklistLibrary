@@ -10,6 +10,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.example.checklist.BaseViewModel.BaseView;
+import com.example.checklist.BaseViewModel.ElemetActionListener;
+import com.example.checklist.BaseViewModel.MandatoryListener;
 import com.example.checklist.MultiTextGenerator.MultiText;
 import com.example.checklist.R;
 
@@ -36,7 +38,7 @@ public class Nouislider extends BaseView {
     private int answer;
     private boolean enable;
     private Context context;
-    private MultiText.MandatoryListener listener;
+    private MandatoryListener listener;
     //endregion
 
     //region used variables
@@ -48,8 +50,8 @@ public class Nouislider extends BaseView {
     //endregion
 
     //region constructors
-    public Nouislider(Context context, JSONObject element,int answer,boolean enable) {
-        super(context);
+    public Nouislider(Context context, JSONObject element,int answer,boolean enable, ElemetActionListener callBack) {
+        super(context,callBack);
         this.context = context;
         this.element = element;
         this.answer = answer;
@@ -69,6 +71,7 @@ public class Nouislider extends BaseView {
     //endregion
 
     private void init(Context context) {
+        isViewAnswered = true;
         try {
             try {
                 visibleSi = element.getString("visibleIf");
@@ -201,12 +204,8 @@ public class Nouislider extends BaseView {
     }
 
     public int getValue(){
-        isMandatoryAnswered();
+        isViewAnswered();
         return seekBar.getProgress();
-    }
-
-    private void isMandatoryAnswered() {
-        //not useful fot here
     }
 
     public void setMandatoryError(){
@@ -218,9 +217,9 @@ public class Nouislider extends BaseView {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                listener.onElementStatusChanged();
+                listener.onElementStatusChanged(false);
+                callBack.onAction("Seekbar",getElementId(),progress+"",-1);
                 seekBar.setBackground(null);
-
                 if (progress < rangMin){
                     seekBar.setProgress(rangMin);
                     prgrssTxt.setText(rangMin+"");
@@ -292,7 +291,7 @@ public class Nouislider extends BaseView {
         return name;
     }
 
-    public void setListener(MultiText.MandatoryListener listener) {
+    public void setListener(MandatoryListener listener) {
         this.listener = listener;
     }
 }

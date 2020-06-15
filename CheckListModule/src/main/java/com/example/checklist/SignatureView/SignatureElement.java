@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.checklist.BaseViewModel.BaseView;
+import com.example.checklist.BaseViewModel.ElemetActionListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,8 +55,8 @@ public class SignatureElement extends BaseView implements View.OnClickListener
 
 
     public SignatureElement(Context context, JSONObject element, boolean isRequired
-    , String folderPath,JSONObject answer,boolean enable) {
-        super(context);
+    , String folderPath,JSONObject answer,boolean enable, ElemetActionListener callBack) {
+        super(context,callBack);
         this.element = element;
         this.isRequired = isRequired;
         this.context = context;
@@ -127,6 +128,7 @@ public class SignatureElement extends BaseView implements View.OnClickListener
                 try {
                     Bitmap bitmap = BitmapFactory.decodeFile(answer.getString(conf_value));
                     sigenatureViewver.setImageBitmap(bitmap);
+                    callBack.onAction("Signature has value",getElementId(),answer.getString(conf_value),-1);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -162,7 +164,7 @@ public class SignatureElement extends BaseView implements View.OnClickListener
     private void showSignatureAlert() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setView(new SignatureGenerator(context,this));
+        builder.setView(new SignatureGenerator(context,this,callBack));
 
         alertDialog = builder.create();
 
@@ -198,11 +200,14 @@ public class SignatureElement extends BaseView implements View.OnClickListener
                 return file.getAbsolutePath();
 
             } catch (Exception e) {
+                callBack.onAction("Signature save image",getElementId(),e.getMessage(),-1);
                 Log.i(TAG, "saveImage: "+e);
                 e.printStackTrace();
                 log(e.getMessage());
                 return "image save error";
             }
+        }else{
+            callBack.onAction("Signature file not exist",getElementId(),element.toString(),-1);
         }
         Log.i(TAG, "saveImage: "+file.getAbsolutePath());
         return file.getAbsolutePath();
@@ -239,5 +244,6 @@ public class SignatureElement extends BaseView implements View.OnClickListener
             log(e.getMessage());
         }
     }
+
 
 }

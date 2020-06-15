@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.example.checklist.BaseViewModel.BaseView;
+import com.example.checklist.BaseViewModel.ElemetActionListener;
 import com.example.checklist.R;
 import com.example.checklist.imageview.GestureImageView;
 
@@ -41,6 +43,7 @@ import static com.example.checklist.GlobalFuncs.setOrgProps;
 
 public class ImagesViewer extends BaseView {
 
+    private static final String TAG = "ImagesViewer";
 
     public enum ImageStatus {
         IMAGE_NOT_EXIST, IMAGE_HAS_PROBLEM
@@ -67,8 +70,8 @@ public class ImagesViewer extends BaseView {
 
     public ImagesViewer(Context context, JSONObject element
             , ArrayList<File> imageFiles, ArrayList<String> priorities
-            , ArrayList<String> names, ImageSliderListener listener) {
-        super(context);
+            , ArrayList<String> names, ImageSliderListener listener, ElemetActionListener callBack) {
+        super(context, callBack);
         this.context = context;
         this.element = element;
         this.imageFiles = imageFiles;
@@ -89,7 +92,7 @@ public class ImagesViewer extends BaseView {
     }
 
 
-    private void init(Context context){
+    private void init(Context context) {
         try {
             visibleSi = element.getString("visibleIf");
             isVisibleSi = true;
@@ -98,35 +101,41 @@ public class ImagesViewer extends BaseView {
             e.printStackTrace();
         }
 
-        if (imageFiles.size() == 0){
+        if (imageFiles.size() == 0) {
+            Log.i(TAG, "init: removed");
             removeView();
         }
 
         //region org props
-        setOrgProps(context,this);
+        setOrgProps(context, this);
         //endregion
 
         //region title props
-        TextView titleTxt = createTitle(context,false,element);
+        TextView titleTxt = createTitle(context, false, element);
         //endregion
 
         LayoutParams sliderParams = new LayoutParams(LayoutParams.MATCH_PARENT
-        ,dpToPx(200,context));
+                , dpToPx(200, context));
 
 
-            //region add view
-            addView(titleTxt);
-            if (checkStoragePermission()) {//so we have read,write permission
-                if (imageFiles.size() > 1) {//image are a lot
-                    SliderLayout sliderLayout = setupSlider(element, context);
-                    sliderLayout.setLayoutParams(sliderParams);
-                    addView(sliderLayout);
-                }else{//one image or no image
-                    addView(createOneImageView());
-                }
-            } else {
-                setStorageError();
+        //region add view
+        addView(titleTxt);
+        if (checkStoragePermission()) {//so we have read,write permission
+            if (imageFiles.size() > 1) {//image are a lot
+                SliderLayout sliderLayout = setupSlider(element, context);
+                sliderLayout.setLayoutParams(sliderParams);
+                addView(sliderLayout);
+                Log.i(TAG, "init: view added");
+            } else {//one image or no image
+                Log.i(TAG, "init: one image");
+                callBack.onAction("Slider one image or no image", getElementId(), element.toString(), -1);
+                addView(createOneImageView());
             }
+        } else {
+            Log.i(TAG, "init: errot add view");
+            callBack.onAction("Slider permission error", getElementId(), element.toString(), -1);
+            setStorageError();
+        }
 
 
         setOrientation(VERTICAL);
@@ -135,8 +144,8 @@ public class ImagesViewer extends BaseView {
     }
 
     private View createOneImageView() {
-        if (imageFiles.size() != 0){
-            View view = LayoutInflater.from(context).inflate(R.layout.layout_image_item,this,false);
+        if (imageFiles.size() != 0) {
+            View view = LayoutInflater.from(context).inflate(R.layout.layout_image_item, this, false);
             ImageView imageView = view.findViewById(R.id.imageView);
             Bitmap bitmap = BitmapFactory.decodeFile(imageFiles.get(0).getAbsolutePath());
             imageView.setImageBitmap(bitmap);
@@ -144,8 +153,8 @@ public class ImagesViewer extends BaseView {
                 @Override
                 public void onClick(View v) {
                     show_image(imageFiles.get(0).getAbsolutePath()
-                    ,names.size() != 0 ? names.get(0) : ""
-                    ,priorities.size() != 0 ? priorities.get(0) : "0");
+                            , names.size() != 0 ? names.get(0) : ""
+                            , priorities.size() != 0 ? priorities.get(0) : "0");
                 }
             });
             return view;
@@ -158,7 +167,7 @@ public class ImagesViewer extends BaseView {
         return textView;
     }
 
-    private void setStorageError(){
+    private void setStorageError() {
         TextView err = new TextView(context);
         err.setText("Storage Permision needed");
         err.setTextColor(Color.RED);
@@ -166,7 +175,7 @@ public class ImagesViewer extends BaseView {
         err.setTextSize(18);
     }
 
-    public void removeView(){
+    public void removeView() {
         this.setVisibility(GONE);
     }
 
@@ -179,9 +188,10 @@ public class ImagesViewer extends BaseView {
     private SliderLayout setupSlider(JSONObject element, Context context) {
 
         SliderLayout sliderLayout = new SliderLayout(context);
-        for (int i = 0 ; i < imageFiles.size() ; i++){
+        for (int i = 0; i < imageFiles.size(); i++) {
             File imageFile = imageFiles.get(i);
             if (!imageFile.exists()) {
+                callBack.onAction("Slider file not exist", getElementId(), element.toString(), -1);
                 if (!isErrorSent) {
                     isErrorSent = true;
                     listener.onError(context.getString(R.string.ImageNoExist), ImageStatus.IMAGE_NOT_EXIST);
@@ -189,6 +199,7 @@ public class ImagesViewer extends BaseView {
             }
 
             if (imageFile.length() == 0) {
+                callBack.onAction("Slider file size is zero", getElementId(), element.toString(), -1);
                 if (!isErrorSent) {
                     isErrorSent = true;
                     listener.onError(context.getString(R.string.ImageHasProblem), ImageStatus.IMAGE_HAS_PROBLEM);
@@ -199,15 +210,15 @@ public class ImagesViewer extends BaseView {
             textSliderView.image(imageFiles.get(i)).bundle(new Bundle())
                     .setScaleType(BaseSliderView.ScaleType.FitCenterCrop)
                     .getBundle().putString("image_path", String.valueOf(imageFiles.get(i)));
-            textSliderView.getBundle().putString("name",names.get(i));
-            textSliderView.getBundle().putString("priority",priorities.get(i));
+            textSliderView.getBundle().putString("name", names.get(i));
+            textSliderView.getBundle().putString("priority", priorities.get(i));
             textSliderView.setOnSliderClickListener(new BaseSliderView.OnSliderClickListener() {
                 @Override
                 public void onSliderClick(BaseSliderView slider) {
                     //show image
                     show_image(slider.getBundle().getString("image_path")
-                            ,slider.getBundle().getString("name")
-                            ,slider.getBundle().getString("priority"));
+                            , slider.getBundle().getString("name")
+                            , slider.getBundle().getString("priority"));
 
                 }
             });
@@ -222,7 +233,7 @@ public class ImagesViewer extends BaseView {
         return sliderLayout;
     }
 
-    private String  getTitleFromElement(JSONObject element) {
+    private String getTitleFromElement(JSONObject element) {
 
         try {
             return element.getString(conf_title);
@@ -233,7 +244,7 @@ public class ImagesViewer extends BaseView {
         }
     }
 
-    private void show_image(String image_path , String name , String priority) {
+    private void show_image(String image_path, String name, String priority) {
         Activity activity = (Activity) context;
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setCancelable(false);
@@ -247,7 +258,7 @@ public class ImagesViewer extends BaseView {
         if (!priority.equals("")) {
             priorityTxt.setText("Prioridad : " + priority);
             // priorityTxt.setVisibility(GONE);
-        }else {
+        } else {
             priorityTxt.setVisibility(GONE);
         }
         nameTxt.setText(name);

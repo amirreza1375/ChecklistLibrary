@@ -1,6 +1,7 @@
 package com.example.checklist.MultiTextGenerator;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -16,6 +17,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.checklist.BaseViewModel.BaseView;
+import com.example.checklist.BaseViewModel.ElemetActionListener;
+import com.example.checklist.BaseViewModel.MandatoryListener;
+import com.example.checklist.Config;
 import com.example.checklist.R;
 
 import org.json.JSONArray;
@@ -24,7 +28,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import static com.example.checklist.GlobalFuncs.conf_name;
+import static android.content.Context.MODE_PRIVATE;
 import static com.example.checklist.GlobalFuncs.dpToPx;
 import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.PageGenerator.CheckListPager.setMandatories;
@@ -41,6 +45,8 @@ public class MultiText extends BaseView implements TextWatcher {
     private String conf_isRequired = "isRequired";
     private String conf_inputType = "inputType";
     private String conf_maxLength = "maxLength";
+    private String conf_preview = "Preview";
+    private boolean isVertical = false;
     //endregion
 
     //region used variable
@@ -49,7 +55,6 @@ public class MultiText extends BaseView implements TextWatcher {
     private ArrayList<String> names;
     private String title;
     private JSONArray items;
-    private boolean isRequired;
     private int TYPE;
     private int maxLength;
     //endregion
@@ -64,8 +69,8 @@ public class MultiText extends BaseView implements TextWatcher {
 
     //region costructors
     public MultiText(Context context, JSONObject element, boolean enabled
-            , JSONArray answers, int position,MandatoryListener listener) {
-        super(context);
+            , JSONArray answers, int position, MandatoryListener listener, ElemetActionListener callBack) {
+        super(context,callBack);
         this.context = context;
         this.answers = answers;
         this.listener = listener;
@@ -78,14 +83,6 @@ public class MultiText extends BaseView implements TextWatcher {
         init(context);
     }
 
-    public MultiText(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public MultiText(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
-
 
     //endregion
 
@@ -94,6 +91,7 @@ public class MultiText extends BaseView implements TextWatcher {
             visibleSi = element.getString("visibleIf");
             isVisibleSi = true;
             name = element.getString(conf_name);
+            isVertical = element.getString(conf_preview).equals("Vertical");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -121,7 +119,7 @@ public class MultiText extends BaseView implements TextWatcher {
         titleTxt.setTextSize(16);
         titleTxt.setTextColor(Color.BLACK);
         titleTxt.setLayoutParams(titleParams);
-        if (isRequired)
+        if (isMandatory)
             titleTxt.setText(getTitleFromElement(element) + "*");
         else
             titleTxt.setText(getTitleFromElement(element));
@@ -144,7 +142,7 @@ public class MultiText extends BaseView implements TextWatcher {
         LayoutParams holderParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         holderParams.setMargins(dpToPx(8, context), dpToPx(0, context)
                 , dpToPx(8, context), dpToPx(8, context));
-        setOrientation(HORIZONTAL);
+        setOrientation(isVertical ? VERTICAL : HORIZONTAL);
         LinearLayout holder = new LinearLayout(context);
         holder.setLayoutParams(holderParams);
         //endregion
@@ -174,7 +172,7 @@ public class MultiText extends BaseView implements TextWatcher {
     }
 
     private void handleEmpryMandatory() {
-        if (isRequired) {
+        if (isMandatory) {
             for (int i = 0; i < editTexts.size(); i++) {
 
                 if (editTexts.get(i).getText().toString().equals("")) {
@@ -204,6 +202,7 @@ public class MultiText extends BaseView implements TextWatcher {
                 title.setText(getTitleFromElement(item));
 
                 EditText edt = comment.findViewById(R.id.comment);
+                editTexts.add(edt);
                 String hint = item.has(conf_placeHolder) ? item.getString(conf_placeHolder) : "Guardar";
                 edt.setHint(hint);
                 if (answer != null) {
@@ -222,12 +221,11 @@ public class MultiText extends BaseView implements TextWatcher {
                 edt.setFilters(filterArray);
                 maxLengthTxt.setText("Max : " + maxLength);
 
-                editTexts.add(edt);
                 names.add(item.getString("name"));
 
                 holder.addView(comment);
 
-                handleEmpryMandatory();
+//                handleEmpryMandatory();
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -245,7 +243,7 @@ public class MultiText extends BaseView implements TextWatcher {
             title = element.has(conf_title) ? element.getString(conf_title) : "no title";
             name = element.has(conf_name) ? element.getString(conf_name) : "no name";
             maxLength = element.has(conf_maxLength) ? element.getInt(conf_maxLength) : 200;
-            isRequired = element.has(conf_isRequired) && element.getBoolean(conf_isRequired);
+            isMandatory = element.has(conf_isRequired) && element.getBoolean(conf_isRequired);
             items = element.has(conf_items) ? element.getJSONArray(conf_items) : new JSONArray();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -276,7 +274,7 @@ public class MultiText extends BaseView implements TextWatcher {
 
         JSONArray array = new JSONArray();
 
-        if (isMandatoryAnswered()) {
+        if (isMandatoryAnswered2()) {
 
             for (int i = 0; i < editTexts.size(); i++) {
                 if (editTexts.get(i) != null) {
@@ -297,19 +295,21 @@ public class MultiText extends BaseView implements TextWatcher {
             }
         }
 
+        callBack.onAction("MultiText",getElementId(),array.toString(),position);
+
         return array;
     }
 
-    private boolean isMandatoryAnswered() {
-        if (isRequired) {
-            for (int i = 0; i < editTexts.size(); i++) {
-                if (editTexts.get(i).getText().toString().equals("")) {
-                    if (listener != null)
-                        listener.onMandatoryStatusError();
-                    return false;
-                }
-            }
-        }
+    private boolean isMandatoryAnswered2() {
+//        if (isMandatory) {
+//            for (int i = 0; i < editTexts.size(); i++) {
+//                if (editTexts.get(i).getText().toString().equals("")) {
+//                    if (listener != null)
+//                        listener.onMandatoryStatusError();
+//                    return false;
+//                }
+//            }
+//        }
         return true;
     }
 
@@ -348,8 +348,26 @@ public class MultiText extends BaseView implements TextWatcher {
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
         if (listener != null)
-            listener.onElementStatusChanged();
-        handleEmpryMandatory();
+            listener.onElementStatusChanged(false);
+
+        checkMandatory();
+//        handleEmpryMandatory();
+    }
+
+    private void checkMandatory() {
+        if (editTexts.size() > 0) {
+            boolean FLAG_NOT_ANSWERED = false;
+            for (int i = 0; i < editTexts.size(); i++) {
+
+                if (editTexts.get(i).getText().toString().trim().length() == 0) {
+                    isViewAnswered = false;
+                    FLAG_NOT_ANSWERED = true;
+                }
+
+            }
+            if (!FLAG_NOT_ANSWERED)
+                isViewAnswered = true;
+        }
     }
 
     @Override
@@ -365,10 +383,5 @@ public class MultiText extends BaseView implements TextWatcher {
         this.listener = listener;
     }
 
-    public interface MandatoryListener {
-        void onMandatoryStatusError();
-
-        void onElementStatusChanged();
-    }
 
 }

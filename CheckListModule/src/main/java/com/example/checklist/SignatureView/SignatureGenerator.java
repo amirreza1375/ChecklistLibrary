@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.example.checklist.BaseViewModel.BaseView;
+import com.example.checklist.BaseViewModel.ElemetActionListener;
 import com.example.checklist.R;
 import com.simplify.ink.InkView;
 
@@ -24,8 +25,8 @@ public class SignatureGenerator extends BaseView implements View.OnClickListener
     private Bitmap signatureBitMap;
     private SignatureListener signatureListener;
 
-    public SignatureGenerator(Context context,SignatureListener signatureListener) {
-        super(context);
+    public SignatureGenerator(Context context,SignatureListener signatureListener, ElemetActionListener callBack) {
+        super(context,callBack);
         this.signatureListener = signatureListener;
         init(context);
     }
@@ -73,7 +74,7 @@ public class SignatureGenerator extends BaseView implements View.OnClickListener
 
         btnGetSignature.setLayoutParams(btnParams);
 
-        btnGetSignature.setBackground(context.getDrawable(R.drawable.picture_btn_has_pic));
+        btnGetSignature.setBackground(context.getResources().getDrawable(R.drawable.new_btn_back));
 
         btnGetSignature.setText("Done");
 

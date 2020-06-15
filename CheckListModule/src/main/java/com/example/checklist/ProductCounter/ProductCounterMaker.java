@@ -5,6 +5,8 @@ import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
 import com.example.checklist.BaseViewModel.BaseView;
+import com.example.checklist.BaseViewModel.ElemetActionListener;
+import com.example.checklist.BaseViewModel.MandatoryListener;
 import com.example.checklist.MultiTextGenerator.MultiText;
 
 import org.json.JSONArray;
@@ -25,7 +27,7 @@ import static com.example.checklist.GlobalFuncs.conf_value;
 import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.GlobalFuncs.setOrgProps;
 
-public class ProductCounterMaker extends BaseView {
+public class ProductCounterMaker extends BaseView implements ElemetActionListener{
 
     private String negativeBtnTitle = "ProductNegativeButton";
     private String positiveBtnTitle = "ProductPositiveButton";
@@ -37,7 +39,7 @@ public class ProductCounterMaker extends BaseView {
     private JSONObject answer;
     private boolean enabled;
     private ArrayList<ProductModel> productModels;
-    private MultiText.MandatoryListener listener;
+    private MandatoryListener listener;
     private String shopId;
     private int position;
     private String negativeBtnTxt;
@@ -47,9 +49,9 @@ public class ProductCounterMaker extends BaseView {
 
     public ProductCounterMaker(Context context, JSONObject element, JSONObject answer, boolean enabled
             , ArrayList<ProductModel> productModels
-            , MultiText.MandatoryListener listener, String shopId
-            ,int position) {
-        super(context);
+            , MandatoryListener listener, String shopId
+            ,int position, ElemetActionListener callBack) {
+        super(context,callBack);
         this.context = context;
         this.element = element;
         this.answer = answer;
@@ -133,7 +135,7 @@ public class ProductCounterMaker extends BaseView {
         ProductCounter productCounter = new ProductCounter(context,model.getProductName(), titleTxt
                 , negativeBtnTxt, positiveBtnTxt, model.getStock()
                 , model.getProductId(), listener, getAnswer(model)
-                ,getBlankHintText(element), enabled);
+                ,getBlankHintText(element), enabled,this);
         productCounters.add(productCounter);
         addView(productCounter);
         log("product id = "+productCounter.getProductId());
@@ -219,9 +221,23 @@ public class ProductCounterMaker extends BaseView {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+        callBack.onAction("Product counter",getElementId(),elementAnswer.toString(),position);
         return elementAnswer;
 
     }
 
+    @Override
+    public void onAction(String name,String id, String data, int pagePosition) {
+        callBack.onAction(name,id,data,pagePosition);
+    }
+
+    @Override
+    public void onConditionaryDataChanged(String id, String value, boolean isChecked,String type) {
+
+    }
+
+    @Override
+    public void isHiddenView() {
+        callBack.isHiddenView();
+    }
 }

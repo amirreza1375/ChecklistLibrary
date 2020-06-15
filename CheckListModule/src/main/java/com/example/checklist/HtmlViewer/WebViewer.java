@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.checklist.BaseViewModel.BaseView;
+import com.example.checklist.BaseViewModel.ElemetActionListener;
 import com.example.checklist.R;
 
 import org.json.JSONException;
@@ -24,8 +25,8 @@ public class WebViewer extends BaseView {
     private JSONObject element;
     private TextView webView;
 
-    public WebViewer(Context context, JSONObject element) {
-        super(context);
+    public WebViewer(Context context, JSONObject element, ElemetActionListener callBack) {
+        super(context,callBack);
         this.element = element;
         init(context);
     }

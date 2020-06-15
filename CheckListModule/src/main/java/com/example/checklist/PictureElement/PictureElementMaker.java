@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.checklist.BaseViewModel.BaseView;
+import com.example.checklist.BaseViewModel.ElemetActionListener;
 import com.example.checklist.Config;
 import com.example.checklist.GlobalFuncs;
 
@@ -41,8 +42,8 @@ public class PictureElementMaker extends BaseView implements PicturesRecyclerVie
     private TakePictureItemClickListener mlistener;
 
     public PictureElementMaker(Context context, JSONObject element, boolean status
-            , boolean FLAG_ENABLE, JSONArray answers, int position, TakePictureItemClickListener mlistener) {
-        super(context);
+            , boolean FLAG_ENABLE, JSONArray answers, int position, TakePictureItemClickListener mlistener, ElemetActionListener callBack) {
+        super(context,callBack);
         this.element = element;
         this.status = status;
         this.FLAG_ENABLE = FLAG_ENABLE;
@@ -102,6 +103,7 @@ public class PictureElementMaker extends BaseView implements PicturesRecyclerVie
                 }
             }
         }
+        callBack.onAction("Set answer image",getElementId(),answers.toString(),position);
         updateRecycler();
     }
 
@@ -117,6 +119,7 @@ public class PictureElementMaker extends BaseView implements PicturesRecyclerVie
     }
 
     private void setupRecyclerData(JSONObject element) {
+        callBack.onAction("Setup picture element",getElementId(),element.toString(),position);
         try {
             String name = element.has(Config.name) ? element.getString(Config.name) : "no name";
             String imageTypeNames[] = element.getString(imagetypeName).split(",");
@@ -159,17 +162,22 @@ public class PictureElementMaker extends BaseView implements PicturesRecyclerVie
 
     private void showError(String[] imageTypeNames, JSONObject element) {
         if (imageTypeNames.length == 0) {
-            if (mlistener != null)
+            if (mlistener != null) {
+                callBack.onAction("Image maker no image assigned",getElementId(),element.toString(),position);
                 mlistener.onNoImageAppeared("No hay imagen asignada");
+            }
         } else {
             try {
                 String nameCountStr = element.has(imageTypeCount + "-" + imageTypeNames[0]) ? element.getString(imageTypeCount + "-" + imageTypeNames[0]) : "1";
                 if (nameCountStr.equals("0")) {
-                    if (mlistener != null)
+                    if (mlistener != null) {
+                        callBack.onAction("Image maker number is zero",getElementId(),element.toString(),position);
                         mlistener.onNoImageAppeared("No hay imagen asignada a esto -> " + imageTypeNames[0] + " tipo de imagen");
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+                callBack.onAction("Image maker",getElementId(),e.getMessage().toString(),position);
                 if (mlistener != null)
                     mlistener.onNoImageAppeared(e.getMessage());
             }
@@ -210,7 +218,9 @@ public class PictureElementMaker extends BaseView implements PicturesRecyclerVie
 
     @Override
     public void onPictureItemClicked(PicturesRecyclerView.ViewHolder holder, PicturePickerItemModel model) {
+        callBack.onAction("Image item clicked",getElementId(),model.getId()+"-"+model.getIndex(),position);
         mlistener.onPictureItemClicked(holder, model);
+
 
     }
 

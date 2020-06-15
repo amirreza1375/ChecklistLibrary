@@ -14,6 +14,8 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.example.checklist.BaseViewModel.BaseView;
+import com.example.checklist.BaseViewModel.ElemetActionListener;
+import com.example.checklist.BaseViewModel.MandatoryListener;
 import com.example.checklist.MultiTextGenerator.MultiText;
 import com.example.checklist.R;
 
@@ -47,7 +49,7 @@ public class ProductCounter extends BaseView implements TextWatcher {
     private String positiveBtnTxt;
     private long productId;
     private boolean isFirstTime = true;
-    private MultiText.MandatoryListener listener;
+    private MandatoryListener listener;
     private String blankHint;
 
     private View mainView;
@@ -59,9 +61,9 @@ public class ProductCounter extends BaseView implements TextWatcher {
     private int appearElemet;
 
     public ProductCounter(Context context, String name, String title, String negativeBtnTxt, String positiveBtnTxt
-            , int stockCount, long productId, MultiText.MandatoryListener listener
-            , JSONObject answer,String blankHint, boolean enabled) {
-        super(context);
+            , int stockCount, long productId, MandatoryListener listener
+            , JSONObject answer,String blankHint, boolean enabled, ElemetActionListener callBack) {
+        super(context,callBack);
         this.name = name;
         this.title = title;
         this.negativeBtnTxt = negativeBtnTxt;
@@ -107,7 +109,7 @@ public class ProductCounter extends BaseView implements TextWatcher {
         choicesGrp.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                listener.onElementStatusChanged();
+                listener.onElementStatusChanged(false);
                 isAnswered = true;
                 if (checkedId == R.id.okBtn) {
                     hiddenCounter();
@@ -248,7 +250,7 @@ public class ProductCounter extends BaseView implements TextWatcher {
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
         if (!isFirstTime)
-            listener.onElementStatusChanged();
+            listener.onElementStatusChanged(false);
 
         if (isRequired) {
             if (s.length() == 0 && !isFirstTime) {

@@ -7,6 +7,7 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -14,12 +15,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.checklist.BaseViewModel.BaseView;
+import com.example.checklist.BaseViewModel.ElemetActionListener;
+import com.example.checklist.BaseViewModel.MandatoryListener;
 import com.example.checklist.Config;
 import com.example.checklist.MultiTextGenerator.MultiText;
 import com.example.checklist.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import static com.example.checklist.Config.TIME_TRACKER_TIPO;
 import static com.example.checklist.GlobalFuncs.conf_id;
 import static com.example.checklist.GlobalFuncs.conf_isRequired;
@@ -46,10 +50,10 @@ import static com.example.checklist.PageGenerator.CheckListPager.setMandatories;
  */
 
 public class Commentario extends BaseView implements TextWatcher {
-
+    private static final String TAG = "Commentario";
     //region used variables
     private boolean IsTextChanged = true;
-    private MultiText.MandatoryListener listener;
+    private MandatoryListener listener;
     private String requiredStr = "*";
     private int TYPE = 0;
     private boolean isFirstTime = true;
@@ -67,7 +71,6 @@ public class Commentario extends BaseView implements TextWatcher {
     private boolean isFromFinish;
     private String pre_content;
     private String tipo;
-    private boolean isRequired;
     private boolean status;
     private JSONObject element;
     private String visible_id;
@@ -75,8 +78,8 @@ public class Commentario extends BaseView implements TextWatcher {
 
     //region constructors
     public Commentario(Context context, boolean isFromFinish, String pre_content
-            , boolean status, JSONObject element, MultiText.MandatoryListener listener) {
-        super(context);
+            , boolean status, JSONObject element, MandatoryListener listener, ElemetActionListener callBack) {
+        super(context,callBack);
         this.context = context;
         this.isFromFinish = isFromFinish;
         this.pre_content = pre_content;
@@ -84,6 +87,7 @@ public class Commentario extends BaseView implements TextWatcher {
         this.element = element;
         this.listener = listener;
         init();
+        checkMandatory(comment.getText().toString());
     }
 
 
@@ -101,6 +105,7 @@ public class Commentario extends BaseView implements TextWatcher {
         try {
             visibleSi = element.getString("visibleIf");
             isVisibleSi = true;
+            setVisibility(INVISIBLE);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -119,7 +124,7 @@ public class Commentario extends BaseView implements TextWatcher {
         //endregion
 
         //region set title props
-        TextView titleText = createTitle(context, isRequired, element);
+        TextView titleText = createTitle(context, isMandatory, element);
         //endregion
 
         //region set maxLength props
@@ -142,7 +147,6 @@ public class Commentario extends BaseView implements TextWatcher {
         //endregion
 
 
-
         //region set edittext props
 
         comment.setPadding(16, 0, 16, 0);
@@ -157,11 +161,11 @@ public class Commentario extends BaseView implements TextWatcher {
         LinearLayout edtHolder = new LinearLayout(context);
         edtHolder.setOrientation(HORIZONTAL);
 
-        if (tipo.equals("Price")){
+        if (tipo.equals("Price")) {
             LinearLayout.LayoutParams dollarParams =
                     new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT
                             , ViewGroup.LayoutParams.WRAP_CONTENT);
-            dollarParams.setMargins(dpToPx(4,context),dpToPx(0,context),dpToPx(0,context),dpToPx(0,context));
+            dollarParams.setMargins(dpToPx(4, context), dpToPx(0, context), dpToPx(0, context), dpToPx(0, context));
             TextView dollar = new TextView(context);
 
             dollar.setTextColor(Color.BLACK);
@@ -259,7 +263,7 @@ public class Commentario extends BaseView implements TextWatcher {
             viewID = element.has(conf_id) ? element.getString(conf_id) : "";
             name = element.has(conf_name) ? element.getString(conf_name) : "";
             maxLength = element.has("maxLength") ? element.getInt("maxLength") : 100;
-            isRequired = element.has(conf_isRequired) ? element.getBoolean(conf_isRequired) : false;
+            isMandatory = element.has(conf_isRequired) ? element.getBoolean(conf_isRequired) : false;
         } catch (JSONException e) {
             e.printStackTrace();
             log(e.getMessage());
@@ -268,11 +272,12 @@ public class Commentario extends BaseView implements TextWatcher {
 
     public String getCommentValue(boolean isNextClicked) {
         isMandatoryAnswered(isNextClicked);
+//        callBack.onAction("getCommentValue",getElementId(),comment.getText().toString(),-1);
         return comment.getText().toString();
     }
 
     private void isMandatoryAnswered(boolean isNextClicked) {
-        if (isRequired) {
+        if (isMandatory) {
             if (comment.getText().toString().equals("")) {
                 if (isNextClicked)
                     setMandatoryError();
@@ -316,8 +321,8 @@ public class Commentario extends BaseView implements TextWatcher {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
     }
 
-    private void setCommentTipoStatus(){
-        if (tipo.equals(TIME_TRACKER_TIPO)){
+    private void setCommentTipoStatus() {
+        if (tipo.equals(TIME_TRACKER_TIPO)) {
             commentTipo = Config.tipo.TIME_TRACKER;
             comment.setEnabled(false);
 
@@ -334,21 +339,23 @@ public class Commentario extends BaseView implements TextWatcher {
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-        if (tipo.equals("Price")){
-        if (IsTextChanged) {
-            IsTextChanged = false;
-            comment.setText(getPriceWithValidates(s));
-            comment.setSelection(comment.getText().length());
-        }else{
-            IsTextChanged = true;
-        }
+        if (tipo.equals("Price")) {
+            if (IsTextChanged) {
+                IsTextChanged = false;
+                comment.setText(getPriceWithValidates(s));
+                comment.setSelection(comment.getText().length());
+            } else {
+                IsTextChanged = true;
+            }
 
         }
+        checkMandatory(comment.getText().toString());
 
-        if (!isFirstTime)
-            listener.onElementStatusChanged();
+        if (!isFirstTime) {
+            listener.onElementStatusChanged(false);
+        }
 
-        if (isRequired) {
+        if (isMandatory) {
             if (s.length() == 0 && !isFirstTime) {
                 setMandatoryError();
             } else {
@@ -358,16 +365,28 @@ public class Commentario extends BaseView implements TextWatcher {
         isFirstTime = false;
     }
 
-    @Override
-    public void afterTextChanged(Editable s) {
+    private void checkMandatory(String s) {
+        if (s.trim().length() > 0) {
+            isViewAnswered = true;
+            removeMandatoryError();
+        }
+        else {
+            isViewAnswered = false;
+        }
+
 
     }
 
-    public void setCommentValue(String value){
+    @Override
+    public void afterTextChanged(Editable s) {
+        Log.i(TAG, "afterTextChanged: ");
+    }
+
+    public void setCommentValue(String value) {
         comment.setText(value);
     }
 
-    public Config.tipo getCommentTipo(){
+    public Config.tipo getCommentTipo() {
         return commentTipo;
     }
 
@@ -413,7 +432,7 @@ public class Commentario extends BaseView implements TextWatcher {
         this.visible_id = visible_id;
     }
 
-    public void setListener(MultiText.MandatoryListener listener) {
+    public void setListener(MandatoryListener listener) {
         this.listener = listener;
     }
     //endregion

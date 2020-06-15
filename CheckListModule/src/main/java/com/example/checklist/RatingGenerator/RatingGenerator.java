@@ -7,6 +7,8 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.example.checklist.BaseViewModel.BaseView;
+import com.example.checklist.BaseViewModel.ElemetActionListener;
+import com.example.checklist.BaseViewModel.MandatoryListener;
 import com.example.checklist.MultiTextGenerator.MultiText;
 
 import org.json.JSONException;
@@ -27,7 +29,7 @@ public class RatingGenerator extends BaseView implements RatingBar.OnRatingBarCh
     private JSONObject element;
     private boolean enable;
     private Context context;
-    private MultiText.MandatoryListener listener;
+    private MandatoryListener listener;
     //endregion
 
     //region user variables
@@ -41,8 +43,8 @@ public class RatingGenerator extends BaseView implements RatingBar.OnRatingBarCh
 
     //region constructors
     public RatingGenerator(Context context, JSONObject element
-    ,boolean enable,int answer) {
-        super(context);
+    ,boolean enable,int answer, ElemetActionListener callBack) {
+        super(context,callBack);
         this.context = context;
         this.element = element;
         this.enable = enable;
@@ -117,6 +119,6 @@ public class RatingGenerator extends BaseView implements RatingBar.OnRatingBarCh
 
     @Override
     public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-        listener.onElementStatusChanged();
+        listener.onElementStatusChanged(false);
     }
 }

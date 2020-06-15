@@ -4,13 +4,14 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.TypedValue;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.example.checklist.BaseViewModel.BaseView;
+import com.example.checklist.BaseViewModel.BaseViewModel;
+import com.example.checklist.BaseViewModel.ElemetActionListener;
+import com.example.checklist.BaseViewModel.MandatoryListener;
 import com.example.checklist.GlobalFuncs;
 import com.example.checklist.MultiTextGenerator.MultiText;
 import com.example.checklist.R;
@@ -21,7 +22,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import static com.example.checklist.CheckListGenerator.CheckListMaker.TAG;
 import static com.example.checklist.GlobalFuncs.conf_choices;
 import static com.example.checklist.GlobalFuncs.conf_disableOthers;
 import static com.example.checklist.GlobalFuncs.conf_id;
@@ -36,10 +36,10 @@ import static com.example.checklist.PageGenerator.CheckListPager.setMandatories;
 
 public class RadioGroupMaker extends BaseView {
 
+    private static final String TAG = "RadioGroupMaker";
     //region variables
     private Context context;
     private JSONObject element;
-    private boolean isRequired = false;
     private boolean enabled;
     private JSONObject answer;
     private int position;
@@ -47,7 +47,7 @@ public class RadioGroupMaker extends BaseView {
 
     //region used variables
     private ArrayList<RadioButton> btns;
-    private MultiText.MandatoryListener listener;
+    private MandatoryListener listener;
     private int choosenIndex = -1;
     private ArrayList<JSONObject> values;
     private int disableOthers = -1;
@@ -56,11 +56,11 @@ public class RadioGroupMaker extends BaseView {
 
     public RadioGroupMaker(Context context
             , JSONObject element, boolean isRequired
-            , boolean enabled, JSONObject answer, int position) {
-        super(context);
+            , boolean enabled, JSONObject answer, int position, ElemetActionListener callBack) {
+        super(context,callBack);
+        log("after super");
         this.context = context;
         this.element = element;
-        this.isRequired = isRequired;
         this.enabled = enabled;
         this.answer = answer;
         this.position = position;
@@ -94,7 +94,7 @@ public class RadioGroupMaker extends BaseView {
         //region title
         TextView titleTxt = new TextView(context);
 
-        if (isRequired)
+        if (isMandatory)
             titleTxt.setText(getTitleFromElement(element) + "*");
         else
             titleTxt.setText(getTitleFromElement(element));
@@ -121,9 +121,8 @@ public class RadioGroupMaker extends BaseView {
 
     private void getVariablesFromElement(JSONObject element) {
         try {
-
             name = element.has(GlobalFuncs.conf_name) ? element.getString(GlobalFuncs.conf_name) : "no name";
-            isRequired = element.has(conf_isRequired) && element.getBoolean(conf_isRequired);
+            isMandatory = element.has(conf_isRequired) && element.getBoolean(conf_isRequired);
         } catch (JSONException e) {
             e.printStackTrace();
             log(e.getMessage());
@@ -132,19 +131,21 @@ public class RadioGroupMaker extends BaseView {
 
     public JSONObject getValue(boolean isNextClicked) {
         if (choosenIndex == -1) {
-            if (!isShowen)
-            isMandatoryAnswered(isNextClicked);
+//            isMandatoryAnswered(isNextClicked);
             JSONObject jsonObject = new JSONObject();
             try {
-                jsonObject.put(conf_name,name);
-                jsonObject.put(conf_id,viewID);
-                jsonObject.put(conf_value,"");
+                jsonObject.put(conf_name, name);
+                jsonObject.put(conf_id, viewID);
+                jsonObject.put(conf_value, "");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+//            Log.i(TAG, "getValue: " + getTitleFromElement(element) + " -> " + jsonObject);
             return jsonObject;
-        } else
+        } else {
+//            Log.i(TAG, "getValue: " + getTitleFromElement(element) + " -> " + values.get(choosenIndex));
             return values.get(choosenIndex);
+        }
     }
 
     private void addRadioButtons(JSONObject element, Context context) {
@@ -169,11 +170,13 @@ public class RadioGroupMaker extends BaseView {
             radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    callBack.onAction("RadioGroup",getElementId(),"id = "+checkedId+" Text = "+btns.get(checkedId).getText().toString(),position);
                     choosenIndex = checkedId;
                     removeMandatoryError();
                     btns.get(checkedId).setChecked(true);
-                    listener.onElementStatusChanged();
-                    Log.i(TAG, "onCheckedChanged: "+checkedId);
+                    listener.onElementStatusChanged(true);
+                    Log.i(TAG, "onCheckedChanged: " + checkedId);
+                    checkMandatory();
                 }
             });
 
@@ -184,6 +187,18 @@ public class RadioGroupMaker extends BaseView {
         }
     }
 
+    private void checkMandatory() {
+        for (int i = 0; i < btns.size(); i++) {
+            if (btns.get(i) != null) {
+                if (btns.get(i).isChecked()) {
+                    isViewAnswered = true;
+                    return;
+                }
+            }
+        }
+        isViewAnswered = false;
+    }
+
     private void addAnswer(RadioButton btn
             , JSONObject answer) {
         try {
@@ -192,7 +207,8 @@ public class RadioGroupMaker extends BaseView {
                     btn.getId()) {
                 choosenIndex = btn.getId();
                 btn.setChecked(true);
-                Log.i(TAG, "addAnswer: "+choosenIndex);
+                isViewAnswered = true;
+                Log.i(TAG, "addAnswer: " + choosenIndex);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -218,7 +234,7 @@ public class RadioGroupMaker extends BaseView {
     }
 
     private void isMandatoryAnswered(boolean isNextClicked) {
-        if (isRequired) {
+        if (isMandatory) {
             if (choosenIndex == -1) {
                 if (isNextClicked)
                     setMandatoryError();
@@ -230,9 +246,8 @@ public class RadioGroupMaker extends BaseView {
     }
 
     public void setMandatoryError() {
-        if (setMandatories)
-            this.setBackground(context.getResources()
-                    .getDrawable(R.drawable.is_requiered));
+        this.setBackground(context.getResources()
+                .getDrawable(R.drawable.is_requiered));
     }
 
     public void removeMandatoryError() {
@@ -245,7 +260,7 @@ public class RadioGroupMaker extends BaseView {
             viewID = element.has(conf_id) ? element.getString(conf_id) : "";
             name = element.has(conf_name) ? element.getString(conf_name) : "";
             disableOthers = element.has(conf_disableOthers) ? element.getInt(conf_disableOthers) : -1;
-            isRequired = element.has(conf_isRequired) ? element.getBoolean(conf_isRequired) : false;
+            isMandatory = element.has(conf_isRequired) ? element.getBoolean(conf_isRequired) : false;
         } catch (JSONException e) {
             e.printStackTrace();
             log(e.getMessage());
@@ -262,26 +277,24 @@ public class RadioGroupMaker extends BaseView {
         }
     }
 
-    public void clearData(){
-        for (RadioButton btn : btns){
-            if (btn.isChecked()){
+    public void clearData() {
+        for (RadioButton btn : btns) {
+            if (btn.isChecked()) {
                 btn.setChecked(false);
-                Log.i(TAG, "clearData: "+btn.getId());
+                Log.i(TAG, "clearData: " + btn.getId());
             }
         }
         choosenIndex = -1;
     }
 
 
-
-    public MultiText.MandatoryListener getListener() {
+    public MandatoryListener getListener() {
         return listener;
     }
 
-    public void setListener(MultiText.MandatoryListener listener) {
+    public void setListener(MandatoryListener listener) {
         this.listener = listener;
     }
-
 
 
 }

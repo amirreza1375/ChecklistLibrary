@@ -12,6 +12,12 @@ public interface CheckListDataListener {
 
     void onCameraLoad();
 
+    void onChecklistLoadStarted();
+    void onChecklistLoadFinished();
+
+    void onConditionaryDataChanged(String name, String value, boolean isChecked, String type);
+    void onViewHidden(String name,  String type);
+
     interface CheckListConditionListener{
         void onConditionRecieved(JSONArray conditions,int position);
         void onClearCondtionRecieved(JSONArray removedConditions, int position);

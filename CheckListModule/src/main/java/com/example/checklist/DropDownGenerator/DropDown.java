@@ -10,6 +10,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.checklist.BaseViewModel.BaseView;
+import com.example.checklist.BaseViewModel.ElemetActionListener;
 import com.example.checklist.R;
 
 import org.json.JSONArray;
@@ -46,8 +47,8 @@ public class DropDown extends BaseView {
 
     //region constructors
     public DropDown(Context context, JSONObject element,boolean enable
-    ,String answer) {
-        super(context);
+    ,String answer, ElemetActionListener callBack) {
+        super(context,callBack);
         this.context = context;
         this.element = element;
         this.enable = enable;

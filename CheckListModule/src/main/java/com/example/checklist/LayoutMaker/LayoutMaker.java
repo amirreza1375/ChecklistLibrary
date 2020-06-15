@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.checklist.BaseViewModel.BaseView;
+import com.example.checklist.BaseViewModel.ElemetActionListener;
 import com.example.checklist.R;
 import com.example.checklist.imageview.GestureImageView;
 
@@ -38,8 +39,8 @@ public class LayoutMaker extends BaseView {
     private String currentShop;
     private Context context;
 
-    public LayoutMaker(Context context, ArrayList<LayoutModel> layoutModels, JSONObject element,String currentShop) {
-        super(context);
+    public LayoutMaker(Context context, ArrayList<LayoutModel> layoutModels, JSONObject element,String currentShop, ElemetActionListener callBack) {
+        super(context,callBack);
         this.context = context;
         this.layoutModels = layoutModels;
         this.element = element;
@@ -66,6 +67,9 @@ public class LayoutMaker extends BaseView {
 
         getVariablesFromElement(element);
 
+        if (layoutModels.size() == 0)
+            callBack.onAction("Layout - size is zero",getElementId(),element.toString(),-1);
+
         for (int  i = 0 ; i < layoutModels.size() ; i ++){
 
             LayoutModel model = layoutModels.get(i);
@@ -79,6 +83,7 @@ public class LayoutMaker extends BaseView {
                                 , new JSONArray(model.getReplacements()));
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        callBack.onAction("Layout",getElementId(),element.toString()+"-"+e.getMessage(),-1);
                     }
                 }
                 String shopsArray[] = shopStr.split(",");
@@ -92,6 +97,7 @@ public class LayoutMaker extends BaseView {
                                     , new JSONArray(model.getReplacements()));
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            callBack.onAction("Layout",getElementId(),element.toString()+"-"+e.getMessage(),-1);
                         }
                         break;
                     }
@@ -105,6 +111,7 @@ public class LayoutMaker extends BaseView {
                             , new JSONArray(model.getReplacements()));
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    callBack.onAction("Layout",getElementId(),element.toString()+"-"+e.getMessage(),-1);
                 }
             }
         }

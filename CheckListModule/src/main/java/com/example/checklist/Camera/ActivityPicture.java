@@ -17,12 +17,18 @@ import android.view.GestureDetector;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.checklist.BaseViewModel.ElemetActionListener;
 import com.example.checklist.CheckListGenerator.CheckListMaker;
+import com.example.checklist.CheckListGenerator.PageView;
 import com.example.checklist.Config;
+import com.example.checklist.Database.IDBResultView;
+import com.example.checklist.Database.ModuleLogEvent;
 import com.example.checklist.PageGenerator.CheckListPager;
 import com.example.checklist.PictureElement.PictureElementMaker;
 import com.example.checklist.PictureElement.PicturePickerItemModel;
@@ -40,16 +46,19 @@ import java.util.HashMap;
 
 import static com.example.checklist.Camera.ActivityCamera.IMAGE_RESULT;
 import static com.example.checklist.GlobalFuncs.conf_id;
+import static com.example.checklist.GlobalFuncs.conf_index;
 import static com.example.checklist.GlobalFuncs.conf_position;
 import static com.example.checklist.GlobalFuncs.convert_ArrayList_to_JSONArray;
 import static com.example.checklist.GlobalFuncs.convert_JSONArray_to_ArrayList;
 import static com.example.checklist.GlobalFuncs.convert_JSONArray_to_PictureModel;
 import static com.example.checklist.GlobalFuncs.convert_PictureModel_to_JSONArrary;
+import static com.example.checklist.GlobalFuncs.getDate;
+import static com.example.checklist.GlobalFuncs.getTime;
 import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.GlobalFuncs.showToast;
 
 public class ActivityPicture extends AppCompatActivity implements View.OnClickListener
-        , PictureElementMaker.TakePictureItemClickListener {
+        , PictureElementMaker.TakePictureItemClickListener , ElemetActionListener {
 
     public static final int CAMERA_REQ_CODE = 110;
 
@@ -58,8 +67,9 @@ public class ActivityPicture extends AppCompatActivity implements View.OnClickLi
     private static final String TAG = "ActivityPicture";
     private RecyclerView recycler;
     private ArrayList<String> img_pathes;
-    private ImageButton back;
-    private TextView done;
+    private ImageView back;
+    private Button done;
+    private ProgressBar savingLoad;
     private int current_index = 0;
     private int position;
     private long checkListId;
@@ -120,7 +130,7 @@ public class ActivityPicture extends AppCompatActivity implements View.OnClickLi
     protected void onPause() {
         super.onPause();
         if (activityClosed) {
-            removeCurrentPageImages(position,elementId);
+            removeCurrentPageImages(position, elementId);
             putDataInSharedPrefrences(getPictures());
             this.activityClosed = false;
 //            setResult(-1);
@@ -143,15 +153,15 @@ public class ActivityPicture extends AppCompatActivity implements View.OnClickLi
     }
 
     public void takePhoto() {
-        Intent cameraIntent = new Intent(Intent.ACTION_MEDIA_MOUNTED,Uri.parse("file://" + Environment.getExternalStorageDirectory()
-        +"/Operator Track"));
+        Intent cameraIntent = new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory()
+                + "/Operator Track"));
         startActivityForResult(cameraIntent, CAMERA_REQ_CODE);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_activitypicture_library);
+        setContentView(R.layout.activity_picture_library_new);
 
         ActivityCamera.sub_folder_path = String.valueOf(System.currentTimeMillis());
 
@@ -159,6 +169,7 @@ public class ActivityPicture extends AppCompatActivity implements View.OnClickLi
         back = findViewById(R.id.back);
         done = findViewById(R.id.done);
         parent = findViewById(R.id.parent);
+        savingLoad = findViewById(R.id.savingLoad);
 
 
         back.setOnClickListener(this);
@@ -181,7 +192,7 @@ public class ActivityPicture extends AppCompatActivity implements View.OnClickLi
             element = bundlee.getString("element");
             position = bundlee.getInt("position");
 
-            String answerPicsStr = bundlee.getString(CheckListMaker.SavedPicturesFlag);
+            String answerPicsStr = bundlee.getString(PageView.SavedPicturesFlag);
             try {
                 answerPictures = new JSONArray(answerPicsStr);
                 if (answerPictures.length() > 0) {
@@ -204,7 +215,7 @@ public class ActivityPicture extends AppCompatActivity implements View.OnClickLi
 
             boolean FLAG_ENABLED = false;
 
-            if (CheckListPager.pageStatus != CheckListMaker.pageStatus.PREVIEW) {
+            if (CheckListPager.pageStatus != PageView.pageStatus.PREVIEW) {
                 FLAG_ENABLED = true;
             }
             if (!FLAG_ENABLED) {
@@ -212,7 +223,7 @@ public class ActivityPicture extends AppCompatActivity implements View.OnClickLi
             }
 
             elementMaker = new PictureElementMaker(this, new JSONObject(element)
-                    , true, FLAG_ENABLED, getPicAnswers(), position, this);
+                    , true, FLAG_ENABLED, getPicAnswers(), position, this,this);
             elementMaker.setMlistener(this);
             parent.addView(elementMaker);
             elementMaker.getModels();
@@ -232,7 +243,7 @@ public class ActivityPicture extends AppCompatActivity implements View.OnClickLi
 
     }
 
-    private void removeCurrentPageImages(int position,String id) {
+    private void removeCurrentPageImages(int position, String id) {
         String picStr = getSharedPreferences(Config.sharedPreferencName, Context.MODE_PRIVATE).getString(Config.pictures, "");
         if (picStr.equals("")) {
             picStr = "[]";
@@ -242,7 +253,7 @@ public class ActivityPicture extends AppCompatActivity implements View.OnClickLi
             ArrayList<JSONObject> picsArray = convert_JSONArray_to_ArrayList(pics);
             for (int i = 0; i < picsArray.size(); i++) {
                 if (picsArray.get(i).getInt("position") == position
-                && picsArray.get(i).getString("id").equals(id)) {
+                        && picsArray.get(i).getString("id").equals(id)) {
                     picsArray.remove(i);
                     i--;
                 }
@@ -331,7 +342,7 @@ public class ActivityPicture extends AppCompatActivity implements View.OnClickLi
         this.activityClosed = false;
         Intent intent = null;
 //        try {
-            this.picturePickerItemModel = model;
+        this.picturePickerItemModel = model;
 //            takePhoto();
         try {
             intent = new Intent(ActivityPicture.this
@@ -446,7 +457,8 @@ public class ActivityPicture extends AppCompatActivity implements View.OnClickLi
         }
         if (v == done) {
             if (takenPicturesCount() > 0) {
-                removeCurrentPageImages(position,elementId);
+                savingLoad.setVisibility(View.VISIBLE);
+                removeCurrentPageImages(position, elementId);
                 putDataInSharedPrefrences(getPictures());
                 this.activityClosed = false;
                 setResult(-1);
@@ -649,5 +661,41 @@ public class ActivityPicture extends AppCompatActivity implements View.OnClickLi
         }
         JSONArray array = convert_PictureModel_to_JSONArrary(tempModels);
         return array;
+    }
+
+    @Override
+    public void onAction(String name,String id, String data, int pagePosition) {
+        if (pagePosition == -1)
+            pagePosition = position;
+
+        ModuleLogEvent moduleLogEvent = new ModuleLogEvent(ActivityPicture.this,"","","","",getDate(),getTime()
+                ,"","","",pagePosition+" -> "+data+" Question id = "+elementId,"",name,answerPictures.toString(),""
+                ,0);
+        moduleLogEvent.insert(moduleLogEvent, null, new IDBResultView() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onItemInserted() {
+
+            }
+
+            @Override
+            public void onFail(String error) {
+
+            }
+        });
+    }
+
+    @Override
+    public void onConditionaryDataChanged(String id, String value, boolean isChecked,String type) {
+
+    }
+
+    @Override
+    public void isHiddenView() {
+
     }
 }

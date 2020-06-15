@@ -17,13 +17,21 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.checklist.CheckListGenerator.CheckListMaker;
+import com.example.checklist.CheckListGenerator.PageView;
+import com.example.checklist.Database.IDBResultView;
+import com.example.checklist.Database.ModuleLogEvent;
+import com.example.checklist.PageGenerator.CheckListPager;
 import com.example.checklist.PictureElement.PicturePickerItemModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class GlobalFuncs {
 
@@ -31,7 +39,7 @@ public class GlobalFuncs {
 
     //region json keys
 
-    public static String LOG = "checklistlib";
+    public static String LOG = "CheckListMaker";
 
     public static String conf_index = "index";
     public static String conf_value = "value";
@@ -46,6 +54,7 @@ public class GlobalFuncs {
     public static String conf_disableOthers = "disableOther";
     public static String conf_choices = "choices";
     public static String conf_text = "text";
+    public static String conf_answer = "answer";
     public static String conf_type = "type";
     public static String conf_radioButton = "radiogroup";
     public static String conf_elements = "elements";
@@ -68,6 +77,8 @@ public class GlobalFuncs {
     public static String conf_ID = "ID";
     public static String conf_pages = "pages";
     public static String conf_position = "position";
+    public static String conf_visibileSi = "visibleIf";
+    public static String conf_required = "isRequired";
     public static String conf_signature = "signaturepad";
     public static String conf_html = "html";
     public static String conf_htmlValue = "html";
@@ -82,6 +93,12 @@ public class GlobalFuncs {
     public static String conf_class = "class";
     public static String conf_valType = "valType";
     public static String conf_tipoNA = "Tipo NA";
+    public static String conf_simpleText = "simpletext";
+    public static String conf_rangeMax = "rangeMax";
+    public static String conf_rangeMin = "rangeMin";
+    public static String conf_systemId = "SystemId";
+
+
     //endregion
 
     public static int dpToPx(float dp, Context context) {
@@ -314,6 +331,46 @@ public class GlobalFuncs {
 
         return convertCharArrayToString(characters);
 
+    }
+
+    public static String getDate() {
+        Date today = Calendar.getInstance().getTime();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+        String date = dateFormat.format(today).replace("/", "-");
+        return date;
+    }
+
+    public static String getTime() {
+        Date now = new Date();
+        SimpleDateFormat sdfDatee = new SimpleDateFormat("HH:mm");//dd/MM/yyyy
+        String time = sdfDatee.format(now);
+        return time;
+    }
+
+    public static void addEvenLog(Context context,int pagePosition,String data,String name,String id,String pageAnswers){
+        if (CheckListPager.pageStatus != PageView.pageStatus.PREVIEW) {
+            ModuleLogEvent moduleLogEvent = new ModuleLogEvent(context, "", "", "", "", getDate(), getTime()
+                    , "", "", "", pagePosition + " -> " + "Question id = " + id + data, ""
+                    , name, pageAnswers, ""
+                    , 0);
+            moduleLogEvent.insert(moduleLogEvent, null, new IDBResultView() {
+                @Override
+                public void onSuccess() {
+
+                }
+
+                @Override
+                public void onItemInserted() {
+
+                }
+
+                @Override
+                public void onFail(String error) {
+
+                }
+            });
+        }
     }
 
 }

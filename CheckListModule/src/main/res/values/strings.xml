@@ -127,6 +127,8 @@
     <string name="newTimequestion">Estas seguro que quieres actualizar la hora ?</string>
     <string name="lastTime">Hora Registrada =</string>
     <string name="newTime">Current time =</string>
+    <string name="signatureGuide">Presione para firmar</string>
+    <string name="errPermissionStorage">Permiso de almacenamiento no otorgado</string>
 
 
 </resources>

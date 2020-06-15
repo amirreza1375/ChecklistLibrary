@@ -60,6 +60,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static com.example.checklist.GlobalFuncs.addEvenLog;
 import static com.example.checklist.GlobalFuncs.log;
 import static com.example.checklist.GlobalFuncs.showToast;
 
@@ -210,6 +211,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
     }
 
     private void update_zoom() {
+        addEvenLog(ActivityCamera.this,-1,zoom+"","Zoom camera","N/I",path);
         Camera.Parameters params = mCamera.getParameters();
         zooms = params.getZoomRatios();
         if (params.isZoomSupported()) {
@@ -336,6 +338,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
                             mCamera.takePicture(null, null, mPicture);
                         } catch (Exception e) {
                             e.printStackTrace();
+                            addEvenLog(ActivityCamera.this,-1,e.getMessage(),"Capture bottun","N/I",path);
                             log(e.getMessage());
                         }
                     }
@@ -518,6 +521,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
                 log(e.getMessage());
                 e.printStackTrace();
                 isParamsSet = false;
+                addEvenLog(ActivityCamera.this,-1,e.getMessage(),"Create camera","N/I",path);
                 Log.i(TAG, "create_camera: " + e);
                 handle_catch_camera_params(has_FLASH);
             }
@@ -530,6 +534,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
         } catch (Exception e) {
             e.printStackTrace();
             log(e.getMessage());
+            addEvenLog(ActivityCamera.this,-1,e.getMessage(),"Create camera","N/I",path);
         }
     }
 
@@ -604,6 +609,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
         } catch (Exception e) {
             e.printStackTrace();
             log(e.getMessage());
+            addEvenLog(ActivityCamera.this,-1,e.getMessage(),"Handle catch camera params","N/I",path);
         }
     }
 
@@ -692,6 +698,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
         } catch (Exception e) {
             e.printStackTrace();
             log(e.getMessage());
+            addEvenLog(ActivityCamera.this,-1,e.getMessage(),"Create image file","N/I",path);
             Log.i(TAG, "createImageFile: " + e);
         }
 //        remove_image_from_pictures(fname);
@@ -716,6 +723,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
                 SubFolder.mkdirs();
         } catch (Exception e) {
             e.printStackTrace();
+            addEvenLog(ActivityCamera.this,-1,e.getMessage(),"Create mandatory folders","N/I",path);
         }
     }
 
@@ -902,6 +910,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
             log(e.getMessage());
             handle_catch_camera_params(has_FLASH);
             e.printStackTrace();
+            addEvenLog(ActivityCamera.this,-1,e.getMessage(),"Rotate camera","N/I",path);
             isParamsSet = false;
             Log.i(TAG, "rotate_camera: " + e);
         }
@@ -972,6 +981,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
             handle_catch_camera_params(has_FLASH);
             isParamsSet = false;
             e.printStackTrace();
+            addEvenLog(ActivityCamera.this,-1,e.getMessage(),"set flash status","N/I",path);
         }
         // }
 
@@ -1036,7 +1046,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
                 ta.setFillAfter(true);
                 ta.isFillEnabled();
 
-                // focus.setAnimation(ta);
+//                focus.startAnimation(ta);
 
 //                final Animation zoom = AnimationUtils.loadAnimation(this, R.anim.zoom_icon);
 //                Animation zoom_out = AnimationUtils.loadAnimation(this, R.anim.zoom_out_icon);
@@ -1069,6 +1079,7 @@ public class ActivityCamera extends AppCompatActivity implements View.OnClickLis
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 log(e.getMessage());
+                                addEvenLog(ActivityCamera.this,-1,e.getMessage(),"Focus","N/I",path);
                             }
 
                         }

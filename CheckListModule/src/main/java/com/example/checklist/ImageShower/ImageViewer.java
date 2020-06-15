@@ -7,6 +7,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.checklist.BaseViewModel.BaseView;
+import com.example.checklist.BaseViewModel.ElemetActionListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,8 +20,8 @@ public class ImageViewer extends BaseView {
 
     private JSONObject element;
 
-    public ImageViewer(Context context, JSONObject element) {
-        super(context);
+    public ImageViewer(Context context, JSONObject element, ElemetActionListener callBack) {
+        super(context,callBack);
         this.element = element;
         init(context);
     }

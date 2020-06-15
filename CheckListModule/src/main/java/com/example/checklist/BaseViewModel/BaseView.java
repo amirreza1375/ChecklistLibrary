@@ -3,20 +3,31 @@ package com.example.checklist.BaseViewModel;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.LinearLayout;
 
-public class BaseView extends LinearLayout {
+import com.example.checklist.R;
+
+
+public abstract class BaseView extends LinearLayout {
+
+    private static final String TAG = "BaseView";
 
     protected String viewID;
     protected boolean isVisibleSi;
     protected String visibleSiName;
     protected String visibleSiValue;
     protected String visibleSi;
-    protected boolean isShowen;
+    protected boolean isShowen = true;
     protected String name;
+    protected boolean isViewAnswered;
+    protected boolean isMandatory;
+    protected ElemetActionListener callBack;
 
-    public BaseView(Context context) {
+    public BaseView(Context context,ElemetActionListener callBack) {
         super(context);
+        this.callBack = callBack;
+        Log.i(TAG, "BaseView: ");
     }
 
     public BaseView(Context context, @Nullable AttributeSet attrs) {
@@ -52,7 +63,7 @@ public class BaseView extends LinearLayout {
         this.viewID = viewID;
     }
 
-    public boolean isVisibleSi() {
+        public boolean isVisibleSi() {
         return isVisibleSi;
     }
 
@@ -105,5 +116,33 @@ public class BaseView extends LinearLayout {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isViewAnswered() {
+        return isViewAnswered;
+    }
+
+    public void setViewAnswered(boolean viewAnswered) {
+        isViewAnswered = viewAnswered;
+    }
+
+    public boolean isMandatory() {
+        return isMandatory;
+    }
+
+    public void setMandatory(boolean mandatory) {
+        isMandatory = mandatory;
+    }
+
+    public  void checkMandatoryAndSetStatus(Context context){
+        if (isMandatory) {
+            if (!isViewAnswered) {
+                setmandatoryError(context);
+            }
+        }
+    }
+
+    private void setmandatoryError(Context context) {
+        this.setBackground(context.getResources().getDrawable(R.drawable.is_requiered));
     }
 }
