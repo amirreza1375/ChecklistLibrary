@@ -132,36 +132,38 @@ public class RadioGoupView extends BaseViewModel {
 
     private void addRadioButtons(Context context) {
         try {
-            for (int i = 0; i < choices.length(); i++) {
-                JSONObject object = choices.getJSONObject(i);
-                RadioButton btn = new RadioButton(context);
-                String text = object.getString(conf_text);
-                btn.setText(text);
-                btn.setId(i);
-                btn.setEnabled(elementEnabled);
-                radioGroup.addView(btn);
-                btns.put(btn.getId(), btn);
-                addToValue(object, i);
-                addAnswer(btn, viewAnswer);
-
-            }
-
-            radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(RadioGroup group, int checkedId) {
-                    if (checkedId != -1) {
-                        callBack.onAction("RadioGroup", getElementId(), "id = " + checkedId + " Text = " + btns.get(checkedId).getText().toString(), pagePosition);
-                        choosenIndex = checkedId;
-                        removeMandatoryError();
-                        btns.get(checkedId).setChecked(true);
-                        Log.i(TAG, "onCheckedChanged: " + checkedId);
-                        checkMandatory();
-                        viewAnswered();
-                        callBack.onConditionaryDataChanged(elementName, valueByIndex.get(checkedId) + "", true, ViewTypeKey.RADIO_GROUP);
-                    }
+            if (choices != null) {
+                for (int i = 0; i < choices.length(); i++) {
+                    JSONObject object = choices.getJSONObject(i);
+                    RadioButton btn = new RadioButton(context);
+                    String text = object.getString(conf_text);
+                    btn.setText(text);
+                    btn.setId(i);
+                    btn.setEnabled(elementEnabled);
+                    radioGroup.addView(btn);
+                    btns.put(btn.getId(), btn);
+                    addToValue(object, i);
+                    addAnswer(btn, viewAnswer);
 
                 }
-            });
+
+                radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(RadioGroup group, int checkedId) {
+                        if (checkedId != -1) {
+                            callBack.onAction("RadioGroup", getElementId(), "id = " + checkedId + " Text = " + btns.get(checkedId).getText().toString(), pagePosition);
+                            choosenIndex = checkedId;
+                            removeMandatoryError();
+                            btns.get(checkedId).setChecked(true);
+                            Log.i(TAG, "onCheckedChanged: " + checkedId);
+                            checkMandatory();
+                            viewAnswered();
+                            callBack.onConditionaryDataChanged(elementName, valueByIndex.get(checkedId) + "", true, ViewTypeKey.RADIO_GROUP);
+                        }
+
+                    }
+                });
+            }
         } catch (JSONException e) {
             e.printStackTrace();
             log(e.getMessage());
