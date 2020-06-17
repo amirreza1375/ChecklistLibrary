@@ -115,7 +115,7 @@ public class ServerJSONCleanUp {
             JSONObject value = values.get(i);
 
             try {
-                if (value.getString(conf_value).equals("")) {
+                if (value.getString(conf_id).equals("")) {
 
                     values.remove(i);
 
