@@ -155,12 +155,10 @@ public class RadioGoupView extends BaseViewModel {
                             choosenIndex = checkedId;
                             removeMandatoryError();
                             btns.get(checkedId).setChecked(true);
-                            Log.i(TAG, "onCheckedChanged: " + checkedId);
                             checkMandatory();
                             viewAnswered();
                             callBack.onConditionaryDataChanged(elementName, valueByIndex.get(checkedId) + "", true, ViewTypeKey.RADIO_GROUP);
                         }
-
                     }
                 });
             }
