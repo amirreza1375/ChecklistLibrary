@@ -37,8 +37,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"/>
         <EditText
+            android:hint="Escriba aquí"
             android:background="@null"
-            android:hint="Some hint"
             android:paddingStart="4dp"
             android:paddingEnd="4dp"
             android:id="@+id/commentEdt"
