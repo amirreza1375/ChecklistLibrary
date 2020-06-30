@@ -181,7 +181,7 @@ public abstract class BaseViewModel extends LinearLayout {
     }
 
     public void removeMandatoryError() {
-        this.setBackground(null);
+        this.setBackground(context.getResources().getDrawable(R.drawable.comment_back));
     }
 
     public boolean isMandatoryAnswered(){
