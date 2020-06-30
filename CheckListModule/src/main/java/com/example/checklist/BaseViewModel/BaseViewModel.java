@@ -171,6 +171,7 @@ public abstract class BaseViewModel extends LinearLayout {
             LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             params.setMargins(dpToPx(0,context),dpToPx(4,context),dpToPx(0,context),dpToPx(0,context));
             this.setLayoutParams(params);
+            this.setBackground(context.getResources().getDrawable(R.drawable.comment_back));
             parentView.addView(baseView);
         }
     }
