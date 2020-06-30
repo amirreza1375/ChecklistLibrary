@@ -170,7 +170,7 @@ public abstract class BaseViewModel extends LinearLayout {
             }
             LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             params.setMargins(dpToPx(0,context),dpToPx(4,context),dpToPx(0,context),dpToPx(0,context));
-            baseView.setLayoutParams(params);
+            this.setLayoutParams(params);
             parentView.addView(baseView);
         }
     }
