@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -31,6 +32,7 @@ import static com.example.checklist.GlobalFuncs.conf_tipo;
 import static com.example.checklist.GlobalFuncs.conf_title;
 import static com.example.checklist.GlobalFuncs.conf_type;
 import static com.example.checklist.GlobalFuncs.conf_visibileSi;
+import static com.example.checklist.GlobalFuncs.dpToPx;
 
 public abstract class BaseViewModel extends LinearLayout {
 
@@ -166,6 +168,9 @@ public abstract class BaseViewModel extends LinearLayout {
                 if (elementIsRequired)
                     titleText.setText(titleText.getText().toString() + "*");
             }
+            LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.setMargins(dpToPx(0,context),dpToPx(4,context),dpToPx(0,context),dpToPx(0,context));
+            baseView.setLayoutParams(params);
             parentView.addView(baseView);
         }
     }
