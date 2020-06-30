@@ -177,7 +177,7 @@ public class PageView extends ScrollView implements ElemetActionListener, Images
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        titleText.setText(name + "\n" +title);
+        titleText.setText(name + "\n" + title);
 
         LinearLayout viewHolder = baseView.findViewById(R.id.viewHolder);
 
@@ -248,8 +248,10 @@ public class PageView extends ScrollView implements ElemetActionListener, Images
 
     public void setMandatoryErrors() {
         for (BaseViewModel view : views) {
-            if (!view.isMandatoryAnswered()) {
-                view.setMandatoryError();
+            if (view.isShowen()) {
+                if (!view.isMandatoryAnswered()) {
+                    view.setMandatoryError();
+                }
             }
         }
     }
@@ -747,7 +749,7 @@ public class PageView extends ScrollView implements ElemetActionListener, Images
     private void removeElementChild(String elementName) {
         int index = hasChild(elementName);
 
-        if (index < views.size() && index >=0)
+        if (index < views.size() && index >= 0)
             hideView(views.get(index));
 
     }

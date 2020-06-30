@@ -1478,8 +1478,8 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
             public void run() {
                 updateCheckListView();
                 if (pageStatus != PageView.pageStatus.PREVIEW) {
-                    int NAPos = getNotAnsweredMandatoryPagePosition();
-                    if (NAPos == -1) {
+                    int NotAnsweredPagePosition = getNotAnsweredMandatoryPagePosition();
+                    if (NotAnsweredPagePosition == -1) {
                         ArrayList<PicturePickerItemModel> picturePickerItemModels = convert_JSONArray_to_PictureModel(getPicsFromSharedPreferences(context));
                         ArrayList<PicturePickerItemModel> signatures = getSignatures();
                         JSONArray datas = getAllData();
@@ -1491,9 +1491,9 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
                         listListener.SaveAsFinished(datas, picturePickerItemModels, signatures, errors);
                     } else {
 //                errors.add("User didn't answer question in page with position = "+NAPos);
-                        listListener.onError("User didn't answer question in page with position = " + NAPos);
+                        listListener.onError("User didn't answer question in page with position = " + NotAnsweredPagePosition);
                         getAllData();
-                        openFirstPageNotAnswered(NAPos);
+                        openFirstPageNotAnswered(NotAnsweredPagePosition);
                     }
                 } else {
 //            errors.add(context.getString(R.string.notSaveInPreview));
