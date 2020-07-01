@@ -4,8 +4,8 @@
     <item>
         <shape>
 
-            <stroke android:width="2dp" android:color="#E9F8F8F8"/>
-            <solid android:color="#F3F3F3"/>
+            <stroke android:width="2dp" android:color="#92F1F1F1"/>
+            <solid android:color="#F8F7F7"/>
             <corners android:radius="22dp"/>
         </shape>
     </item>
