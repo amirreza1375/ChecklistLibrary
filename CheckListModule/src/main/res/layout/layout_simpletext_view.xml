@@ -7,9 +7,7 @@
     <TextView
         android:id="@+id/titleText"
         android:textSize="16sp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="4dp"
+        android:layout_margin="6dp"
         android:textColor="#000"
         android:text="Radio Title"
         android:layout_width="wrap_content"
