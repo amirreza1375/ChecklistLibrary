@@ -35,7 +35,7 @@ public class PicturesRecyclerView extends RecyclerView.Adapter<PicturesRecyclerV
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        return new ViewHolder(LayoutInflater.from(context).inflate(R.layout.layout_picture_picker_library,parent,false));
+        return new ViewHolder(LayoutInflater.from(context).inflate(R.layout.layout_image_taker_item,parent,false));
     }
 
     @Override
