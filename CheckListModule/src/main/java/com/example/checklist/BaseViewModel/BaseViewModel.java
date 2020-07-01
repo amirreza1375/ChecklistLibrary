@@ -2,6 +2,7 @@ package com.example.checklist.BaseViewModel;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -171,9 +172,30 @@ public abstract class BaseViewModel extends LinearLayout {
             LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             params.setMargins(dpToPx(0,context),dpToPx(4,context),dpToPx(0,context),dpToPx(0,context));
             this.setLayoutParams(params);
-            this.setBackground(context.getResources().getDrawable(R.drawable.baseview_back));
-            parentView.addView(baseView);
+//            this.setBackground(context.getResources().getDrawable(R.drawable.baseview_back));
+
+            CardView cardView = createCardView();
+
+            cardView.addView(baseView);
+
+            parentView.addView(cardView);
         }
+    }
+
+    public CardView createCardView(){
+
+        CardView cardView = new CardView(context);
+        cardView.setCardElevation(dpToPx(3,context));
+        cardView.setRadius(dpToPx(8,context));
+
+        LayoutParams cardParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        cardParams.setMargins(dpToPx(5,context),dpToPx(5,context),dpToPx(5,context),dpToPx(5,context));
+
+        cardView.setLayoutParams(cardParams);
+
+
+        return cardView;
+
     }
 
     public void setMandatoryError(){
@@ -181,7 +203,8 @@ public abstract class BaseViewModel extends LinearLayout {
     }
 
     public void removeMandatoryError() {
-        this.setBackground(context.getResources().getDrawable(R.drawable.baseview_back));
+//        this.setBackground(context.getResources().getDrawable(R.drawable.baseview_back));
+        this.setBackground(null);
     }
 
     public boolean isMandatoryAnswered(){
