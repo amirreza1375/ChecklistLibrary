@@ -112,7 +112,7 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
     private PageView checkListMaker;
     private CheckListFinishPage finishPage;
     private CheckListListener listListener;
-    private int shopId;
+    private String shopId;
     private ArrayList<LayoutModel> layoutModels;
 
     private int cachedPage;
@@ -138,7 +138,7 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
             , ArrayList<PicturePickerItemModel> picAnswers, PageView.pageStatus pageStatus
             , JSONArray checkListAnswer, ArrayList<ImageSliderModel> imageSliderModels
             , String signatureFolderPath, CheckListListener listListener
-            , int shopId, ArrayList<LayoutModel> layoutModels, int cachedPage, ArrayList<ProductModel> productModels
+            , String shopId, ArrayList<LayoutModel> layoutModels, int cachedPage, ArrayList<ProductModel> productModels
             , String checklistSurverId, String appFolder, String picturesFolder) {
         super(context);
         this.context = context;

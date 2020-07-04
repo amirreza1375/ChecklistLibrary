@@ -110,7 +110,7 @@ public class PageView extends ScrollView implements ElemetActionListener, Images
     private JSONObject page;
     private int pagePosition;
     private ArrayList<ImageSliderModel> imageSliderModels;
-    private int shopId;
+    private String shopId;
     private JSONArray picAnswers;
     private JSONArray pageAnswers;
     private String signatureFolderPath;
@@ -132,7 +132,7 @@ public class PageView extends ScrollView implements ElemetActionListener, Images
     private CheckListDataListener.CheckListConditionListener conditionListener;
 
     public PageView(Context context, JSONObject page, PageView.pageStatus pageStatus
-            , int position, ArrayList<ImageSliderModel> imageSliderModels, int shopId
+            , int position, ArrayList<ImageSliderModel> imageSliderModels, String shopId
             , JSONArray picAnswers, JSONArray pageAnswers, String signatureFolderPath
             , CheckListDataListener listener, ArrayList<LayoutModel> layoutModels
             , ArrayList<ProductModel> productModels, String checklistServerId
@@ -630,7 +630,7 @@ public class PageView extends ScrollView implements ElemetActionListener, Images
                 //check shops
                 for (int k = 0; k < model.getShops().size(); k++) {
 
-                    if (model.getShops().get(k) == shopId) {
+                    if (model.getShops().get(k).toString().trim().equals( shopId)) {
                         Log.i(TAG, "isConditionsAreOk: Shop is Ok" + shopId + " = " + model.getShops().get(k));
                         FLAG_EXIST = true;
                         break;
