@@ -234,15 +234,15 @@ public abstract class BaseViewModel extends LinearLayout {
                 }
             }
             elementDisableOthers = element.has(conf_disableOthers) ? element.getInt(conf_disableOthers) : -1;
-//            isMandatory = element.has(conf_required) && element.getBoolean(conf_required);
-            isMandatory = true;
+            isMandatory = element.has(conf_required) && element.getBoolean(conf_required);
+//            isMandatory = true;
             elementMax = element.has(conf_rangeMax) ? element.getInt(conf_rangeMax) : 100;
             elementMin = element.has(conf_rangeMin) ? element.getInt(conf_rangeMin) : 0;
             elementIsMinMaxExist = isMaxMinExist(element);
             elementTipo = element.has(conf_tipo) ? element.getString(conf_tipo) : "";
             elementMaxLength = element.has(conf_maxLength) ? element.getInt(conf_maxLength) : 999;
-//            elementIsRequired = element.has(conf_isRequired) && element.getBoolean(conf_isRequired);
-            elementIsRequired = true;
+            elementIsRequired = element.has(conf_isRequired) && element.getBoolean(conf_isRequired);
+//            elementIsRequired = true;
             elementSysyemId = element.has(conf_systemId) ? element.getString(conf_systemId) : "";
 
         } catch (JSONException e) {
