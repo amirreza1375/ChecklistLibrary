@@ -1124,7 +1124,7 @@ public class PageView extends ScrollView implements ElemetActionListener, Images
     public boolean isMandariesAnsweredInPage() {
         for (BaseViewModel view : views) {
             if (view.isShowen()) {
-//                if (!view.isMandatoryAnswered())
+                if (!view.isMandatoryAnswered())
                     return false;
             }
         }

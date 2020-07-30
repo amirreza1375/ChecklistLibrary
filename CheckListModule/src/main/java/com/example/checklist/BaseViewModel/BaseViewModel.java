@@ -240,7 +240,8 @@ public abstract class BaseViewModel extends LinearLayout {
             elementIsMinMaxExist = isMaxMinExist(element);
             elementTipo = element.has(conf_tipo) ? element.getString(conf_tipo) : "";
             elementMaxLength = element.has(conf_maxLength) ? element.getInt(conf_maxLength) : 999;
-            elementIsRequired = element.has(conf_isRequired) && element.getBoolean(conf_isRequired);
+//            elementIsRequired = element.has(conf_isRequired) && element.getBoolean(conf_isRequired);
+            elementIsRequired = true;
             elementSysyemId = element.has(conf_systemId) ? element.getString(conf_systemId) : "";
 
         } catch (JSONException e) {
