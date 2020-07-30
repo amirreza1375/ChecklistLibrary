@@ -234,7 +234,8 @@ public abstract class BaseViewModel extends LinearLayout {
                 }
             }
             elementDisableOthers = element.has(conf_disableOthers) ? element.getInt(conf_disableOthers) : -1;
-            isMandatory = element.has(conf_required) && element.getBoolean(conf_required);
+//            isMandatory = element.has(conf_required) && element.getBoolean(conf_required);
+            isMandatory = true;
             elementMax = element.has(conf_rangeMax) ? element.getInt(conf_rangeMax) : 100;
             elementMin = element.has(conf_rangeMin) ? element.getInt(conf_rangeMin) : 0;
             elementIsMinMaxExist = isMaxMinExist(element);
