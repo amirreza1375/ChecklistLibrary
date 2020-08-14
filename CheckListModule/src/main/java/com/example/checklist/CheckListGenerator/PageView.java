@@ -801,12 +801,12 @@ public class PageView extends ScrollView implements ElemetActionListener, Images
                 JSONObject condition = conditions.getJSONObject(i);
                 String conditionName = condition.has(conf_name) ? condition.getString(conf_name).trim() : "";
                 String conditionValue = condition.has(conf_value) ? condition.getString(conf_value).trim() : "";
-                boolean conditionStatus = condition.has("status") && condition.getBoolean("status");
-                if (conditionStatus) {
+//                boolean conditionStatus = condition.has("status") && condition.getBoolean("status");
+//                if (conditionStatus) {
                     if (conditionName.equals(visibleSiName.trim()) && conditionValue.equals(visibleSiValue.trim())) {
                         return true;
                     }
-                }
+//                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }

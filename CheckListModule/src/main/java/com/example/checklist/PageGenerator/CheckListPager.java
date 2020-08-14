@@ -1416,6 +1416,7 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
             e.printStackTrace();
         }
 
+
         if (index < 0) {
             visibleSiData.add(object);
         }else{
