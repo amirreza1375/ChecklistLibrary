@@ -27,7 +27,7 @@ public class BarCodeView extends BaseViewModel implements ZXingScannerView.Resul
 
     private ZXingScannerView scannerView;
 
-    private String barCodeText = "",barCodeFormat = "";
+
 
     public BarCodeView(Context context, JSONObject element, ElemetActionListener callBack, JSONObject viewAnswer, boolean isEnabled, int pagePosition, int viewPosition) {
         super(context, element, callBack, viewAnswer, isEnabled, pagePosition, viewPosition);

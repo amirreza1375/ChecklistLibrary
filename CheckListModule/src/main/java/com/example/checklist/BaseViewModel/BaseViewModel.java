@@ -86,6 +86,8 @@ public abstract class BaseViewModel extends LinearLayout {
 
     protected Context context;
 
+    protected String barCodeText = "",barCodeFormat = "";
+
     //region constructors
     public BaseViewModel(Context context,JSONObject element,ElemetActionListener callBack,JSONObject viewAnswer,boolean isEnabled,int pagePosition,int viewPosition) {
         super(context);
