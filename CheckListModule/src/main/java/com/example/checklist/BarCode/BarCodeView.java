@@ -62,7 +62,14 @@ public class BarCodeView extends BaseViewModel implements ZXingScannerView.Resul
         resultTxt.setVisibility(GONE);
         scannerViewHolder.setVisibility(GONE);
 
-        viewAnswerRemoved();
+        if (!barCodeText.equals("")){
+            scanBtn.setVisibility(VISIBLE);
+            resultTxt.setText(barCodeText);
+            resultTxt.setVisibility(VISIBLE);
+            viewAnswered();
+        }
+
+
 
         return this;
     }
@@ -89,11 +96,7 @@ public class BarCodeView extends BaseViewModel implements ZXingScannerView.Resul
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        if (!barCodeText.equals("")){
-            scanBtn.setVisibility(VISIBLE);
-            resultTxt.setText(barCodeText);
-            resultTxt.setVisibility(VISIBLE);
-        }
+
     }
 
     @Override
