@@ -75,7 +75,7 @@ public class BarCodeView extends BaseViewModel implements ZXingScannerView.Resul
 
     @Override
     public void handleResult(Result rawResult) {
-        resultTxt.setText("Resultado : "+rawResult.getText().toLowerCase()+"\n Formato : "+rawResult.getBarcodeFormat());
+        resultTxt.setText(" Resultado : "+rawResult.getText().toLowerCase()+"\n Formato : "+rawResult.getBarcodeFormat());
         resultTxt.setVisibility(VISIBLE);
         scanBtn.setVisibility(VISIBLE);
         scannerViewHolder.setVisibility(GONE);
@@ -89,6 +89,7 @@ public class BarCodeView extends BaseViewModel implements ZXingScannerView.Resul
             scanBtn.setVisibility(GONE);
             scannerViewHolder.setVisibility(VISIBLE);
             scannerView.startCamera();
+            scannerView.resumeCameraPreview(this);
         }
     }
 }
