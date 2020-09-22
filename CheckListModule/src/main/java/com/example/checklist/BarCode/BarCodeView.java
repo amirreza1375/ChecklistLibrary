@@ -12,9 +12,12 @@ import com.example.checklist.BaseViewModel.ElemetActionListener;
 import com.example.checklist.R;
 import com.google.zxing.Result;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
+
+import static com.example.checklist.GlobalFuncs.conf_value;
 
 public class BarCodeView extends BaseViewModel implements ZXingScannerView.ResultHandler, View.OnClickListener {
 
@@ -24,13 +27,22 @@ public class BarCodeView extends BaseViewModel implements ZXingScannerView.Resul
 
     private ZXingScannerView scannerView;
 
+    private String barCodeText = "",barCodeFormat = "";
+
     public BarCodeView(Context context, JSONObject element, ElemetActionListener callBack, JSONObject viewAnswer, boolean isEnabled, int pagePosition, int viewPosition) {
         super(context, element, callBack, viewAnswer, isEnabled, pagePosition, viewPosition);
     }
 
     @Override
     public JSONObject getValue() {
-        return null;
+        JSONObject answer = getGeneralValues();
+        try {
+            answer.put(conf_value,barCodeText);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return answer;
     }
 
     @Override
@@ -49,6 +61,8 @@ public class BarCodeView extends BaseViewModel implements ZXingScannerView.Resul
 
         resultTxt.setVisibility(GONE);
         scannerViewHolder.setVisibility(GONE);
+
+        viewAnswerRemoved();
 
         return this;
     }
@@ -70,7 +84,16 @@ public class BarCodeView extends BaseViewModel implements ZXingScannerView.Resul
 
     @Override
     public void getAnswer(JSONObject answer) {
-
+        try {
+            barCodeText = answer.getString(conf_value);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if (!barCodeText.equals("")){
+            scanBtn.setVisibility(VISIBLE);
+            resultTxt.setText(barCodeText);
+            resultTxt.setVisibility(VISIBLE);
+        }
     }
 
     @Override
@@ -80,6 +103,7 @@ public class BarCodeView extends BaseViewModel implements ZXingScannerView.Resul
         scanBtn.setVisibility(VISIBLE);
         scannerViewHolder.setVisibility(GONE);
         scannerView.stopCamera();
+        viewAnswered();
     }
 
     @Override
@@ -90,6 +114,7 @@ public class BarCodeView extends BaseViewModel implements ZXingScannerView.Resul
             scannerViewHolder.setVisibility(VISIBLE);
             scannerView.startCamera();
             scannerView.resumeCameraPreview(this);
+            viewAnswerRemoved();
         }
     }
 }
