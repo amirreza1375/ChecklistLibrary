@@ -1,4 +1,4 @@
-package com.example.checklist.BaseViewModel;
+ package com.example.checklist.BaseViewModel;
 
 import android.content.Context;
 import android.support.annotation.Nullable;

@@ -1,4 +1,4 @@
-package com.example.macbook.checlistlibrary;
+package com.example.checklist.checlistlibrary;
 
 import org.junit.Test;
 

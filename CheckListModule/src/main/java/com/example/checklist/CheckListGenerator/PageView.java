@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.example.checklist.BarCode.BarCodeView;
 import com.example.checklist.BaseViewModel.BaseView;
 import com.example.checklist.BaseViewModel.BaseViewModel;
 import com.example.checklist.BaseViewModel.ElemetActionListener;
@@ -280,6 +281,7 @@ public class PageView extends ScrollView implements ElemetActionListener, Images
                 if (element.getString(conf_type)
                         .equals(conf_radioButton)) {
                     linearLayout.addView(createRadio(element, context, i));
+                    linearLayout.addView(createBarCodeScanner(element,i));
                     continue;
                 }
                 //checkbox
@@ -371,6 +373,12 @@ public class PageView extends ScrollView implements ElemetActionListener, Images
 
         }
         return linearLayout;
+    }
+
+    private View createBarCodeScanner(JSONObject element, int position) {
+        BarCodeView barCodeView = new BarCodeView(context,element,this,getViewAnswer(element),enable,pagePosition,position);
+        views.add(barCodeView);
+        return barCodeView;
     }
 
 

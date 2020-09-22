@@ -42,6 +42,7 @@ dependencies {
     implementation "com.airbnb.android:lottie:2.7.0"
     implementation  'com.simplify:ink:1.0.2'
     implementation 'com.alexvasilkov:gesture-views:2.5.2'
+    implementation 'me.dm7.barcodescanner:zxing:1.9.13'
 
 
 }

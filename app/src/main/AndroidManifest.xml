@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.checklist">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
@@ -9,36 +10,27 @@
     <uses-feature android:name="android.hardware.camera"
         android:required="true"/>
 
-    <application >
-        <activity android:name="com.example.checklist.Camera.empty"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustNothing">
+    <application
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:hardwareAccelerated="false"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
+        tools:ignore="GoogleAppIndexingWarning"
+        android:requestLegacyExternalStorage="true"
+        tools:replace="android:allowBackup"
+        tools:targetApi="q">
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
-        <activity android:name="com.example.checklist.Camera.ActivityCamera"
-            android:theme="@style/CAMERA_THEME"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustNothing">
 
-        </activity>
-        <activity android:name="com.example.checklist.Camera.ActivityEdit"
-            android:theme="@style/CAMERA_THEME"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustNothing">
-
-        </activity>
-        <activity android:name="com.example.checklist.Camera.ActivityPicture"
-            android:theme="@style/CAMERA_THEME"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustNothing">
-
-        </activity>
-        <activity android:name="com.example.checklist.Camera.ActivityCamera2"
-            android:theme="@style/CAMERA_THEME"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustNothing">
-
-        </activity>
     </application>
 
 </manifest>

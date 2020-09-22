@@ -1,4 +1,4 @@
-package com.example.macbook.checlistlibrary;
+package com.example.checklist.checlistlibrary;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

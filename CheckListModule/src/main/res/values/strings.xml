@@ -129,6 +129,7 @@
     <string name="newTime">Current time =</string>
     <string name="signatureGuide">Presione para firmar</string>
     <string name="errPermissionStorage">Permiso de almacenamiento no otorgado</string>
+    <string name="scan">Escanear</string>
 
 
 </resources>
