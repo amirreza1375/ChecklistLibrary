@@ -6,13 +6,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
+        android:textColor="#000"
+        android:textStyle="bold"
+        android:text="Qeustion ?!"
         android:id="@+id/titleText"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
     <LinearLayout
-        android:visibility="gone"
+        android:layout_marginTop="8dp"
+        android:background="#ACA7FF"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,14 +27,20 @@
 
     </LinearLayout>
 
+
     <TextView
-        android:visibility="gone"
+        android:textStyle="bold"
+        android:padding="8dp"
+        android:background="@drawable/barcode_result_back"
+        android:layout_marginTop="8dp"
+        android:text=" Result : 23154236346 \n Format : jpg"
         android:id="@+id/resultTxt"
         app:layout_constraintTop_toBottomOf="@id/scannerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
     <Button
+        android:layout_marginTop="8dp"
         android:textColor="#fff"
         android:background="@drawable/new_btn_back"
         android:text="@string/scan"

@@ -47,6 +47,9 @@ public class BarCodeView extends BaseViewModel implements ZXingScannerView.Resul
 
         scannerViewHolder.addView(scannerView);
 
+        resultTxt.setVisibility(GONE);
+        scannerViewHolder.setVisibility(GONE);
+
         return this;
     }
 
