@@ -70,7 +70,13 @@ public class BarCodeView extends BaseViewModel implements ZXingScannerView.Resul
             viewAnswered();
         }
 
-
+        if (!elementEnabled){
+            scanBtn.setVisibility(GONE);
+            scannerViewHolder.setVisibility(GONE);
+            scannerView.stopCamera();
+            resultTxt.setVisibility(VISIBLE);
+            resultTxt.setText(barCodeText);
+        }
 
         return this;
     }
@@ -102,7 +108,8 @@ public class BarCodeView extends BaseViewModel implements ZXingScannerView.Resul
 
     @Override
     public void handleResult(Result rawResult) {
-        resultTxt.setText(" Resultado : "+rawResult.getText().toLowerCase()+"\n Formato : "+rawResult.getBarcodeFormat());
+        barCodeText = rawResult.getText();
+        resultTxt.setText(rawResult.getText());
         resultTxt.setVisibility(VISIBLE);
         scanBtn.setVisibility(VISIBLE);
         scannerViewHolder.setVisibility(GONE);
