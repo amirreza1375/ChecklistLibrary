@@ -282,6 +282,7 @@ public class PageView extends ScrollView implements ElemetActionListener, Images
                 if (element.getString(conf_type)
                         .equals(conf_radioButton)) {
                     linearLayout.addView(createRadio(element, context, i));
+
                     continue;
                 }
                 //checkbox
@@ -332,14 +333,9 @@ public class PageView extends ScrollView implements ElemetActionListener, Images
                         .equals(conf_comment)) {
                     if (element.has(conf_isBarcode)){
                         if (element.getBoolean(conf_isBarcode)){
-                            createBarCodeScanner(element,i);
-                        }else{
-                            if (isComment(element)) {
-                                linearLayout.addView(createComment(element, context, i));
-                            } else {
-                                linearLayout.addView(createLayout(element, context, i));
-                            }
+                            linearLayout.addView(createBarCodeScanner(element,i));
                         }
+
                     }else {
                         if (element.has(conf_tipo)) {
                             if (element.getString(conf_tipo)
