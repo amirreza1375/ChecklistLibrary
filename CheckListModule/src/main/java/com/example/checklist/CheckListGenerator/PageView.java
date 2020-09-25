@@ -66,6 +66,7 @@ import static com.example.checklist.GlobalFuncs.conf_file;
 import static com.example.checklist.GlobalFuncs.conf_html;
 import static com.example.checklist.GlobalFuncs.conf_id;
 import static com.example.checklist.GlobalFuncs.conf_imagePicker;
+import static com.example.checklist.GlobalFuncs.conf_isBarcode;
 import static com.example.checklist.GlobalFuncs.conf_multiText;
 import static com.example.checklist.GlobalFuncs.conf_name;
 import static com.example.checklist.GlobalFuncs.conf_optico;
@@ -281,7 +282,6 @@ public class PageView extends ScrollView implements ElemetActionListener, Images
                 if (element.getString(conf_type)
                         .equals(conf_radioButton)) {
                     linearLayout.addView(createRadio(element, context, i));
-                    linearLayout.addView(createBarCodeScanner(element,i));
                     continue;
                 }
                 //checkbox
@@ -330,24 +330,30 @@ public class PageView extends ScrollView implements ElemetActionListener, Images
                 //comment
                 if (element.getString(conf_type)
                         .equals(conf_comment)) {
-                    if (element.has(conf_tipo)) {
-                        if (element.getString(conf_tipo)
-                                .equals(conf_productCount)) {
-                            linearLayout.addView(createProductCounter(element, context, i));
-                        } else {
+                    if (element.has(conf_isBarcode)){
+                        if (element.getBoolean(conf_isBarcode)){
+                            createBarCodeScanner(element,i);
+                        }
+                    }else {
+                        if (element.has(conf_tipo)) {
+                            if (element.getString(conf_tipo)
+                                    .equals(conf_productCount)) {
+                                linearLayout.addView(createProductCounter(element, context, i));
+                            } else {
 
+                                if (isComment(element)) {
+                                    linearLayout.addView(createComment(element, context, i));
+                                } else {
+                                    linearLayout.addView(createLayout(element, context, i));
+                                }
+                            }
+
+                        } else {
                             if (isComment(element)) {
                                 linearLayout.addView(createComment(element, context, i));
                             } else {
                                 linearLayout.addView(createLayout(element, context, i));
                             }
-                        }
-
-                    } else {
-                        if (isComment(element)) {
-                            linearLayout.addView(createComment(element, context, i));
-                        } else {
-                            linearLayout.addView(createLayout(element, context, i));
                         }
                     }
 

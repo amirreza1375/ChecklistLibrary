@@ -97,6 +97,7 @@ public class GlobalFuncs {
     public static String conf_rangeMax = "rangeMax";
     public static String conf_rangeMin = "rangeMin";
     public static String conf_systemId = "SystemId";
+    public static String conf_isBarcode = "Barcode";
 
 
     //endregion
