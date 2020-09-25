@@ -333,6 +333,12 @@ public class PageView extends ScrollView implements ElemetActionListener, Images
                     if (element.has(conf_isBarcode)){
                         if (element.getBoolean(conf_isBarcode)){
                             createBarCodeScanner(element,i);
+                        }else{
+                            if (isComment(element)) {
+                                linearLayout.addView(createComment(element, context, i));
+                            } else {
+                                linearLayout.addView(createLayout(element, context, i));
+                            }
                         }
                     }else {
                         if (element.has(conf_tipo)) {
