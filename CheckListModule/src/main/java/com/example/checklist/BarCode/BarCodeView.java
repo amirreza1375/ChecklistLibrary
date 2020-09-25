@@ -49,6 +49,7 @@ public class BarCodeView extends BaseViewModel implements ZXingScannerView.Resul
     public LinearLayout InitilizeView(Context context) {
 
         scannerView = new ZXingScannerView(context);
+        scannerView.setAutoFocus(true);
         scannerView.setResultHandler(this);
 
         resultTxt = baseView.findViewById(R.id.resultTxt);
