@@ -21,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static com.example.checklist.GlobalFuncs.conf_choices;
 import static com.example.checklist.GlobalFuncs.conf_disableOthers;
@@ -51,6 +52,7 @@ public class RadioGroupMaker extends BaseView {
     private int choosenIndex = -1;
     private ArrayList<JSONObject> values;
     private int disableOthers = -1;
+    private HashMap<Integer,String> strIdByIntId;
     //endregion
 
 
@@ -66,6 +68,7 @@ public class RadioGroupMaker extends BaseView {
         this.position = position;
         values = new ArrayList<>();
         btns = new ArrayList<>();
+        strIdByIntId = new HashMap<>();
         init(context);
     }
 
@@ -158,6 +161,7 @@ public class RadioGroupMaker extends BaseView {
                 String text = object.getString(conf_text);
                 btn.setText(text);
                 btn.setId(i);
+                strIdByIntId.put(i,object.getString(conf_id));
                 addAnswer(btn, answer);
                 btn.setEnabled(enabled);
                 radioGroup.addView(btn);

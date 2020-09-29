@@ -33,7 +33,7 @@ public class RadioGoupView extends BaseViewModel {
     private HashMap<Integer, RadioButton> btns;
     private RadioGroup radioGroup;
     private JSONArray choices;
-    private HashMap<Integer, Integer> valueByIndex;
+    private HashMap<Integer, String> valueByIndex;
 
     public RadioGoupView(Context context, JSONObject element, ElemetActionListener callBack, JSONObject viewAnswer
             , boolean isEnabled, IConditionChangeListener conditionChangeListener, int elementPosition, int viewPosition) {
@@ -58,7 +58,7 @@ public class RadioGoupView extends BaseViewModel {
 
             try {
                 answer.put(conf_index, choosenIndex+"");
-                answer.put(conf_value, valueByIndex.get(choosenIndex)+"");
+                answer.put(conf_value, valueByIndex.get(choosenIndex));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -204,7 +204,7 @@ public class RadioGoupView extends BaseViewModel {
 
     private void addToValue(JSONObject object, int index) {
         try {
-            valueByIndex.put(index, Integer.valueOf(object.getString(conf_value)));
+            valueByIndex.put(index, object.getString(conf_value));
         } catch (JSONException e) {
             e.printStackTrace();
         }
