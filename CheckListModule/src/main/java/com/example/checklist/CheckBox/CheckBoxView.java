@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.example.checklist.GlobalFuncs.conf_answer;
+import static com.example.checklist.GlobalFuncs.conf_id;
 import static com.example.checklist.GlobalFuncs.conf_text;
 import static com.example.checklist.GlobalFuncs.conf_value;
 import static com.example.checklist.GlobalFuncs.log;
@@ -40,6 +41,7 @@ public class CheckBoxView extends BaseViewModel {
 
     private LinearLayout footer,holder;
     private TextView minTxt,maxTxt;
+    private HashMap<Integer, String> valueByIndex;
 
     public CheckBoxView(Context context, JSONObject element, ElemetActionListener callBack, JSONObject viewAnswer, boolean isEnabled
             , IConditionChangeListener conditionChangeListener,int elementPosition,int viewPosition) {
@@ -87,7 +89,7 @@ public class CheckBoxView extends BaseViewModel {
     @Override
     public LinearLayout InitilizeView(Context context) {
 
-
+        valueByIndex = new HashMap<>();
         titleText = baseView.findViewById(R.id.titleText);
         footer = baseView.findViewById(R.id.footer);
         holder = baseView.findViewById(R.id.holder);
@@ -166,9 +168,10 @@ public class CheckBoxView extends BaseViewModel {
                 final CheckBox checkBox = new CheckBox(context);
                 checkBox.setEnabled(elementEnabled);
                 checkBox.setText(checkBoxObj.getString(conf_text));
-                checkBox.setId(checkBoxObj.getInt(conf_value));
+                checkBox.setId(i);
+                valueByIndex.put(i,checkBoxObj.getString(conf_id));
                 checkBoxStatuses.put(checkBox.getId(), false);
-                setAnswer(answers, checkBox, String.valueOf(checkBoxObj.getInt(conf_value)));
+                setAnswer(answers, checkBox, checkBoxObj.getString(conf_value));
                 checkBoxes.add(checkBox);
                 setMinMaxId(checkBox.getId());
 
@@ -178,7 +181,7 @@ public class CheckBoxView extends BaseViewModel {
 
                         checkBoxStatuses.put(checkBox.getId(), isChecked);
                         if (checkBox.getId() == elementDisableOthers) {
-                            disableOthersById(checkBox.getId(), isChecked);
+                            disableOthersById(valueByIndex.get(checkBox.getId()), isChecked);
                         }
                         checkMandatory();
                         removeMandatoryError();
@@ -206,7 +209,7 @@ public class CheckBoxView extends BaseViewModel {
                 checkBoxStatuses.put(checkBox.getId(), true);
                 if (disableOthers != -1)
                     if (disableOthers == checkBox.getId())
-                        disableOthersById(checkBox.getId(), true);
+                        disableOthersById(valueByIndex.get(checkBox.getId()), true);
                 break;
             }
         }
@@ -231,7 +234,7 @@ public class CheckBoxView extends BaseViewModel {
             if (hashMap.get(i) != null) {
                 JSONObject object = new JSONObject();
                 try {
-                    object.put("value", i + "");
+                    object.put("value", valueByIndex.get(i));
                     object.put("index", i);
                     object.put("status", hashMap.get(i));
 
@@ -265,10 +268,10 @@ public class CheckBoxView extends BaseViewModel {
             max = id;
         }
     }
-    private void disableOthersById(int id, boolean isChecked) {
+    private void disableOthersById(String id, boolean isChecked) {
         for (int i = 0; i < checkBoxes.size(); i++) {
-            long checkBoxId = checkBoxes.get(i).getId();
-            if (checkBoxId != id) {
+            String checkBoxId = valueByIndex.get(checkBoxes.get(i).getId());
+            if (checkBoxId.equals(id)) {
                 checkBoxes.get(i).setEnabled(!isChecked);
                 checkBoxes.get(i).setChecked(false);
                 checkBoxStatuses.put(checkBoxes.get(i).getId(), false);
