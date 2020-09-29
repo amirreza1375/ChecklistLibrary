@@ -169,7 +169,7 @@ public class CheckBoxView extends BaseViewModel {
                 checkBox.setEnabled(elementEnabled);
                 checkBox.setText(checkBoxObj.getString(conf_text));
                 checkBox.setId(i);
-                valueByIndex.put(i,checkBoxObj.getString(conf_id));
+                valueByIndex.put(i,checkBoxObj.getString(conf_value));
                 checkBoxStatuses.put(checkBox.getId(), false);
                 setAnswer(answers, checkBox, checkBoxObj.getString(conf_value));
                 checkBoxes.add(checkBox);
