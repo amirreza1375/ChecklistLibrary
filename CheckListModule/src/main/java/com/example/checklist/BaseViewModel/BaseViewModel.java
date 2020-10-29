@@ -1,5 +1,6 @@
  package com.example.checklist.BaseViewModel;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
@@ -201,12 +202,25 @@ public abstract class BaseViewModel extends LinearLayout {
     }
 
     public void setMandatoryError(){
-        this.setBackground(context.getResources().getDrawable(R.drawable.is_requiered));
+        Activity activity = (Activity) context;
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                setBackground(context.getResources().getDrawable(R.drawable.is_requiered));
+            }
+        });
+
     }
 
     public void removeMandatoryError() {
+        Activity activity = (Activity) context;
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
 //        this.setBackground(context.getResources().getDrawable(R.drawable.baseview_back));
-        this.setBackground(null);
+                setBackground(null);
+            }
+        });
     }
 
     public boolean isMandatoryAnswered(){
