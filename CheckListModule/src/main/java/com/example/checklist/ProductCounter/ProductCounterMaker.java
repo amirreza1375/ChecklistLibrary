@@ -2,12 +2,10 @@ package com.example.checklist.ProductCounter;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.LinearLayout;
 
 import com.example.checklist.BaseViewModel.BaseView;
 import com.example.checklist.BaseViewModel.ElemetActionListener;
 import com.example.checklist.BaseViewModel.MandatoryListener;
-import com.example.checklist.MultiTextGenerator.MultiText;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -16,7 +15,6 @@ import android.widget.TextView;
 import com.example.checklist.BaseViewModel.BaseView;
 import com.example.checklist.BaseViewModel.ElemetActionListener;
 import com.example.checklist.BaseViewModel.MandatoryListener;
-import com.example.checklist.MultiTextGenerator.MultiText;
 import com.example.checklist.R;
 
 import org.json.JSONException;
@@ -24,11 +22,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import static com.example.checklist.GlobalFuncs.conf_id;
 import static com.example.checklist.GlobalFuncs.conf_isAnswered;
-import static com.example.checklist.GlobalFuncs.conf_isRequired;
-import static com.example.checklist.GlobalFuncs.conf_productId;
-import static com.example.checklist.GlobalFuncs.conf_title;
 import static com.example.checklist.GlobalFuncs.conf_value;
 import static com.example.checklist.GlobalFuncs.setOrgProps;
 import static com.example.checklist.PageGenerator.CheckListPager.setMandatories;

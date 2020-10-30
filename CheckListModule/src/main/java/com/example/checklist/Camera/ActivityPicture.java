@@ -16,15 +16,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.GestureDetector;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.checklist.BaseViewModel.ElemetActionListener;
-import com.example.checklist.CheckListGenerator.CheckListMaker;
 import com.example.checklist.CheckListGenerator.PageView;
 import com.example.checklist.Config;
 import com.example.checklist.Database.IDBResultView;
@@ -46,7 +43,6 @@ import java.util.HashMap;
 
 import static com.example.checklist.Camera.ActivityCamera.IMAGE_RESULT;
 import static com.example.checklist.GlobalFuncs.conf_id;
-import static com.example.checklist.GlobalFuncs.conf_index;
 import static com.example.checklist.GlobalFuncs.conf_position;
 import static com.example.checklist.GlobalFuncs.convert_ArrayList_to_JSONArray;
 import static com.example.checklist.GlobalFuncs.convert_JSONArray_to_ArrayList;

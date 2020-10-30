@@ -6,7 +6,6 @@ import android.content.Context;
 
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.util.TypedValue;
@@ -17,7 +16,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.checklist.CheckListGenerator.CheckListMaker;
 import com.example.checklist.CheckListGenerator.PageView;
 import com.example.checklist.Database.IDBResultView;
 import com.example.checklist.Database.ModuleLogEvent;

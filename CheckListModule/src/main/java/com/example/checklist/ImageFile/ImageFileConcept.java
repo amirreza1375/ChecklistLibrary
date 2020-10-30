@@ -17,7 +17,6 @@ import com.example.checklist.BaseViewModel.BaseView;
 import com.example.checklist.BaseViewModel.ElemetActionListener;
 import com.example.checklist.BaseViewModel.MandatoryListener;
 import com.example.checklist.Config;
-import com.example.checklist.MultiTextGenerator.MultiText;
 import com.example.checklist.PictureElement.PicturePickerItemModel;
 import com.example.checklist.R;
 
