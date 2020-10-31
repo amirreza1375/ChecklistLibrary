@@ -68,7 +68,7 @@ public abstract class BaseViewModel extends LinearLayout {
     protected boolean elementEnabled = true;
     protected boolean elementIsVisibleSi;
     protected String elementVisibleSiName;
-    protected String elementVisibleSiValue;
+    protected String[] elementVisibleSiValue;
     protected String elementVisibleSi;
     protected int elementDisableOthers = -1;
     protected String elemetTitle;
@@ -238,17 +238,9 @@ public abstract class BaseViewModel extends LinearLayout {
             }
             elementId = element.has(conf_id) ? element.getString(conf_id) : "No Id";
             elementName = element.has(conf_name) ? element.getString(conf_name) : "No name";
-            elementIsVisibleSi = hasVisibleSi(element);
-            if (elementIsVisibleSi){
 
-                elementVisibleSi = element.getString(conf_visibileSi);
-                String[] elementVisibleSiArray = elementVisibleSi.split("contains");
-                if (elementVisibleSiArray.length == 2){
-                    elementVisibleSiName = elementVisibleSiArray[0].substring(1,elementVisibleSiArray[0].length()-2);
-                    elementVisibleSiValue = elementVisibleSiArray[1];
-                    callBack.isHiddenView();
-                }
-            }
+            getVisiblePage();
+
             elementDisableOthers = element.has(conf_disableOthers) ? element.getInt(conf_disableOthers) : -1;
             isMandatory = element.has(conf_required) && element.getBoolean(conf_required);
 //            isMandatory = true;
@@ -266,6 +258,38 @@ public abstract class BaseViewModel extends LinearLayout {
         }
         getElementProps();
     }
+
+    private void getVisiblePage(){
+        try {
+            elementIsVisibleSi = hasVisibleSi(element);
+            if (elementIsVisibleSi) {
+
+                elementVisibleSi = element.getString(conf_visibileSi);
+                String[] elementVisibleSiArray = elementVisibleSi.split("=");
+                if (elementVisibleSiArray.length == 2) {
+                    elementVisibleSiName = elementVisibleSiArray[0].substring(1, elementVisibleSiArray[0].length() - 2);
+                    elementVisibleSiValue = getVisibleSiValue(elementVisibleSiArray[1]);
+                    callBack.isHiddenView();
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private   String[] getVisibleSiValue(String s){
+        String[] values = {};
+
+        if (!s.substring(0).equals("[")){
+            //RadioGroup
+            return new String[]{s};
+        }else{
+            //CheckBox
+            String withOutBracets = s.substring(1, s.length() - 2);
+            return withOutBracets.split(",");
+        }
+    }
+
 
     public boolean hasVisibleSi(JSONObject element) {
         if (!element.has(conf_visibileSi))
@@ -367,11 +391,11 @@ public abstract class BaseViewModel extends LinearLayout {
         this.elementVisibleSiName = elementVisibleSiName;
     }
 
-    public void setElementVisibleSiValue(String elementVisibleSiValue) {
+    public void setElementVisibleSiValue(String[] elementVisibleSiValue) {
         this.elementVisibleSiValue = elementVisibleSiValue;
     }
 
-    public String getElementVisibleSiValue() {
+    public String[] getElementVisibleSiValue() {
         return elementVisibleSiValue;
     }
 

@@ -50,6 +50,7 @@ import static com.example.checklist.GlobalFuncs.conf_position;
 import static com.example.checklist.GlobalFuncs.conf_radioButton;
 import static com.example.checklist.GlobalFuncs.conf_type;
 import static com.example.checklist.GlobalFuncs.conf_value;
+import static com.example.checklist.GlobalFuncs.conf_visibileSi;
 import static com.example.checklist.GlobalFuncs.convert_ArrayList_to_JSONArray;
 import static com.example.checklist.GlobalFuncs.convert_JSONArray_to_ArrayList;
 import static com.example.checklist.GlobalFuncs.convert_JSONArray_to_PictureModel;
@@ -866,24 +867,41 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
 
     }
 
+
+    private   String[] getVisibleSiValue(String s){
+        String[] values = {};
+
+        if (!s.substring(0).equals("[")){
+            //RadioGroup
+            return new String[]{s};
+        }else{
+            //CheckBox
+            String withOutBracets = s.substring(1, s.length() - 2);
+            return withOutBracets.split(",");
+        }
+    }
+
     private boolean isPageAllowedToShowByOrder(JSONObject page) {
 
-        String visiblePage = "visiblePage";
+        String visiblePage = conf_visibileSi;
         boolean FLAG_EXIST = false;
         String currentPageId = "";
-        String currentPageValue = "";
+        String[] currentPageValues = {};
         String showElemento = "n";
 
-        if (!page.has(visiblePage)) {
+        if (!page.has(visiblePage)) {//this state is for page witout visibleif so they are not conditional and suppose to show anyway
             addEvenLog(context, -1, "Has not value", "Visible page", "N/I", "");
             return true;
         }
 
+        /**
+         * This block of code is just to get visible si name and value to campare later in next block of code
+         */
         try {
             String[] visiblePageConditions = page.getString(visiblePage).split(":");
             if (visiblePageConditions.length >= 2) {
                 currentPageId = visiblePageConditions[0];
-                currentPageValue = visiblePageConditions[1];
+                currentPageValues = getVisibleSiValue(visiblePageConditions[1]);
             } else {
                 addEvenLog(context, -1, "Value is -> : ", "Visible page", "N/I", "");
                 return true;
@@ -895,20 +913,27 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
             return true;
         }
 
+        /*****************               END          **/
+
         for (int i = 0; i < conditions.size(); i++) {
             try {
                 String tempId = conditions.get(i).getString("id");
-                String tempValue = conditions.get(i).getString("value");
-                if (currentPageValue.equals(showElemento)
-                        && tempId.equals(currentPageId)) {
-                    Log.i(TAG, "checkVisibleByOrder: condition is ok");
-                    addEvenLog(context, -1, "Value match : " + i, "Visible page", tempId + ":" + tempValue, "");
-                    return true;
-                }
-                if (tempId.equals(currentPageId)
-                        && tempValue.equals(currentPageValue)) {
-                    addEvenLog(context, -1, "Value match : " + i, "Visible page", currentPageId + ":" + currentPageValue, "");
-                    FLAG_EXIST = true;
+                String tempValue = conditions.get(i).getString("name");
+                for (int j = 0 ; j < currentPageValues.length ; j++) {
+
+                    String currentPageValue = currentPageValues[j];
+
+                    if (currentPageValue.equals(showElemento)
+                            && tempId.equals(currentPageId)) {
+                        Log.i(TAG, "checkVisibleByOrder: condition is ok");
+                        addEvenLog(context, -1, "Value match : " + i, "Visible page", tempId + ":" + tempValue, "");
+                        return true;
+                    }
+                    if (tempId.equals(currentPageId)
+                            && tempValue.equals(currentPageValue)) {
+                        addEvenLog(context, -1, "Value match : " + i, "Visible page", currentPageId + ":" + currentPageValues, "");
+                        FLAG_EXIST = true;
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -916,71 +941,13 @@ public class CheckListPager extends LinearLayout implements CheckListDataListene
                 errors.add(e.getMessage());
                 addEvenLog(context, -1, e.getMessage(), "Visible page", "N/I", "");
             }
-        }
+                }
+
         return FLAG_EXIST;
 
     }
 
-//    private boolean checkVisibleByOrder(JSONObject page) {
-//
-//        String visiblePage = "visiblePage";
-//
-//        if (page.has(visiblePage)) {
-//            try {
-//                if (page.getString(visiblePage).equals("")
-//                        || page.getString(visiblePage).equals("0")) {
-//                    Log.i(TAG, "checkVisibleByOrder: visible page value is = empty or 0");
-//                    return true;
-//                }
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//                log(e.getMessage());
-//                listListener.CheckListHasError(e.getMessage());
-//            }
-//        } else {
-//            Log.i(TAG, "checkVisibleByOrder: not visible page value");
-//            return true;
-//        }
-//        boolean FLAG_EXIST = false;
-//        String currentPageId = null;
-//        String currentPageValue = null;
-//        String showElemento = "n";
-//
-//        try {
-//            String[] visiblePages = page.getString(visiblePage).split(":");
-//            if (visiblePages.length >= 2) {
-//                currentPageId = visiblePages[0];
-//                currentPageValue = visiblePages[1];
-//            }else{
-//                return true;
-//            }
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//            log(e.getMessage());
-//            listListener.CheckListHasError(e.getMessage());
-//        }
-//        for (int i = 0; i < conditions.size(); i++) {
-//            try {
-//                String tempId = conditions.get(i).getString("id");
-//                String tempValue = conditions.get(i).getString("value");
-//                if (currentPageValue.equals(showElemento)
-//                        && tempId.equals(currentPageId)) {
-//                    Log.i(TAG, "checkVisibleByOrder: condition is ok");
-//                    return true;
-//                }
-//                if (tempId.equals(currentPageId)
-//                        && tempValue.equals(currentPageValue)) {
-//                    FLAG_EXIST = true;
-//                }
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//                log(e.getMessage());
-////                listListener.CheckListHasError(e.getMessage());
-//            }
-//        }
-////        Log.i(TAG, "checkVisibleByOrder: no statment called , condition size = " + conditions.size());
-//        return FLAG_EXIST;
-//    }
+
 
     private void getPagesArray(JSONObject object) {
         try {

@@ -54,6 +54,8 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.ArrayList;
 
+import javax.xml.validation.Validator;
+
 import static com.example.checklist.GlobalFuncs.addEvenLog;
 import static com.example.checklist.GlobalFuncs.conf_DataBase;
 import static com.example.checklist.GlobalFuncs.conf_Elemento;
@@ -228,7 +230,7 @@ public class PageView extends ScrollView implements ElemetActionListener, Images
 
 
                         if (name.trim().equals(view.getElementVisibleSiName().trim())
-                                && value.trim().equals(view.getElementVisibleSiValue().trim())) {
+                                && isIdExistInVisibleValue(value,view.getElementVisibleSiValue())) {
                             showView(view);
                             isExist = true;
                         }
@@ -810,8 +812,8 @@ public class PageView extends ScrollView implements ElemetActionListener, Images
         conditions = convert_ArrayList_to_JSONArray(conditionsArr);
     }
 
-    private boolean isIdExistInConditions(String visibleSiName, String visibleSiValueWrong) {
-        String visibleSiValue = visibleSiValueWrong.replace("\"", "");
+    private boolean isIdExistInConditions(String visibleSiName, String[] visibleSiValueWrong) {
+//        String visibleSiValue = visibleSiValueWrong.replace("\"", "");
         for (int i = 0; i < conditions.length(); i++) {
             try {
                 JSONObject condition = conditions.getJSONObject(i);
@@ -819,7 +821,8 @@ public class PageView extends ScrollView implements ElemetActionListener, Images
                 String conditionValue = condition.has(conf_value) ? condition.getString(conf_value).trim() : "";
 //                boolean conditionStatus = condition.has("status") && condition.getBoolean("status");
 //                if (conditionStatus) {
-                    if (conditionName.equals(visibleSiName.trim()) && conditionValue.equals(visibleSiValue.trim())) {
+                    if (conditionName.equals(visibleSiName.trim())) {
+                        if (isIdExistInVisibleValue(conditionValue,visibleSiValueWrong))
                         return true;
                     }
 //                }
@@ -834,7 +837,8 @@ public class PageView extends ScrollView implements ElemetActionListener, Images
                 String conditionValue = condition.getString(conf_value).trim();
                 boolean conditionStatus = condition.getBoolean("status");
                 if (conditionStatus) {
-                    if (conditionName.equals(visibleSiName.trim()) && conditionValue.equals(visibleSiValue.trim())) {
+                    if (conditionName.equals(visibleSiName.trim())) {
+                        if (isIdExistInVisibleValue(conditionValue,visibleSiValueWrong))
                         return true;
                     }
                 }
@@ -934,10 +938,10 @@ public class PageView extends ScrollView implements ElemetActionListener, Images
             for (BaseViewModel view : views) {
                 if (view.isElementIsVisibleSi()) {
                     String viewVisibleSiName = view.getElementVisibleSiName();
-                    String viewVisibleSiValue = view.getElementVisibleSiValue();
+                    String[] viewVisibleSiValue = view.getElementVisibleSiValue();
 
                     if (viewVisibleSiName.trim().equals(name.trim())) {//Check name
-                        if (viewVisibleSiValue.trim().equals(value.trim())) {//Check value
+                        if (isIdExistInVisibleValue(value,viewVisibleSiValue)) {//Check value
                             if (isChecked)//if Check box is selected
                                 showView(view);
                             else//if check box is unselected
@@ -950,6 +954,15 @@ public class PageView extends ScrollView implements ElemetActionListener, Images
                 }
             }
         }
+    }
+
+    private boolean isIdExistInVisibleValue(String currentValue,String[] values) {
+        for (String value : values){
+            if (value.trim().equals(value.trim())){
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
