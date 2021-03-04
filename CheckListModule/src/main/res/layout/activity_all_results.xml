@@ -64,7 +64,7 @@
 
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
+    <android.support.v7.widget.RecyclerView
         android:layout_below="@+id/toolbar"
         tools:itemCount="100"
         tools:listitem="@layout/layout_result_item"
@@ -73,6 +73,6 @@
         android:layout_height="wrap_content"
         >
 
-    </androidx.recyclerview.widget.RecyclerView>
+    </android.support.v7.widget.RecyclerView>
 
 </RelativeLayout>
