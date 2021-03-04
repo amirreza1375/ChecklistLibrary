@@ -1,25 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:layout_marginTop="4dp"
-    android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+<LinearLayout android:orientation="vertical"
+    android:background="@color/back_main"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <TextView
-        android:id="@+id/titleText"
-        android:textSize="16sp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="4dp"
-        android:textColor="#000"
-        android:textStyle="bold"
-        android:text="Radio Title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+
+            android:id="@+id/questionIdTxt"
+            android:textSize="16sp"
+            android:textColor="@color/opisite_text"
+            android:gravity="end"
+            android:textAlignment="textEnd"
+            tools:text="1 . "
+            android:layout_weight="0.1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:gravity="start"
+            android:textAlignment="textStart"
+            android:id="@+id/titleText"
+            android:textSize="16sp"
+            android:textColor="@color/opisite_text"
+            android:textStyle="bold"
+            android:text="Radio Title Radio Title Radio Title Radio Title Radio Title Radio Title Radio Titlee Radio Title Radio Title Radio Title Radio Title Radio Title Radio Titlee Radio Title Radio Title Radio Title Radio Title Radio Title Radio Title Radio Title v Radio Title Radio Title"
+            android:layout_width="0dp"
+            android:layout_weight="1.5"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+
 
     <TextView
         android:id="@+id/counterTxt"
-        android:textColor="#313131"
+        android:textColor="@color/opisite_text"
         android:layout_gravity="end"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -48,10 +67,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content">
             <TextView
+                android:textColor="@color/opisite_text"
                 android:text="min : "
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <TextView
+                android:textColor="@color/opisite_text"
                 android:id="@+id/minTxt"
                 android:text="2"
                 android:layout_width="wrap_content"
@@ -63,10 +84,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content">
             <TextView
+                android:textColor="@color/opisite_text"
                 android:text="Max : "
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <TextView
+                android:textColor="@color/opisite_text"
                 android:id="@+id/maxTxt"
                 android:text="5"
                 android:layout_width="wrap_content"

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<LinearLayout android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="256dp"
+    android:background="#0057b8"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <TextView
+            android:layout_marginEnd="40dp"
+            android:layout_marginStart="40dp"
+            android:textSize="15sp"
+            android:layout_marginTop="16dp"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            android:typeface="monospace"
+            android:textColor="#fff"
+            android:text="Elegir aplicación"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Spinner
+            android:popupBackground="#0057b8"
+            android:textAlignment="center"
+            android:background="@drawable/spinner_back"
+            android:id="@+id/appsSpinner"
+            android:layout_marginEnd="40dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="48dp">
+
+        </Spinner>
+
+        <Button
+            android:layout_marginBottom="32dp"
+            android:layout_marginTop="16dp"
+            android:id="@+id/chooseApp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="40dp"
+            android:layout_marginStart="40dp"
+            android:background="@drawable/roundbottonlogin"
+            android:text="Escoger"
+            android:textColor="#0057b8"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+

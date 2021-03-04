@@ -132,4 +132,110 @@
     <string name="scan">Escanear</string>
 
 
+    //login
+
+    <string name="title_dialog_reply_ticket">Informe su Problema</string>
+    <string name="hint_dialog_reply_ticket">Ingrese Contenido</string>
+    <string name="btn_cancel_dialog_reply_ticket">Cancelar</string>
+    <string name="btn_reply_dialog_reply_ticket">Aceptar</string>
+    //forgetPassword
+    <string name="passwordSentToYourMail">"Una nueva contraseña fue enviada a su correo electrónico"</string>
+    <string name="tryLater">p8or favor intente mas tarde</string>
+    <string name="emailNotFound">El correo electrónico no encontrado</string>
+    <string name="ticket_empty">No hay tickets disponibles</string>
+    //drawer
+
+
+    // suport
+    <string name="responseErroreBodyFalse">el cuerpo del error de respuesta es falso</string>
+    <string name="fail">fallar</string>
+    <string name="josnNotArticles">json no tiene artículos</string>
+    <string name="notConvertToJson">no puedo convertir a json</string>
+    <string name="notLoad">no se puede cargar</string>
+    <string name="statusFalse">el código de estado es falso</string>
+    <string name="errorAcured">ocurrió un error</string>
+    <string name="thingHappend">algo ha pasado!</string>
+
+
+
+    //login
+    <!-- TODO: Remove or change this placeholder text -->
+    //////==================================================================================////////
+
+
+
+    <string name="pressAgainToExitMsg">Por favor, haga clic en ATRÁS nuevamente para salir</string>
+    <string name="messageVersionApp">La nueva versión de la aplicación está disponible, Nuevas características agregadas y correcciones de errores. ¿Desea actualizar su aplicación?</string>
+    <!-- TODO: Remove or change this placeholder text -->
+
+    // ---------------------------------------------------------------------
+
+
+    <string name="notif_message">Su Check Lists ha sido guardado como borrador</string>
+    <string name="notif_title">Borrador guardado</string>
+    <string name="no_network">SIN ANTENA</string>
+
+    <string name="no_checklist">La lista de verificación no está disponible</string>
+
+    <string name="fab_menu_item_a">Auditoría</string>
+    <string name="fab_menu_item_c">Campañas</string>
+
+    <string name="crashMessage">¿Quieres reportar este problema?</string>
+    <string name="surveyIdIsZero">La identificación de la encuesta no debe ser cero</string>
+    <string name="shopIdIsZero">La identificación de la tienda no debe ser cero</string>
+    <string name="surveyIdIsNull">La identificación de la encuesta no debe estar vacía</string>
+    <string name="shopIdIsNull">la identificación de la tienda no debe estar vacía</string>
+    <string name="emptyData">No se puede enviar respuesta vacía!</string>
+    <string name="preDistanceMsg">La distancia a esta tienda es de</string>
+    <string name="postDistanceMsg">kilómetro</string>
+    <string name="postDistanceMsgPlural">kilómetros</string>
+    <string name="wayFarFromShop">No estás en la tienda</string>
+    <string name="meterMsg">metros</string>
+    <string name="and">y</string>
+    <string name="youAreInTheShop">Pareces estar en la tienda</string>
+    <string name="serverREsponseError">Error de respuesta del servidor</string>
+    <string name="authFailedMsg">Su sesión ha expirado, por favor vuelva a iniciar sesión</string>
+    <string name="deleted">Eliminado</string>
+    <string name="deletedItems">Objetos eliminados</string>
+    <string name="removeAll">Eliminar todo</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="maps">Mapas</string>
+    <string name="deleteAllTitle">Eliminar todos</string>
+    <string name="deleteAllMsg">¿Estás seguro de que quieres eliminar todos los elementos?</string>
+    <string name="permissionErrorGPS">Necesitamos permiso de GPS para encontrar tiendas cercanas.</string>
+    <string name="noShopFindUpToNow">¿No encuentras tiendas hasta ahora quieres terminar de buscar?</string>
+    <string name="finish">terminar</string>
+    <string name="noShop">No hay tienda</string>
+    <string name="noShopUpdateDataMsg">¿No hay tienda asignada desea actualizar los datos?</string>
+    <string name="locationPermissionError">La aplicación necesita permiso de ubicación para mostrar la distancia</string>
+    <string name="GPSnotWorkTurnOnHightPerformance">El GPS no funciona bien. Por favor verifique el rendimiento de su GPS.</string>
+    <string name="fillAllBlanks">Por favor llene todos los espacios en blanco</string>
+    <string name="valueCannotZero">El valor no puede ser cero</string>
+    <string name="yearNotExist">Este año no existe</string>
+    <string name="valueNotValid">El valor no es válido</string>
+    <string name="pleaseUpdateAfterUpload">Algunos elementos se están sincronizando. Intenta actualizarlos después de que todos hayan terminado.</string>
+    <string name="imageNoExist">Las imágenes de este resultado se eliminan.</string>
+    <string name="noConnectio">Revisa tu conexión a Internet. Apareces conectado, pero sin internet</string>
+    <string name="errorFixMsg">Contacte a su administrador para que corrija la configuración en el Check List, para que pueda trabajar correctamente.</string>
+    <string name="checklistErrorWarn">Estos son los problemas de configuración para informar a su administrador:</string>
+    <string name="tutorial">Tutorial</string>
+    <string name="appTutorial">App Tutorial</string>
+    <string name="checklistTutorial">Checklist Tutorial</string>
+    <string name="Tutorials">Tutorials</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="cameraTutorial">Camera Tutorial</string>
+    <string name="databaseVersionError">Se produjo un error inesperado con la base de datos, póngase en contacto con el soporte</string>
+    <string name="login">Iniciar sesión</string>
+    <string name="direction">Dirección</string>
+    <string name="country">País</string>
+    <string name="city">Ciudad o Comuna</string>
+    <string name="zone">Zona Geográfica</string>
+    <string name="allItems">Todos los resultados</string>
+    <string name="closeApp">Cerrar app</string>
+    <string name="databaseVersionErrorIncrease">La versión de la base de datos aumenta y hará que pierda datos antiguos</string>
+    <string name="ticket">Ticket</string>
+
+
+
 </resources>

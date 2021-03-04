@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:id="@+id/parent"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+
+    android:layout_height="wrap_content"
+    android:background="@drawable/layout_main_item_result_back"
+    xmlns:tools="http://schemas.android.com/tools">
+<LinearLayout
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="68dp"
+    >
+    <ImageView
+        android:layout_marginLeft="4dp"
+        android:id="@+id/imgProfile"
+        android:src="@drawable/barbershop"
+        android:layout_width="38dp"
+        android:layout_height="38dp" />
+    <LinearLayout
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:id="@+id/retail"
+                android:layout_marginLeft="16dp"
+                android:textColor="@color/main_empty"
+                android:text="Tea Connection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+
+                android:layout_marginLeft="2dp"
+                android:textColor="@color/main_empty"
+                android:text=""
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:textStyle="bold"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:layout_marginLeft="2dp"
+                android:id="@+id/shop_name"
+                android:textColor="@color/main_empty"
+                android:text="Office"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <TextView
+            android:text="Razabi Khorasan"
+            android:layout_marginLeft="16dp"
+            android:id="@+id/shop_adress"
+            android:textColor="@color/main_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+</LinearLayout>
+<LinearLayout
+    android:id="@+id/divider"
+    android:background="@color/main_empty"
+    android:layout_width="match_parent"
+    android:layout_height="0.5dp"
+    android:orientation="horizontal">
+
+</LinearLayout>
+</LinearLayout>

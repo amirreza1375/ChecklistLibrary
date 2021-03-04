@@ -1,0 +1,475 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/containter"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:orientation="vertical">
+
+
+    <RelativeLayout
+        android:id="@+id/mapHolder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/main_drawer_back"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/map2"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="20dp"
+            android:background="@color/main_drawer_back" />
+
+        <ProgressBar
+            android:id="@+id/gpsLoad"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_centerInParent="true" />
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+
+        android:id="@+id/holder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/layout_main_item_result_back"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <!--                    <LinearLayout-->
+            <!--                        android:id="@+id/infoHolder"-->
+            <!--                        android:visibility="gone"-->
+            <!--                        android:orientation="vertical"-->
+            <!--                        android:layout_width="match_parent"-->
+            <!--                        android:layout_height="wrap_content">-->
+
+            <!--                        <LinearLayout-->
+            <!--                            android:layout_marginStart="16dp"-->
+            <!--                            android:layout_marginTop="8dp"-->
+            <!--                            android:layout_width="match_parent"-->
+            <!--                            android:layout_height="wrap_content">-->
+            <!--                            <TextView-->
+            <!--                                android:text="County : "-->
+            <!--                                android:layout_width="wrap_content"-->
+            <!--                                android:layout_height="wrap_content"/>-->
+            <!--                            <TextView-->
+            <!--                                android:id="@+id/countryTxt"-->
+            <!--                                android:text="Zone"-->
+            <!--                                android:layout_width="wrap_content"-->
+            <!--                                android:layout_height="wrap_content"/>-->
+            <!--                        </LinearLayout>-->
+            <!--                        <LinearLayout-->
+            <!--                            android:layout_marginStart="16dp"-->
+            <!--                            android:layout_marginTop="8dp"-->
+            <!--                            android:layout_width="match_parent"-->
+            <!--                            android:layout_height="wrap_content">-->
+            <!--                            <TextView-->
+            <!--                                android:text="City : "-->
+            <!--                                android:layout_width="wrap_content"-->
+            <!--                                android:layout_height="wrap_content"/>-->
+            <!--                            <TextView-->
+            <!--                                android:id="@+id/cityTxt"-->
+            <!--                                android:text="Zone"-->
+            <!--                                android:layout_width="wrap_content"-->
+            <!--                                android:layout_height="wrap_content"/>-->
+            <!--                        </LinearLayout>-->
+            <!--                        <LinearLayout-->
+            <!--                            android:layout_marginStart="16dp"-->
+            <!--                            android:layout_marginTop="8dp"-->
+            <!--                            android:layout_width="match_parent"-->
+            <!--                            android:layout_height="wrap_content">-->
+            <!--                            <TextView-->
+            <!--                                android:text="Zone : "-->
+            <!--                                android:layout_width="wrap_content"-->
+            <!--                                android:layout_height="wrap_content"/>-->
+            <!--                            <TextView-->
+            <!--                                android:id="@+id/zoneTxt"-->
+            <!--                                android:text="Zone"-->
+            <!--                                android:layout_width="wrap_content"-->
+            <!--                                android:layout_height="wrap_content"/>-->
+            <!--                        </LinearLayout>-->
+            <!--                        <LinearLayout-->
+            <!--                            android:layout_marginStart="16dp"-->
+            <!--                            android:layout_marginTop="8dp"-->
+            <!--                            android:layout_width="match_parent"-->
+            <!--                            android:layout_height="wrap_content">-->
+            <!--                            <TextView-->
+            <!--                                android:text="Zip : "-->
+            <!--                                android:layout_width="wrap_content"-->
+            <!--                                android:layout_height="wrap_content"/>-->
+            <!--                            <TextView-->
+            <!--                                android:id="@+id/zipTxt"-->
+            <!--                                android:text="Zone"-->
+            <!--                                android:layout_width="wrap_content"-->
+            <!--                                android:layout_height="wrap_content"/>-->
+            <!--                        </LinearLayout>-->
+            <!--                        <LinearLayout-->
+
+            <!--                            android:layout_marginStart="16dp"-->
+            <!--                            android:layout_marginTop="8dp"-->
+            <!--                            android:layout_width="match_parent"-->
+            <!--                            android:layout_height="wrap_content">-->
+            <!--                            <TextView-->
+            <!--                                android:text="Address : "-->
+            <!--                                android:layout_width="wrap_content"-->
+            <!--                                android:layout_height="wrap_content"/>-->
+            <!--                            <EditText-->
+            <!--                                android:hint="Put address"-->
+            <!--                                android:id="@+id/streetTxt"-->
+            <!--                                android:layout_width="match_parent"-->
+            <!--                                android:layout_height="wrap_content"/>-->
+            <!--                        </LinearLayout>-->
+
+            <!--                        <Button-->
+            <!--                            android:id="@+id/submitBtn"-->
+            <!--                            android:textColor="#fff"-->
+            <!--                            android:background="@drawable/new_login_btn"-->
+            <!--                            android:text="Ok"-->
+            <!--                            android:layout_marginStart="32dp"-->
+            <!--                            android:layout_marginEnd="32dp"-->
+            <!--                            android:layout_marginTop="8dp"-->
+            <!--                            android:layout_marginBottom="8dp"-->
+            <!--                            android:layout_width="match_parent"-->
+            <!--                            android:layout_height="wrap_content"/>-->
+
+            <!--                    </LinearLayout>-->
+
+            <LinearLayout
+                android:id="@+id/infoHolder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/addressTxt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:background="@drawable/ticket_edt"
+                    android:gravity="center"
+                    android:minHeight="48dp"
+                    android:text="Dirección"
+                    android:textAlignment="center"
+                    android:textColor="@color/main_empty" />
+
+                <EditText
+                    android:id="@+id/numberEdt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="32dp"
+                    android:background="@drawable/ticket_edt"
+                    android:gravity="center"
+                    android:hint="Pon tu numero"
+                    android:maxLines="1"
+                    android:minHeight="48dp"
+                    android:padding="8dp"
+                    android:textColor="@color/main_empty"
+                    android:textColorHint="@color/main_search_hint" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="32dp"
+                    android:text="@string/zone"
+                    android:textColor="@color/main_empty"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="32dp"
+
+                    android:background="@drawable/ticket_edt"
+                    android:orientation="vertical">
+
+                    <Spinner
+                        android:popupBackground="@color/main_drawer_back"
+                        android:background="@drawable/spinner_back_border"
+                        android:id="@+id/autoZoneSpn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:maxLines="1"
+                        android:minHeight="48dp"
+                        android:textAlignment="center" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="32dp"
+                    android:text="Región"
+                    android:textColor="@color/main_empty"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="32dp"
+
+                    android:background="@drawable/ticket_edt"
+                    android:orientation="vertical">
+
+                    <Spinner
+                        android:popupBackground="@color/main_drawer_back"
+                        android:background="@drawable/spinner_back_border"
+                        android:id="@+id/autoRegionSpn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:hint="Región"
+                        android:maxLines="1"
+                        android:minHeight="48dp"
+                        android:textAlignment="center" />
+                </LinearLayout>
+
+
+                <Button
+                    android:id="@+id/submitBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/calendar_btn_back"
+                    android:text="Ok"
+                    android:textColor="@color/main_back" />
+
+            </LinearLayout>
+
+            <ScrollView
+                android:id="@+id/manualInfoHolder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+
+                <LinearLayout
+
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+
+                    <EditText
+                        android:id="@+id/manualCountryEdt"
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="32dp"
+                        android:layout_marginEnd="32dp"
+                        android:background="@drawable/ticket_edt"
+                        android:gravity="center"
+                        android:hint="@string/country"
+                        android:maxLines="1"
+                        android:minHeight="48dp"
+                        android:text="Chile"
+                        android:textAlignment="center"
+                        android:textColor="@color/main_empty" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="32dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="32dp"
+                        android:text="@string/zone"
+                        android:textColor="@color/main_empty"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="32dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="32dp"
+
+                        android:background="@drawable/ticket_edt"
+                        android:orientation="vertical">
+
+                        <Spinner
+                            android:popupBackground="@color/main_drawer_back"
+                            android:background="@drawable/spinner_back_border"
+                            android:id="@+id/manualZoneSpn"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+
+                            android:maxLines="1"
+                            android:minHeight="48dp"
+                            android:textAlignment="center" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="32dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="32dp"
+                        android:text="Región"
+                        android:textColor="@color/main_empty"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="32dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="32dp"
+
+                        android:background="@drawable/ticket_edt"
+                        android:orientation="vertical">
+
+                        <Spinner
+                            android:popupBackground="@color/main_drawer_back"
+                            android:background="@drawable/spinner_back_border"
+                            android:id="@+id/manualRegionSpn"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:hint="Región"
+                            android:maxLines="1"
+                            android:minHeight="48dp"
+                            android:textAlignment="center" />
+                    </LinearLayout>
+
+                    <EditText
+                        android:id="@+id/manualCityEdt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="32dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="32dp"
+                        android:background="@drawable/ticket_edt"
+                        android:gravity="center"
+                        android:hint="@string/city"
+                        android:maxLines="1"
+                        android:minHeight="48dp"
+                        android:textAlignment="center"
+                        android:textColor="@color/main_empty"
+                        android:textColorHint="@color/main_search_hint" />
+
+                    <EditText
+                        android:id="@+id/manualAddressEdt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="32dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="32dp"
+                        android:background="@drawable/ticket_edt"
+                        android:gravity="center"
+                        android:hint="Dirección"
+                        android:maxLines="1"
+                        android:minHeight="48dp"
+                        android:textAlignment="center"
+                        android:textColor="@color/main_empty"
+                        android:textColorHint="@color/main_search_hint" />
+
+                    <EditText
+                        android:id="@+id/manualNumberEdt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="32dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="32dp"
+                        android:background="@drawable/ticket_edt"
+                        android:gravity="center"
+                        android:hint="Pon tu numero"
+                        android:maxLines="1"
+                        android:minHeight="48dp"
+                        android:padding="8dp"
+                        android:textColor="@color/main_empty"
+                        android:textColorHint="@color/main_search_hint" />
+
+
+                    <Button
+                        android:id="@+id/manualSubmitBtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="32dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="32dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@drawable/calendar_btn_back"
+                        android:text="Ok"
+                        android:textColor="@color/main_back" />
+
+                </LinearLayout>
+
+            </ScrollView>
+
+
+            <ProgressBar
+                android:id="@+id/visitsLoad"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_centerInParent="true"
+                android:visibility="gone" />
+
+
+            <TextView
+                android:id="@+id/guidTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_margin="4dp"
+                android:text="Mantenga presionado en el mapa para enviar su ubicación"
+                android:textColor="@color/main_empty"
+                android:visibility="visible" />
+
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <!--    <Button-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintBottom_toTopOf="@+id/holder"-->
+    <!--        android:textColor="#fff"-->
+    <!--        android:background="@color/colorPrimary"-->
+    <!--        android:id="@+id/manulAddressBtn"-->
+    <!--        android:text="a mano"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="32dp"/>-->
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

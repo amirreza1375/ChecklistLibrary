@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f1f1f1"
+    android:id="@+id/parent"
+    android:fitsSystemWindows="true"
+    >
+    <LinearLayout
+        android:scaleY="1.04"
+        android:id="@+id/toolbar"
+        android:gravity="center_vertical"
+        android:layout_gravity="top"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_width="match_parent">
+
+        <ImageView
+            android:padding="4dp"
+            android:id="@+id/back"
+            android:layout_marginLeft="12dp"
+            android:src="@drawable/back"
+            android:layout_width="30dp"
+            android:layout_height="30dp" />
+
+        <LinearLayout
+            android:layout_marginRight="36dp"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:textSize="16sp"
+                android:textColor="#fff"
+                android:text="@string/send_ticket"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:background="@drawable/dark_shadow"
+        android:id="@+id/shadow"
+        android:layout_below="@id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="3dp">
+
+    </LinearLayout>
+
+
+    <FrameLayout
+        android:background="#fff"
+        android:id="@+id/holder"
+        android:layout_below="@id/tab"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </FrameLayout>
+    <TableLayout
+        android:layout_width="match_parent"
+        android:id="@+id/tab"
+        android:layout_below="@id/shadow"
+        app:tabTextColor="#464646"
+        android:background="#c3efefef"
+        android:layout_height="40dp">
+
+    </TableLayout>
+
+
+    <com.github.clans.fab.FloatingActionButton
+        android:id="@+id/fab"
+        fab:fab_size="normal"
+        android:src="@drawable/ic_ticket"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        fab:fab_label="@string/check_list"
+        style="@style/MenuButtonsStyle" />
+
+
+
+</RelativeLayout>

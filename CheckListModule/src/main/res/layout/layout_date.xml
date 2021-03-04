@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/main_back"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_height="32dp">
+
+        <TextView
+            android:text="Calendario de AD"
+            android:textSize="15sp"
+            android:textColor="@color/main_top_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:background="@color/main_back"
+        android:layout_weight="0.9"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <LinearLayout
+            android:background="@color/main_back"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.cardview.widget.CardView
+                app:cardCornerRadius="8dp"
+                android:elevation="4dp"
+                android:layout_margin="4dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_margin="4dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <!--<TextView-->
+                        <!--android:textColor="#000"-->
+                        <!--android:text="From"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content" />-->
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:weightSum="3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:hint="Día"
+                            android:textColorHint="@color/main_search_hint"
+                            android:textColor="@color/main_search_text"
+                            android:inputType="numberDecimal"
+                            android:id="@+id/dayEdt"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content" />
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:textColorHint="@color/main_search_hint"
+                            android:textColor="@color/main_search_text"
+                            android:hint="Mes"
+                            android:inputType="numberDecimal"
+                            android:id="@+id/monthEdt"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content" />
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:textColorHint="@color/main_search_hint"
+                            android:textColor="@color/main_search_text"
+                            android:inputType="numberDecimal"
+                            android:id="@+id/yearEdt"
+                            android:hint="Año"
+                            android:text="2019"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+
+
+            </androidx.cardview.widget.CardView>
+
+
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_weight="0.1"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+        <TextView
+            android:background="@drawable/calendar_alert_btn_back"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textColor="#505050"
+            android:id="@+id/today"
+            android:text="Hoy"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:background="@drawable/calendar_alert_btn_back"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textColor="#fa1111"
+            android:id="@+id/cancel"
+            android:text="@string/cancel"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+
+
+        <TextView
+            android:background="@drawable/calendar_alert_btn_back"
+            android:textAlignment="center"
+            android:textSize="17sp"
+            android:textColor="#1e8f16"
+            android:id="@+id/done"
+            android:text="@string/filter"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+
+
+
+</LinearLayout>

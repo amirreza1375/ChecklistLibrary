@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout
+    android:id="@+id/bn"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/main_back"
+    android:fillViewport="true"
+    android:focusable="true"
+    android:isScrollContainer="true">
+
+    <LinearLayout
+
+        android:background="@color/colorPrimary"
+        android:id="@+id/progressHolder"
+        android:weightSum="4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <LinearLayout
+            android:paddingBottom="4dp"
+            android:weightSum="4"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/btnChooseShop"
+                    app:tint="#fff"
+                    android:background="@drawable/new_btn_back"
+                    android:src="@drawable/ic_done_black_24dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/fragment_shop_title"
+                    android:textAlignment="center"
+                    android:textColor="#fff"
+                    android:textSize="12sp" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content">
+                <ImageView
+
+                    android:id="@+id/btnChooseChecklist"
+                    app:tint="#fff"
+                    android:background="@drawable/new_btn_back"
+                    android:src="@drawable/ic_autorenew_black_24dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/fragment_check_lists_title"
+                    android:textAlignment="center"
+                    android:textColor="#fff"
+                    android:textSize="12sp" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/btnShowChecklist"
+                    app:tint="#fff"
+                    android:background="@drawable/new_btn_back"
+                    android:src="@drawable/ic_autorenew_black_24dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/fragment_check_list_title"
+                    android:textAlignment="center"
+                    android:textColor="#fff"
+                    android:textSize="12sp" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/btnFinishChecklist"
+                    app:tint="#fff"
+                    android:background="@drawable/new_btn_back"
+                    android:src="@drawable/ic_autorenew_black_24dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/fragment_name_finish"
+                    android:textAlignment="center"
+                    android:textColor="#fff"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/elementChoosenHolder"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progressHolder"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:background="@drawable/layout_main_item_result_back"
+
+        android:layout_height="wrap_content">
+
+
+            <TextView
+
+                android:textColor="@color/main_empty"
+                android:layout_marginTop="2dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:id="@+id/choosenProgress"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textAlignment="textStart"
+                android:textSize="13sp"
+                tools:text="TC office Tea Dia/Noche >> TC office Tea Dia/Noche TC office Tea Dia/Noche" />
+
+
+        <!--            <TextView-->
+        <!--                android:id="@+id/seprator"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="match_parent"-->
+        <!--                android:textAlignment="center"-->
+        <!--                android:textSize="13sp"-->
+        <!--                android:text="  >>  " />-->
+
+        <!--            <TextView-->
+        <!--                android:textSize="13sp"-->
+        <!--                android:textAlignment="center"-->
+        <!--                tools:text="Tea Dia/Noche"-->
+        <!--                android:id="@+id/checklistName"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"/>-->
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/holder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/elementChoosenHolder">
+
+<!--        <LinearLayout-->
+<!--            android:id="@+id/parent"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:gravity="center_horizontal"-->
+<!--            android:orientation="vertical">-->
+<!--            &lt;!&ndash;            <TextView&ndash;&gt;-->
+<!--            &lt;!&ndash;                &ndash;&gt;-->
+<!--            &lt;!&ndash;                android:paddingEnd="6dp"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:paddingStart="6dp"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:paddingBottom="2dp"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:paddingTop="2dp"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:textSize="18sp"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:textColor="#000"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:text="@string/fragment_shop_title"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:layout_width="wrap_content"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:layout_height="wrap_content"/>&ndash;&gt;-->
+<!--            <android.support.v7.widget.RecyclerView-->
+<!--                android:id="@+id/recycler"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:layout_marginLeft="8dp"-->
+<!--                android:layout_marginRight="8dp"-->
+<!--                tools:listitem="@layout/layout_item_shop_new">-->
+
+<!--            </android.support.v7.widget.RecyclerView>-->
+
+<!--        </LinearLayout>-->
+    </FrameLayout>
+
+
+
+
+</LinearLayout>

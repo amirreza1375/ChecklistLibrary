@@ -8,11 +8,19 @@
     android:layout_height="match_parent"
     >
 
-
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animation_view"
+        android:layout_marginTop="16dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        app:lottie_repeatCount="0"
+        app:lottie_autoPlay="true"
+        app:lottie_fileName="done.json"
+        app:lottie_loop="true" />
 
     <LinearLayout
-        android:layout_marginTop="32dp"
         android:paddingBottom="8dp"
+        android:gravity="bottom"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">

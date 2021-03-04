@@ -1,18 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:gravity="center"
-    android:layout_height="wrap_content">
+    android:layout_height="42dp">
 
 
     <android.support.v7.widget.CardView
-        android:layout_margin="4dp"
-        android:padding="4dp"
-        android:elevation="4dp"
-        app:cardCornerRadius="4dp"
+        android:padding="8dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
@@ -20,7 +16,7 @@
             android:layout_margin="4dp"
             android:textSize="15sp"
             android:textColor="#000"
-            tools:text="page title page title page title page title page titlepage titpage title page title page title page titlepage titpage title page title page title page titlepage titpage title page title page title page titlepage titpage title page title page title page titlepage titpage title page title page title page titlepage titpage title page title page title page titlepage titpage title page title page title page titlepage titpage title page title page title page titlepage titpage title page title page title page titlepage titpage title page title page title page titlepage titlepage title page titlepage title "
+            tools:text="page title"
             android:id="@+id/titleTxt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

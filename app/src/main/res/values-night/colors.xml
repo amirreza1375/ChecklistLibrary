@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#000</color>
+    <color name="colorPrimaryDark">#000</color>
+    <color name="colorPrimaryLight">#1B1B1B</color>
+    <color name="colorAccent">#ff793f</color>
+    <color name="colorAccentDark">#FC6827</color>
+    <color name="colorAccentLight">#FC8F60</color>
+    <color name="colorDoneLight">#5EE9C8</color>
+    <color name="colorDone">#56EBC7</color>
+    <color name="colorDoneDark">#46ECC5</color>
+
+    <color name="bgRowBackground">#FA315B</color>
+
+    <!--    <color name="icon_color">#F8F8F8</color>-->
+    <!--    <color name="text_color">#fff</color>-->
+    <!--    <color name="back_color">#000</color>-->
+    <!--    <color name="main_search_back">#fff</color>-->
+
+    <color name="White">#000</color>
+    <color name="LimeGreen">#61CA61</color>
+
+    <color name="trasparent">#00FFFFFF</color>
+
+
+    //      ---------------------  SPLASH ACT
+    <color name="splash_back">#000</color>
+    <color name="spalsh_icon">#F4F4F4</color>
+
+    //      ---------------------   LOGIN ACT
+    <color name="login_back">#000</color>
+    <color name="login_top_icon">#fff</color>
+    <color name="login_top_text">#fff</color>
+    <color name="login_edt_hint">#7CFFFFFF</color>
+    <color name="login_edt_text">#fff</color>
+    <color name="login_edt_back">#fff</color>
+
+    <color name="login_btn_back_start">#fff</color>
+    <color name="login_btn_back_center">#fff</color>
+    <color name="login_btn_back_end">#fff</color>
+
+    <color name="login_btn_back_start_p">#FBFBFB</color>
+    <color name="login_btn_back_center_p">#FBFBFB</color>
+    <color name="login_btn_back_end_p">#FBFBFB</color>
+
+    <color name="login_btn_text">#000</color>
+    <color name="login_edt_img">#9CFFFFFF</color>
+
+    //      ----------------------   FROGET PASS ACT
+    <color name="main_back">#000</color>
+    <color name="main_top_icon">#fff</color>
+
+    <color name="main_calendar_btn_start">#fff</color>
+    <color name="main_calendar_btn_center">#fff</color>
+    <color name="main_calendar_btn_end">#fff</color>
+
+    <color name="main_calendar_btn_start_p">#C3FFFFFF</color>
+    <color name="main_calendar_btn_center_p">#C3FFFFFF</color>
+    <color name="main_calendar_btn_end_p">#C3FFFFFF</color>
+
+    <color name="main_search_back">#fff</color>
+    <color name="main_search_icon">#fff</color>
+    <color name="main_search_hint">#A4FFFFFF</color>
+    <color name="main_search_text">#fff</color>
+
+    <color name="main_empty">#fff</color>
+
+    <color name="main_drawer_icon">#fff</color>
+    <color name="main_drawer_back">#151515</color>
+    <color name="main_drawer_back_p">#272727</color>
+    <color name="main_drawer_option">#1E1E1E</color>
+    <color name="main_drawer_option_p">#292929</color>
+
+    <color name="main_new_action_img">#000</color>
+    <color name="main_calendar_text">#fff</color>
+
+    <color name="main_result_border">#121212</color>
+    <color name="main_result_item_draft">#49B3E0</color>
+
+
+
+
+
+
+
+    <color name="text_color">#000</color>
+    <color name="back_main">#000</color>
+
+    <color name="alert_back">#151515</color>
+
+    <color name="opisite_text">#fff</color>
+    <color name="hint_text">#F8F8F8</color>
+    <color name="main_pic_border">#D1D1D1</color>
+    <color name="pic_back">#292929</color>
+
+    <color name="main_calendar_btn_start_m">#FC8F60</color>
+    <color name="main_calendar_btn_center_m">#ff793f</color>
+    <color name="main_calendar_btn_end_m">#FC6827</color>
+
+    <color name="main_calendar_btn_start_p_m">#FF9568</color>
+    <color name="main_calendar_btn_center_p_m">#FF844E</color>
+    <color name="main_calendar_btn_end_p_m">#FA753B</color>
+
+    <color name="back_button_left_start">#fff</color>
+    <color name="back_button_left_center">#FAFAFA</color>
+    <color name="back_button_left_end">#F6F6F6</color>
+
+    <color name="back_button_right_start">#fff</color>
+    <color name="back_button_right_center">#FAFAFA</color>
+    <color name="back_button_right_end">#F6F6F6</color>
+
+    <color name="back_button_left_start_p">#fff</color>
+    <color name="back_button_left_center_p">#FAFAFA</color>
+    <color name="back_button_left_end_p">#F6F6F6</color>
+
+    <color name="back_button_right_start_p">#fff</color>
+    <color name="back_button_right_center_p">#FAFAFA</color>
+    <color name="back_button_right_end_p">#F6F6F6</color>
+</resources>

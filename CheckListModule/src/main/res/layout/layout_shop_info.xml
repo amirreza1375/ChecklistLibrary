@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:gravity="center"
+    android:orientation="vertical"
+    android:padding="16dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@color/main_drawer_back"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:paddingEnd="24dp"
+            android:paddingStart="24dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_marginTop="8dp"
+                android:gravity="start"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textAlignment="center"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:textSize="17dp"
+                    android:text="Country : "
+                    android:textColor="@color/main_empty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:textAlignment="center"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:textSize="17dp"
+                    tools:text="Chile"
+                    android:textColor="@color/main_empty"
+                    android:id="@+id/country"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginTop="8dp"
+                android:gravity="start"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textAlignment="center"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:textSize="17dp"
+                    android:text="City : "
+                    android:textColor="@color/main_empty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:textAlignment="center"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:textSize="17dp"
+                    tools:text="Chile"
+                    android:textColor="@color/main_empty"
+                    android:id="@+id/city"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginTop="8dp"
+                android:gravity="start"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textAlignment="center"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:textSize="17dp"
+                    android:text="Shop name : "
+                    android:textColor="@color/main_empty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:textAlignment="center"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:textSize="17dp"
+                    tools:text="Chile"
+                    android:textColor="#1d1d1d"
+                    android:id="@+id/shopName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginTop="8dp"
+                android:gravity="start"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textAlignment="center"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:textSize="17dp"
+                    android:text="Adress : "
+                    android:textColor="@color/main_empty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:textAlignment="center"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:textSize="17dp"
+                    tools:text="Chile"
+                    android:textColor="@color/main_empty"
+                    android:id="@+id/adress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginTop="8dp"
+                android:gravity="start"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textAlignment="center"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:textSize="17dp"
+                    android:text="Retail name : "
+                    android:textColor="@color/main_empty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:textAlignment="center"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:textSize="17dp"
+                    tools:text="Chile"
+                    android:textColor="@color/main_empty"
+                    android:id="@+id/retailName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginTop="8dp"
+                android:gravity="start"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textAlignment="center"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:textSize="17dp"
+                    android:text="Zone : "
+                    android:textColor="@color/main_empty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:textAlignment="center"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:textSize="17dp"
+                    tools:text="Chile"
+                    android:textColor="@color/main_empty"
+                    android:id="@+id/zone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/disnatanceText"
+        android:typeface="serif"
+        android:layout_marginTop="8dp"
+        android:textAlignment="center"
+        tools:text="You are 1.4 KM far from this shop"
+        android:textColor="@color/bgRowBackground"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_marginTop="8dp"
+        android:textColor="@color/main_empty"
+        android:text="@string/shops_direction_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:layoutDirection="rtl"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+
+        <Button
+            android:layout_marginLeft="16dp"
+            android:id="@+id/btn"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/main_back"
+            android:background="@drawable/calendar_btn_back"
+            android:text="@string/log_out_yes"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp" />
+        <Button
+
+            android:id="@+id/cancel"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/main_empty"
+            android:background="@drawable/btn_cancel"
+            android:text="@string/log_out_no"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp" />
+    </LinearLayout>
+</LinearLayout>

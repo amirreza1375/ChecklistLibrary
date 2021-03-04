@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="68dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginTop="4dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:background="@drawable/layout_main_item_result_back"
+    android:layout_marginBottom="4dp"
+    android:elevation="2dp"
+    app:cardCornerRadius="4dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:src="@drawable/barbershop"
+            android:id="@+id/shopImg"
+            android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_width="38dp"
+            android:layout_height="38dp"/>
+
+        <TextView
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="@id/shopImg"
+            app:layout_constraintStart_toEndOf="@id/shopImg"
+            android:maxLines="1"
+            android:id="@+id/retail"
+            android:layout_marginLeft="16dp"
+            android:textColor="@color/main_empty"
+            android:text="Tea Connection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:textStyle="bold"
+            android:id="@+id/emptyTxt"
+            app:layout_constraintStart_toEndOf="@+id/retail"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginLeft="2dp"
+            android:textColor="@color/main_empty"
+            android:text=""
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/emptyTxt"
+            app:layout_constraintTop_toTopOf="@id/shopImg"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:layout_marginLeft="2dp"
+            android:id="@+id/shop_name"
+            android:textColor="@color/main_empty"
+            android:text="Office"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            app:layout_constraintBottom_toBottomOf="@id/shopImg"
+            app:layout_constraintStart_toEndOf="@id/shopImg"
+            app:layout_constraintTop_toBottomOf="@id/retail"
+            android:text="Razabi Khorasan"
+            android:layout_marginLeft="16dp"
+            android:id="@+id/shop_adress"
+            android:textColor="@color/main_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>
